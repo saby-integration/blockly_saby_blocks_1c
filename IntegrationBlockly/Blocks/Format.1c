@@ -1,0 +1,25 @@
+Функция block_format_calc_value(block_type, node, path, context, block_context)
+	Узел = block_format_get_node_return(node);
+	res = block_execute_all_next(Узел, path + "." + "main", context, block_context);
+	Формат_Вар = block_format_get_node_field(node);
+	Если Формат_Вар = "to_date" Тогда
+		Попытка
+			Если не ТипЗнч(res) = Тип("Дата") Тогда
+				ВставитьСвойствоЕслиНет(block_context, "result", Дата(res + " 00:00:00"));
+			КонецЕсли;	
+		Исключение
+			Сообщить("Преоразование строки в дату не удалось");
+		КонецПопытки	
+	ИначеЕсли Формат_Вар = "to_string" Тогда
+		ВставитьСвойствоЕслиНет(block_context, "result", Строка(res));
+	КонецЕсли;	
+    Возврат block_context["result"];
+КонецФункции
+
+Функция block_format_get_node_return(node)	
+	Возврат Root.ВычислитьВыражениеXpath("./b:value[@name='value']", node, размыватель).ПолучитьСледующий(); 
+КонецФункции
+
+Функция block_format_get_node_field(node)	
+	Возврат Root.ВычислитьВыражениеXpath("./b:field", node, размыватель).ПолучитьСледующий().ТекстовоеСодержимое; 
+КонецФункции

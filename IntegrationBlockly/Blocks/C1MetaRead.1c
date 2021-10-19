@@ -1,0 +1,14 @@
+Функция block_c1_meta_read_execute(block_type, node, path, context, block_context)
+	variable = block_c1_meta_read_get_node_field(node);
+	НовыйОбъект = context.variables[variable];
+	Попытка
+		Возврат НовыйОбъект.ПолучитьОбъект();
+	Исключение
+		Сообщить("Переменная " + variable + " не возвращает объекта по ссылке.");
+	КонецПопытки;	
+	Возврат Неопределено;
+КонецФункции
+
+Функция block_c1_meta_read_get_node_field(node)	
+	Возврат Root.ВычислитьВыражениеXpath("./b:field", node, размыватель).ПолучитьСледующий().ТекстовоеСодержимое; 
+КонецФункции
