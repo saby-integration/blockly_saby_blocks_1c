@@ -25,6 +25,10 @@
 #Область include_BlocklySabyBlocks_src_Blocks_C1MetaCreate
 #КонецОбласти
 
+
+#Область include_BlocklySabyBlocks_src_Blocks_C1MetaUpdate
+#КонецОбласти
+
 #Область include_BlocklySabyBlocks_src_Blocks_C1ClearTable 
 #КонецОбласти
 

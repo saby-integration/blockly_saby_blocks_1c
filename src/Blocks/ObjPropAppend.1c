@@ -1,9 +1,13 @@
 Функция block_obj_prop_append_calc_value(block_type, node, path, context, block_context)
 	obj = block_get_variable(context, block_context["VAR"]);
-	Если block_context["PATH"] Тогда
+	Если ЗначениеЗаполнено(block_context["PATH"]) Тогда
 		obj[block_context["PATH"]].append(block_context["VALUE"]);
 	Иначе
-		obj.append(block_context["VALUE"]);
+		Если Найти(Строка(obj), "ТабличнаяЧасть") Тогда
+			_variable = obj.Добавить();
+		Иначе	
+			obj.append(block_context["VALUE"]);
+		КонецЕсли; 
 	КонецЕсли;	
 	block_set_variable(context, block_context["VAR"], obj);
 	Возврат Неопределено;
