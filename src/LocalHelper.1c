@@ -149,7 +149,15 @@
 		ВызватьИсключение ЗначениеВСтрокуВнутр(ExtException( Новый Структура("message, detail", "Не известный тип HTTP ответа", response_type), ));		
 	КонецЕсли;
 	Возврат result;
+КонецФункции
 	
+Функция local_helper_extsyncdoc_write(context, connection_uuid, extsyncdoc, objects)
+   //response = local_helper_integration_api(context, method='ExtSyncDoc.Write', params={'param': {
+   //     'ConnectionId': connection_uuid,
+   //     'ExtSyncDoc': extsyncdoc,
+   //     'ExtSyncObj': objects
+   // }})
+   // return response;
 КонецФункции
 
 Функция local_helper_auth_by_login(context, __kwargs = Неопределено)
@@ -159,7 +167,22 @@
 	context.Вставить("session", result.result);
 	Возврат result.result
 КонецФункции
+Функция local_helper_integration_api(context, method, params)
+	//Попытка
+	//    # res.log('Авторизуемся %s' % self.data['login'])
+	//    url = f'{context["url"]}/integration_config/service/'
+	//    result = local_helper_exec_method(
+	//        context,
+	//        url=url,
+	//        method=method,
+	//        params=params,
+	//        auto_auth=True
+	//    )
+	//    Возврат result["result"];
 
 Функция local_helper_add_auth_header(context, __kwargs = Неопределено)
+	//Исключение
+	//    raise Exception(f"integration_api: {str(err)} ")
+	//КонецПопытки;
 КонецФункции
 
