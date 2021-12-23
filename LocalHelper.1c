@@ -1,0 +1,80 @@
+//Метод для вызова АПИ БЛ
+//context - структура
+//__kwargs - структура
+Функция local_helper_exec_method(context, __kwargs = Неопределено)
+	Перем headers, params, response_type, url, type_request;
+	kwargs = __kwargs;
+	params = Новый Структура;
+	Если kwargs = Неопределено Тогда
+		kwargs = Новый Структура;
+	КонецЕсли;
+	Если	Не	context.Свойство("session")
+		И		kwargs.Свойство("auto_auth")
+		И		kwargs.auto_auth Тогда
+		local_helper_auth_by_login(context);
+	КонецЕсли;
+	
+	Если Не kwargs.Свойство("headers", headers) Тогда
+		headers = Новый Структура;
+	КонецЕсли;
+	
+	Если kwargs.Свойство("method") Тогда
+		data = Новый Структура(
+			"jsonrpc,	id,	method",
+			"2.0",		1,	kwargs.method);
+		headers.Вставить("Content-Type", "application/json-rpc;charset=utf-8");
+		Если kwargs.Свойство("params") Тогда
+			data.Вставить("params", kwargs.params);
+		КонецЕсли;
+		Если kwargs.Свойство("protocol") Тогда
+			data.Вставить("protocol", kwargs.protocol);
+		КонецЕсли;
+		data = encode_xdto_xml(data);
+		params = Новый Структура;
+	Иначе
+		Если Не kwargs.Свойство("params", params) Тогда
+			params = Новый Структура;
+		КонецЕсли;
+	КонецЕсли;
+	Если Не kwargs.Свойство("response", response_type) Тогда
+		response_type = "json";
+	КонецЕсли;
+	Если Не kwargs.Свойство("url", url) Тогда
+		response_type = context.url + "/service/?srv=1";
+	КонецЕсли;
+	Если Не kwargs.Свойство("type", type_request) Тогда
+		type_request = "post";
+	КонецЕсли;
+	local_helper_add_auth_header(context, headers);
+	code_result = local_helper_exec_request(type_request, url, response_type, Новый Структура("params, data, headers", params, data, headers));
+	Если code_result.code = 401 Тогда
+		Если	kwargs.Свойство("auto_auth")
+			И	kwargs.auto_auth Тогда
+			local_helper_auth_by_login(context);
+			local_helper_add_auth_header(context, headers);			
+			code_result = local_helper_exec_request(type_request, url, response_type, Новый Структура("params, data, headers", params, data, headers));
+		КонецЕсли;
+	КонецЕсли;
+	Если code_result.code = 401 Тогда
+		ОшибкаСтрокой	= ЗначениеВСтрокуВнутр(ExtException( Новый Структура("message, detail", "Ошибка авторизации", ""), ));
+		ВызватьИсключение ОшибкаСтрокой;
+	ИначеЕсли	code_result.result.Свойство("error") 
+			И	(	code_result.code = 500
+				Или	code_result.code = 501
+				Или	code_result.code = 404
+				Или	code_result.code = 200) Тогда
+		_details = "";
+		msg = code_result.result.error.message;
+	КонецЕсли;
+	
+КонецФункции
+
+Функция local_helper_exec_request(type_request, url, response_type, __kwargs = Неопределено)
+КонецФункции
+
+Функция local_helper_auth_by_login(context, __kwargs = Неопределено)
+КонецФункции
+
+Функция local_helper_add_auth_header(context, __kwargs = Неопределено)
+КонецФункции
+
