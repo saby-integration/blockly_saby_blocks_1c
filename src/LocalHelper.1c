@@ -1,3 +1,4 @@
+
 //Метод для вызова АПИ БЛ
 //context - структура
 //__kwargs - структура
@@ -16,7 +17,7 @@
 		КонецЕсли;
 		
 		Если Не kwargs.Свойство("headers", headers) Тогда
-			headers = Новый Структура;
+			headers = Новый Соответствие;
 		КонецЕсли;
 		
 		Если kwargs.Свойство("method") Тогда
@@ -75,18 +76,46 @@
 		КонецЕсли;
 	Исключение
 		ИнфОбОшибке = ИнформацияОбОшибке();
-		Ошибка = ExtExceptionAnalyse(ИнфОбОшибке);
-		Если Ошибка.type = "Exception" Тогда
-			НоваяОшибка = Новый Структура("message, detail", "Неизвестная ошибка", Ошибка.message);
-			ОшибкаСтруктура = ExtException(НоваяОшибка, Ошибка);
-		Иначе
-			ОшибкаСтруктура = ExtException(, Ошибка);
-		КонецЕсли;
-		ВызватьИсключение(ЗначениеВСтрокуВнутр(ОшибкаСтруктура));
+		ВызватьИсключение(NewExtException(ИнфОбОшибке));
 	КонецПопытки;
 	Возврат code_result.result;
 КонецФункции
 
+Функция local_helper_extsyncdoc_write(context, connection_uuid, extsyncdoc, objects)
+	Попытка
+		params = Новый Структура("param", Новый Структура("ConnectionId, ExtSyncDoc, ExtSyncObj", connection_uuid, extsyncdoc, objects));
+		Возврат local_helper_integration_api(context, "ExtSyncDoc.Write", params);
+	Исключение
+		ИнфОбОшибке = ИнформацияОбОшибке();
+		ВызватьИсключение(NewExtException(ИнфОбОшибке));		
+	КонецПопытки;
+КонецФункции
+
+Функция local_helper_auth_by_login(context, __kwargs = Неопределено)
+	Попытка
+		params = Новый Структура("login, password", context.login, context.password);
+		url = context.url + "/auth/service/";
+		result = local_helper_exec_method(context, Новый Структура("url, method, params, auto_auth", url, "СБИС.Аутентифицировать", params, Ложь));
+	Исключение
+		ИнфОбОшибке = ИнформацияОбОшибке();
+		ВызватьИсключение(NewExtException(ИнфОбОшибке));		
+	КонецПопытки;
+	context.Вставить("session", result.result);
+	Возврат result.result
+КонецФункции
+
+Функция local_helper_integration_api(context, method, params)
+	Попытка
+		url = context.url + "/integration_config/service/";
+		result = local_helper_exec_method(context, Новый Структура("url, method, params, auto_auth", url, method, params, Истина));
+	Исключение
+		ИнфОбОшибке = ИнформацияОбОшибке();
+		ВызватьИсключение(NewExtException(ИнфОбОшибке));
+	КонецПопытки;
+	Возврат result.result;
+КонецФункции
+
+//Выполнение POST/GET запроса
 Функция local_helper_exec_request(request_type, request_url, response_type, __kwargs = Неопределено)
 	kwargs = __kwargs;
 	Если kwargs = Неопределено Тогда
@@ -94,26 +123,56 @@
 	КонецЕсли;
 	result = Новый Структура("code, result");	
 	Если		request_type = "post" Тогда
-		//Соединение = ПолучитьСоединение(Ложь, ПараметрыРобота["host"]);
-		//АдресРесурса = ПараметрыРобота["path"];
-		//Запрос = Новый Структура("connection_uuid, ini_name, operation_uuid, commands_result, endpoint",
-		//ПараметрыВызова["connection_uuid"], ПараметрыВызова["ini_name"], ПараметрыВызова["operation_uuid"], ПараметрыВызова["commands_result"], ПараметрыВызова["endpoint"]);	
-		//СтрокаТелаЗапроса = encode_xdto_xml(Запрос);
-		//ЗапросСервису = Новый HTTPЗапрос(АдресРесурса, СформироватьЗаголовкиЗапроса());
-		//Если СтрокаТелаЗапроса <> "" Тогда
-		//	ЗапросСервису.УстановитьТелоИзСтроки(СтрокаТелаЗапроса);
-		//КонецЕсли;
-		//Попытка
-		//	Ответ = Соединение.ОтправитьДляОбработки(ЗапросСервису);
-		//Исключение
-		//	Ошибка = ОписаниеОшибки();
-		//КонецПопытки;	
-		//СтрокаОтвета = Ответ.ПолучитьТелоКакСтроку();
-		//Чтение = Новый ЧтениеXML;
-		//Чтение.УстановитьСтроку(СтрокаОтвета);
-		//РезультатЗапроса = decode_xml_xdto(СтрокаОтвета);
-		//Возврат РезультатЗапроса;		
+		response = session_post(request_url, kwargs);
 	ИначеЕсли	request_type = "get" Тогда
+		response = session_get(request_url, kwargs);
+	Иначе
+		ВызватьИсключение ЗначениеВСтрокуВнутр(ExtException( Новый Структура("message, detail", "Неизвестный тип HTTP запроса", request_type), ));		
+	КонецЕсли;
+	Возврат result;
+КонецФункции
+	
+//Дополняет заголовки сессией
+//context - Структура
+//headers - Соответствие
+Функция local_helper_add_auth_header(context, headers)
+	Если context.Свойство("session") Тогда
+		headers.Вставить("X-SBISSessionID", context.session);
+	КонецЕсли;
+КонецФункции
+
+//post запрос
+Функция session_post(url, kwargs)
+	//Надо дойти досюда, чтобы получить параметры для реализации post запроса.
+	ВызватьИсключение ЗначениеВСтрокуВнутр(ExtException( Новый Структура("message, detail", "Если видим это, то надо реализовать session_post.", "post:" + url), ));
+	//Хост = Сред(request_url, 9);
+	//Слэш = Найти(Хост,"/"); //19
+	//Хост = Сред(Хост, 0, Слэш-1);
+	//Соединение = ПолучитьСоединение(Ложь, ПараметрыРобота["host"]);
+	//АдресРесурса = ПараметрыРобота["path"];
+	//Запрос = Новый Структура("connection_uuid, ini_name, operation_uuid, commands_result, endpoint",
+	//ПараметрыВызова["connection_uuid"], ПараметрыВызова["ini_name"], ПараметрыВызова["operation_uuid"], ПараметрыВызова["commands_result"], ПараметрыВызова["endpoint"]);	
+	//СтрокаТелаЗапроса = encode_xdto_xml(Запрос);
+	//ЗапросСервису = Новый HTTPЗапрос(АдресРесурса, СформироватьЗаголовкиЗапроса());
+	//Если СтрокаТелаЗапроса <> "" Тогда
+	//	ЗапросСервису.УстановитьТелоИзСтроки(СтрокаТелаЗапроса);
+	//КонецЕсли;
+	//Попытка
+	//	Ответ = Соединение.ОтправитьДляОбработки(ЗапросСервису);
+	//Исключение
+	//	Ошибка = ОписаниеОшибки();
+	//КонецПопытки;	
+	//СтрокаОтвета = Ответ.ПолучитьТелоКакСтроку();
+	//Чтение = Новый ЧтениеXML;
+	//Чтение.УстановитьСтроку(СтрокаОтвета);
+	//РезультатЗапроса = decode_xml_xdto(СтрокаОтвета);
+	//Возврат РезультатЗапроса;		
+КонецФункции
+
+//get запрос
+Функция session_get(url, kwargs)
+	//Надо дойти досюда, чтобы получить параметры для реализации get запроса.
+	ВызватьИсключение ЗначениеВСтрокуВнутр(ExtException( Новый Структура("message, detail", "Если видим это, то надо реализовать session_get.", "get:" + url), ));			
 		//Хост = Сред(request_url, 9);
 		//Слэш = Найти(Хост,"/"); //19
 		//Хост = Сред(Хост, 0, Слэш-1);
@@ -139,50 +198,16 @@
 		//	ПроверкаФайл = Новый Файл(Файл);
 		//	Счет = Счет + 1;
 		//КонецЦикла;	
-	Иначе
-		ВызватьИсключение ЗначениеВСтрокуВнутр(ExtException( Новый Структура("message, detail", "Не известный тип HTTP запроса", request_type), ));		
-	КонецЕсли;
+КонецФункции
+
+//get запрос
+Функция response_handler(response_type, response)
+	ВызватьИсключение ЗначениеВСтрокуВнутр(ExtException( Новый Структура("message, detail", "Неизвестный тип HTTP ответа", response_type), ));		
 	Если		response_type = "json" Тогда
 	ИначеЕсли	response_type = "binary" Тогда
 	ИначеЕсли	response_type = "text" Тогда
 	Иначе
-		ВызватьИсключение ЗначениеВСтрокуВнутр(ExtException( Новый Структура("message, detail", "Не известный тип HTTP ответа", response_type), ));		
+		ВызватьИсключение ЗначениеВСтрокуВнутр(ExtException( Новый Структура("message, detail", "Неизвестный тип HTTP ответа", response_type), ));		
 	КонецЕсли;
-	Возврат result;
-КонецФункции
-	
-Функция local_helper_extsyncdoc_write(context, connection_uuid, extsyncdoc, objects)
-   //response = local_helper_integration_api(context, method='ExtSyncDoc.Write', params={'param': {
-   //     'ConnectionId': connection_uuid,
-   //     'ExtSyncDoc': extsyncdoc,
-   //     'ExtSyncObj': objects
-   // }})
-   // return response;
-КонецФункции
-
-Функция local_helper_auth_by_login(context, __kwargs = Неопределено)
-	url = context.url + "/auth/service/";
-	params = Новый Структура("login, password", context.login, context.password);
-	result = local_helper_exec_method(context, Новый Структура("url, method, params, auto_auth", url, "СБИС.Аутентифицировать", params, Ложь));
-	context.Вставить("session", result.result);
-	Возврат result.result
-КонецФункции
-Функция local_helper_integration_api(context, method, params)
-	//Попытка
-	//    # res.log('Авторизуемся %s' % self.data['login'])
-	//    url = f'{context["url"]}/integration_config/service/'
-	//    result = local_helper_exec_method(
-	//        context,
-	//        url=url,
-	//        method=method,
-	//        params=params,
-	//        auto_auth=True
-	//    )
-	//    Возврат result["result"];
-
-Функция local_helper_add_auth_header(context, __kwargs = Неопределено)
-	//Исключение
-	//    raise Exception(f"integration_api: {str(err)} ")
-	//КонецПопытки;
 КонецФункции
 
