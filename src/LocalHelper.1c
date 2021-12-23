@@ -8,70 +8,82 @@
 	Если kwargs = Неопределено Тогда
 		kwargs = Новый Структура;
 	КонецЕсли;
-	Если	Не	context.Свойство("session")
-		И		kwargs.Свойство("auto_auth")
-		И		kwargs.auto_auth Тогда
-		local_helper_auth_by_login(context);
-	КонецЕсли;
-	
-	Если Не kwargs.Свойство("headers", headers) Тогда
-		headers = Новый Структура;
-	КонецЕсли;
-	
-	Если kwargs.Свойство("method") Тогда
-		data = Новый Структура(
-			"jsonrpc,	id,	method",
-			"2.0",		1,	kwargs.method);
-		headers.Вставить("Content-Type", "application/json-rpc;charset=utf-8");
-		Если kwargs.Свойство("params") Тогда
-			data.Вставить("params", kwargs.params);
-		КонецЕсли;
-		Если kwargs.Свойство("protocol") Тогда
-			data.Вставить("protocol", kwargs.protocol);
-		КонецЕсли;
-		data = encode_xdto_xml(data);
-		params = Новый Структура;
-	Иначе
-		Если Не kwargs.Свойство("params", params) Тогда
-			params = Новый Структура;
-		КонецЕсли;
-	КонецЕсли;
-	Если Не kwargs.Свойство("response", response_type) Тогда
-		response_type = "json";
-	КонецЕсли;
-	Если Не kwargs.Свойство("url", url) Тогда
-		response_type = context.url + "/service/?srv=1";
-	КонецЕсли;
-	Если Не kwargs.Свойство("type", type_request) Тогда
-		type_request = "post";
-	КонецЕсли;
-	local_helper_add_auth_header(context, headers);
-	code_result = local_helper_exec_request(type_request, url, response_type, Новый Структура("params, data, headers", params, data, headers));
-	Если code_result.code = 401 Тогда
-		Если	kwargs.Свойство("auto_auth")
-			И	kwargs.auto_auth Тогда
+	Попытка
+		Если	Не	context.Свойство("session")
+			И		kwargs.Свойство("auto_auth")
+			И		kwargs.auto_auth Тогда
 			local_helper_auth_by_login(context);
-			local_helper_add_auth_header(context, headers);			
-			code_result = local_helper_exec_request(type_request, url, response_type, Новый Структура("params, data, headers", params, data, headers));
 		КонецЕсли;
-	КонецЕсли;
-	Если code_result.code = 401 Тогда
-		ВызватьИсключение ЗначениеВСтрокуВнутр(ExtException( Новый Структура("message, detail", "Ошибка авторизации", ""), ));
-	ИначеЕсли	code_result.result.Свойство("error") 
-			И	(	code_result.code = 500
-				Или	code_result.code = 501
-				Или	code_result.code = 404
-				Или	code_result.code = 200) Тогда
-		_details = Неопределено;
-		msg = code_result.result.error.message;
-		Если	code_result.result.error.Свойство("details", _details)
-			И	msg <> _details Тогда
-			msg = msg + " " + _details;
+		
+		Если Не kwargs.Свойство("headers", headers) Тогда
+			headers = Новый Структура;
 		КонецЕсли;
-		ВызватьИсключение ЗначениеВСтрокуВнутр(ExtException( Новый Структура("message, detail", "Внешняя ошибка", msg), ));
-	Иначе
-		ВызватьИсключение ЗначениеВСтрокуВнутр(ExtException( Новый Структура("message, detail", "Неизвестная ошибка", "Код ошибки " + code_result.code), ));
-	КонецЕсли;
+		
+		Если kwargs.Свойство("method") Тогда
+			data = Новый Структура(
+				"jsonrpc,	id,	method",
+				"2.0",		1,	kwargs.method);
+			headers.Вставить("Content-Type", "application/json-rpc;charset=utf-8");
+			Если kwargs.Свойство("params") Тогда
+				data.Вставить("params", kwargs.params);
+			КонецЕсли;
+			Если kwargs.Свойство("protocol") Тогда
+				data.Вставить("protocol", kwargs.protocol);
+			КонецЕсли;
+			data = encode_xdto_xml(data);
+			params = Новый Структура;
+		Иначе
+			Если Не kwargs.Свойство("params", params) Тогда
+				params = Новый Структура;
+			КонецЕсли;
+		КонецЕсли;
+		Если Не kwargs.Свойство("response", response_type) Тогда
+			response_type = "json";
+		КонецЕсли;
+		Если Не kwargs.Свойство("url", url) Тогда
+			response_type = context.url + "/service/?srv=1";
+		КонецЕсли;
+		Если Не kwargs.Свойство("type", type_request) Тогда
+			type_request = "post";
+		КонецЕсли;
+		local_helper_add_auth_header(context, headers);
+		code_result = local_helper_exec_request(type_request, url, response_type, Новый Структура("params, data, headers", params, data, headers));
+		Если code_result.code = 401 Тогда
+			Если	kwargs.Свойство("auto_auth")
+				И	kwargs.auto_auth Тогда
+				local_helper_auth_by_login(context);
+				local_helper_add_auth_header(context, headers);			
+				code_result = local_helper_exec_request(type_request, url, response_type, Новый Структура("params, data, headers", params, data, headers));
+			КонецЕсли;
+		КонецЕсли;
+		Если code_result.code = 401 Тогда
+			ВызватьИсключение ЗначениеВСтрокуВнутр(ExtException( Новый Структура("message, detail", "Ошибка авторизации", ""), ));
+		ИначеЕсли	code_result.result.Свойство("error") 
+				И	(	code_result.code = 500
+					Или	code_result.code = 501
+					Или	code_result.code = 404
+					Или	code_result.code = 200) Тогда
+			_details = Неопределено;
+			msg = code_result.result.error.message;
+			Если	code_result.result.error.Свойство("details", _details)
+				И	msg <> _details Тогда
+				msg = msg + " " + _details;
+			КонецЕсли;
+			ВызватьИсключение ЗначениеВСтрокуВнутр(ExtException( Новый Структура("message, detail", "Внешняя ошибка", msg), ));
+		Иначе
+			ВызватьИсключение ЗначениеВСтрокуВнутр(ExtException( Новый Структура("message, detail", "Неизвестная ошибка", "Код ошибки " + code_result.code), ));
+		КонецЕсли;
+	Исключение
+		ИнфОбОшибке = ИнформацияОбОшибке();
+		Ошибка = ExtExceptionAnalyse(ИнфОбОшибке);
+		Если Ошибка.type = "Exception" Тогда
+			НоваяОшибка = Новый Структура("message, detail", "Неизвестная ошибка", Ошибка.message);
+			ОшибкаСтруктура = ExtException(НоваяОшибка, Ошибка);
+		Иначе
+			ОшибкаСтруктура = ExtException(, Ошибка);
+		КонецЕсли;
+		ВызватьИсключение(ЗначениеВСтрокуВнутр(ОшибкаСтруктура));
+	КонецПопытки;
 	Возврат code_result.result;
 КонецФункции
 
@@ -80,10 +92,29 @@
 	Если kwargs = Неопределено Тогда
 		kwargs = Новый Структура;
 	КонецЕсли;
+	result = Новый Структура("code, result");	
 	Если		request_type = "post" Тогда
-		
+		//Соединение = ПолучитьСоединение(Ложь, ПараметрыРобота["host"]);
+		//АдресРесурса = ПараметрыРобота["path"];
+		//Запрос = Новый Структура("connection_uuid, ini_name, operation_uuid, commands_result, endpoint",
+		//ПараметрыВызова["connection_uuid"], ПараметрыВызова["ini_name"], ПараметрыВызова["operation_uuid"], ПараметрыВызова["commands_result"], ПараметрыВызова["endpoint"]);	
+		//СтрокаТелаЗапроса = encode_xdto_xml(Запрос);
+		//ЗапросСервису = Новый HTTPЗапрос(АдресРесурса, СформироватьЗаголовкиЗапроса());
+		//Если СтрокаТелаЗапроса <> "" Тогда
+		//	ЗапросСервису.УстановитьТелоИзСтроки(СтрокаТелаЗапроса);
+		//КонецЕсли;
+		//Попытка
+		//	Ответ = Соединение.ОтправитьДляОбработки(ЗапросСервису);
+		//Исключение
+		//	Ошибка = ОписаниеОшибки();
+		//КонецПопытки;	
+		//СтрокаОтвета = Ответ.ПолучитьТелоКакСтроку();
+		//Чтение = Новый ЧтениеXML;
+		//Чтение.УстановитьСтроку(СтрокаОтвета);
+		//РезультатЗапроса = decode_xml_xdto(СтрокаОтвета);
+		//Возврат РезультатЗапроса;		
 	ИначеЕсли	request_type = "get" Тогда
-		//Хост = Сред(Ссылка, 9);
+		//Хост = Сред(request_url, 9);
 		//Слэш = Найти(Хост,"/"); //19
 		//Хост = Сред(Хост, 0, Слэш-1);
 		//Соединение = Новый HTTPСоединение(
@@ -97,7 +128,9 @@
 		//);
 		//Заголовки = Новый Соответствие;
 		//Заголовки.Вставить("X-SBISSessionID", ПолучитьИдентификаторСессии());
-		//Запрос = Новый HTTPЗапрос(Прав(Ссылка,СтрДлина(Ссылка) - 8 - СтрДлина(Хост)), Заголовки);	Результат = Соединение.Получить(Запрос, Файл);
+		//Запрос = Новый HTTPЗапрос(Прав(Ссылка,СтрДлина(Ссылка) - 8 - СтрДлина(Хост)), Заголовки);
+		//
+		//Результат = Соединение.Получить(Запрос, Файл);
 		//ПроверкаФайл = Новый Файл(Файл);
 		//Счет = 1;
 		//
@@ -109,12 +142,22 @@
 	Иначе
 		ВызватьИсключение ЗначениеВСтрокуВнутр(ExtException( Новый Структура("message, detail", "Не известный тип HTTP запроса", request_type), ));		
 	КонецЕсли;
+	Если		response_type = "json" Тогда
+	ИначеЕсли	response_type = "binary" Тогда
+	ИначеЕсли	response_type = "text" Тогда
+	Иначе
+		ВызватьИсключение ЗначениеВСтрокуВнутр(ExtException( Новый Структура("message, detail", "Не известный тип HTTP ответа", response_type), ));		
+	КонецЕсли;
+	Возврат result;
 	
 КонецФункции
 
-
-
 Функция local_helper_auth_by_login(context, __kwargs = Неопределено)
+	url = context.url + "/auth/service/";
+	params = Новый Структура("login, password", context.login, context.password);
+	result = local_helper_exec_method(context, Новый Структура("url, method, params, auto_auth", url, "СБИС.Аутентифицировать", params, Ложь));
+	context.Вставить("session", result.result);
+	Возврат result.result
 КонецФункции
 
 Функция local_helper_add_auth_header(context, __kwargs = Неопределено)
