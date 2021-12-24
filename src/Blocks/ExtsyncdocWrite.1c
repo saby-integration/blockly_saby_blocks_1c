@@ -22,16 +22,16 @@
 	
 	Если direction = "import" Тогда
         direction = 1;
-        objects = block_format_prepare_ext_sync_objects(context, direction, objects);
+        objects = block_extsyncdoc_write_ext_sync_objects(context, direction, objects);
     ИначеЕсли direction = "export" Тогда
         direction = 2;
-        objects = block_format_prepare_ext_sync_objects(context, direction, objects);
+        objects = block_extsyncdoc_write_ext_sync_objects(context, direction, objects);
     ИначеЕсли direction = "import_api3_obj" Тогда
         direction = 1;
-        objects = block_format_prepare_api3_objects(context, direction, objects);
+        objects = block_extsyncdoc_write_api3_objects(context, direction, objects);
     ИначеЕсли direction = "import_api3_link" Тогда
         direction = 1;
-        objects = block_format_prepare_api3_link(context, direction, objects);
+        objects = block_extsyncdoc_write_api3_link(context, direction, objects);
     Иначе
         ВызватьИсключение "Хрень какая то";
 	КонецЕсли;
@@ -55,14 +55,14 @@
 	Возврат block_context["result"];	
 КонецФункции
 
-Функция block_format_prepare_ext_sync_objects(context, direction, objects)
+Функция block_extsyncdoc_write_ext_sync_objects(context, direction, objects)
     Для Каждого obj Из objects Цикл
         obj["Action"] = direction;
 	КонецЦикла;
     Возврат objects;
 КонецФункции
 	
-Функция block_format_prepare_api3_link(context, direction, objects)
+Функция block_extsyncdoc_write_api3_link(context, direction, objects)
 //    _objects = []
 //    for obj in objects:
 //        _id = obj['ИдИС']
@@ -86,7 +86,7 @@
 //    return _objects
 КонецФункции
 	
-Функция block_format_prepare_api3_objects(context, direction, objects)
+Функция block_extsyncdoc_write_api3_objects(context, direction, objects)
 //    _objects = []
 //    for obj in objects:
 //        _id = obj['ИдИС']

@@ -5,14 +5,17 @@
 Функция block_extsyncdoc_run_command_syncdocfill(context, block_context, ext_sync_obj)
 //        raise NotImplemented()
 КонецФункции
+
 Функция block_extsyncdoc_run_command_processpredefineobject(context, block_context, ext_sync_obj)
 //        raise NotImplemented()
 КонецФункции
+
 Функция block_extsyncdoc_run_command_getobject(context, block_context, ext_sync_obj)
 		//obj = ext_sync_obj.get('Context', {})
 		//obj['ИдИС'] = ext_sync_obj['ClientId']
 		//await block_extsyncdoc_run_add_command_calc_ini(context, block_context, 'read', ext_sync_obj, obj)
 КонецФункции
+
 Функция block_extsyncdoc_run_command_update(context, block_context, ext_sync_obj)
 		//try:
 		//    obj = ext_sync_obj['Data']['data']
@@ -20,6 +23,7 @@
 		//    raise Exception(f'Объект не содержит необходимый параметр {key}')
 		//await block_extsyncdoc_run_add_command_calc_ini(context, block_context, 'update', ext_sync_obj, obj)
 КонецФункции
+
 Функция block_extsyncdoc_run_command_find(context, block_context, ext_sync_obj)
 		//try:
 		//    obj = ext_sync_obj['Data']['data']
@@ -27,6 +31,7 @@
 		//    raise Exception(f'Объект не содержит необходимый параметр {key}')
 		//await block_extsyncdoc_run_add_command_calc_ini(context, block_context, 'find', ext_sync_obj, obj)
 КонецФункции
+
 Функция block_extsyncdoc_run_add_command_calc_ini(context, block_context, command, ext_sync_obj, obj)
 		//obj_name = ext_sync_obj['Data']['ini_name'][13:]
 		//ini_name = f'{obj_name}_{command}'
@@ -45,6 +50,7 @@
 		//    }
 		//)
 КонецФункции
+
 Функция block_extsyncdoc_run_process_commands_result(context, block_context)
 		//connection_uuid = context.operation['connection_uuid']
 		//extsyncdoc_uuid = context.operation['operation_uuid']
@@ -85,6 +91,7 @@
 		//    if block_context['__deferred']:  # добавились новые команды
 		//        raise LimitCommand()
 КонецФункции
+
 Функция block_extsyncdoc_run_process_command_result_read(context, block_context, command, result, objects)
 		//if 'ИдИС' in result:
 		//    objects.append({
@@ -109,11 +116,13 @@
 		//    }
 		//    objects.append(_data)
 КонецФункции
+
 Функция block_extsyncdoc_run_process_command_result_find(context, block_context, command, result, objects)
 		//if 'ИдИС' in result:
 		//    command['Data']['data']['ИдИС'] = result['ИдИС']
 		//await block_extsyncdoc_run_command_update(context, block_context, command)
 КонецФункции
+
 Функция block_extsyncdoc_run_process_command_result_update(context, block_context, command, result, objects)
 		//connection_uuid = context.operation['connection_uuid']
 
@@ -140,6 +149,7 @@
 		//    'StatusId': 'Синхронизирован'
 		//})
 КонецФункции
+
 Функция block_extsyncdoc_run_extsyncdoc_prepare_is(context, block_context)
 		//extsyncdoc_uuid = context.operation['operation_uuid']
 		//connection_uuid = context.operation['connection_uuid']
@@ -192,15 +202,18 @@
 		//            raise Exception('Ошибки подготовки')
 		//        break
 КонецФункции
+
 Функция block_extsyncdoc_run_extsyncdoc_prepare_saby(context, block_context)
 		//extsyncdoc_uuid = context.operation['operation_uuid']
 		//await self.executor.service.extsyncdoc_prepare_saby(context.params, extsyncdoc_uuid)
 КонецФункции
+
 Функция block_extsyncdoc_run_extsyncdoc_execute_saby(context, block_context)
 		//extsyncdoc_uuid = context.operation['operation_uuid']
 		//result = await block_extsyncdoc_run_executor.service.extsyncdoc_execute(context.params, extsyncdoc_uuid, 1)
 		//return
 КонецФункции
+
 Функция block_extsyncdoc_run_extsyncdoc_execute_is(context, block_context)
 		//# connection_uuid = context.operation['connection_uuid']
 		//extsyncdoc_uuid = context.operation['operation_uuid']
@@ -222,6 +235,7 @@
 		//            await block_extsyncdoc_run_command_update(context, block_context, obj)
 		//    raise LimitCommand()
 КонецФункции
+
 Функция block_extsyncdoc_run_extsyncdoc_read_saby(context, block_context)
 		//extsyncdoc_uuid = context.operation['operation_uuid']
 		//result = await self.executor.service.api3_extsyncdoc_read(context.params, extsyncdoc_uuid)
