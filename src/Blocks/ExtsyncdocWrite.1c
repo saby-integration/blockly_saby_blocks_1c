@@ -36,8 +36,15 @@
         ВызватьИсключение "Хрень какая то";
 	КонецЕсли;
 	
-    extsyncdoc_uuid = "";//ПараметрыВызова["operation_uuid"];
-    connection_uuid = "";//ПараметрыВызова["connection_uuid"];
+    extsyncdoc_uuid = "";
+    connection_uuid = "";
+	Если ТипЗнч(context.params) = Тип("Структура") Тогда
+	    context.params.Свойство("operation_uuid", extsyncdoc_uuid);
+	    context.params.Свойство("connection_uuid", connection_uuid);
+	ИначеЕсли ТипЗнч(context.params) = Тип("Соответствие") Тогда
+	    extsyncdoc_uuid = context.params.Получить("operation_uuid");
+	    connection_uuid = context.params.Получить("connection_uuid");
+	КонецЕсли;
 		
 	Попытка
 		local_helper_extsyncdoc_write(
@@ -63,50 +70,60 @@
 КонецФункции
 	
 Функция block_extsyncdoc_write_api3_link(context, direction, objects)
-//    _objects = []
-//    for obj in objects:
-//        _id = obj['ИдИС']
-//        ini_name = obj['ini_name']
-//        # await update_ini(self.executor, context, ini_name)
-//        _object = {
-//            'Id': _id,
-//            'Action': direction,
-//            'Title': obj.get('Название', _id),
-//            'Type': f"{obj['ТипИС']}.{obj['ИмяИС']}",
-//            'ClientId': _id,
-//            'Data': {
-//                'data_is': obj,
-//                'ini_name': ini_name,
-//            },
-//            'StatusId': None
-//        }
+    _objects = Новый Массив;
+	Для Каждого obj Из objects Цикл
+		_id = "";
+        obj.Свойство("ИдИС", _id);
+		ini_name	= "";
+        obj.Свойство("ini_name", ini_name);
+        //# await update_ini(self.executor, context, ini_name)
+        _object = Новый Структура(
+            "Id, Action, Title, Type, ClientId, Data, StatusId",
+			_id,
+            direction,
+            ?(obj.Свойство("Название"), obj.Название, _id),
+            obj.ТипИС+"."+obj.ИмяИС,
+            _id,
+            Новый Структура(
+                "data_is, ini_name",
+				obj,
+				ini_name,
+            ),
+            Неопределено
+        );
+		
+		_objects.Добавить(_object);
+	КонецЦикла;
 
-//        _objects.append(_object)
-
-//    return _objects
+    Возврат _objects;
 КонецФункции
 	
 Функция block_extsyncdoc_write_api3_objects(context, direction, objects)
-//    _objects = []
-//    for obj in objects:
-//        _id = obj['ИдИС']
-//        ini_name = obj.get('ini_name')
-//        _object = {
-//            'Id': _id,
-//            'Action': direction,
-//            'Title': obj.get('Название', _id),
-//            'Type': f"{obj['ТипИС']}.{obj['ИмяИС']}",
-//            'ClientId': _id,
-//            'Data': {
-//                'data_is': obj,
-//                'ini_name': ini_name,
-//            },
-//            'StatusId': 'Получен',
-//        }
-//        # if not _ini_name:
-//        #     # update_ini
-//        _objects.append(_object)
+    _objects = Новый Массив;
+	Для Каждого obj Из objects Цикл
+		_id = "";
+        obj.Свойство("ИдИС", _id);
+		ini_name	= "";
+        obj.Свойство("ini_name", ini_name);
+        //# await update_ini(self.executor, context, ini_name)
+        _object = Новый Структура(
+            "Id, Action, Title, Type, ClientId, Data, StatusId",
+			_id,
+            direction,
+            ?(obj.Свойство("Название"), obj.Название, _id),
+            obj.ТипИС+"."+obj.ИмяИС,
+            _id,
+            Новый Структура(
+                "data_is, ini_name",
+				obj,
+				ini_name,
+            ),
+            Неопределено
+        );
+		
+		_objects.Добавить(_object);
+	КонецЦикла;
 
-//    return _objects
+    Возврат _objects;
 КонецФункции
 
