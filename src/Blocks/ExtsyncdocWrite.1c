@@ -55,16 +55,11 @@
 	Возврат block_context["result"];	
 КонецФункции
 
-//Функция block_format_prepare_set_variable(
-//	      if self.executor.multi_thread_mode:
-//            context.debug['__thread_vars'][name] = value
-//        context.variables[name] = value
-//КонецФункции
-
 Функция block_format_prepare_ext_sync_objects(context, direction, objects)
-//    for obj in objects:
-//        obj['Action'] = direction
-//    return objects
+    Для Каждого obj Из objects Цикл
+        obj["Action"] = direction;
+	КонецЦикла;
+    Возврат objects;
 КонецФункции
 	
 Функция block_format_prepare_api3_link(context, direction, objects)

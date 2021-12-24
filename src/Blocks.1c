@@ -7,12 +7,6 @@
 #Область include_BlocklySabyBlocks_src_Blocks_ObjPropSet
 #КонецОбласти
 
-#Область include_BlocklySabyBlocks_src_Blocks_Api3Link
-#КонецОбласти
-
-#Область include_BlocklySabyBlocks_src_Blocks_ExtsysRead
-#КонецОбласти
-
 #Область include_BlocklySabyBlocks_src_Blocks_Format 
 #КонецОбласти
 
@@ -51,5 +45,8 @@
 #КонецОбласти
 
 #Область include_BlocklySabyBlocks_src_Blocks_ExtsyncdocWrite
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_ExtsyncdocRun
 #КонецОбласти
 
