@@ -3,11 +3,19 @@
 //context - структура
 //__kwargs - структура
 Функция local_helper_exec_method(context_params, __kwargs = Неопределено)
-	Перем headers, params, response_type, url, type_request;
+	Перем headers, params, response_type, url, type_request, request_body_type, data;
 	kwargs = __kwargs;
 	params = Новый Структура;
 	Если kwargs = Неопределено Тогда
 		kwargs = Новый Структура;
+	КонецЕсли;
+	Если Не kwargs.Свойство("body_type", request_body_type) Тогда
+		//Тип того, как отдаём тело запроса
+		request_body_type = "json";
+	КонецЕсли;
+	Если Не kwargs.Свойство("response", response_type) Тогда
+		//То, что ожидается в ответе
+		response_type = "json";
 	КонецЕсли;
 	Попытка
 		Если	Не	context_params.Свойство("session")
@@ -20,26 +28,31 @@
 			headers = Новый Соответствие;
 		КонецЕсли;
 		
-		Если kwargs.Свойство("method") Тогда
-			data = Новый Структура(
-				"jsonrpc,	id,	method",
-				"2.0",		1,	kwargs.method);
-			headers.Вставить("Content-Type", "application/json-rpc;charset=utf-8");
-			Если kwargs.Свойство("params") Тогда
-				data.Вставить("params", kwargs.params);
+		Если request_body_type = "json" Тогда
+			Если headers.Получить("Content-Type") = Неопределено Тогда
+				//headers.Вставить("Content-Type", "application/xml");
+				headers.Вставить("Content-Type", "application/json; charset=utf-8");
 			КонецЕсли;
-			Если kwargs.Свойство("protocol") Тогда
-				data.Вставить("protocol", kwargs.protocol);
-			КонецЕсли;
-			data = encode_xdto_xml(data);
-			params = Новый Структура;
-		Иначе
-			Если Не kwargs.Свойство("params", params) Тогда
+			Если kwargs.Свойство("method") Тогда
+				data = Новый Структура(
+					"jsonrpc,	id,	method",
+					"2.0",		1,	kwargs.method);
+				headers.Вставить("Content-Type", "application/json-rpc;charset=utf-8");
+				Если kwargs.Свойство("params") Тогда
+					data.Вставить("params", kwargs.params);
+				КонецЕсли;
+				Если kwargs.Свойство("protocol") Тогда
+					data.Вставить("protocol", kwargs.protocol);
+				КонецЕсли;
+				data = encode_xdto_json(data);
 				params = Новый Структура;
-			КонецЕсли;
-		КонецЕсли;
-		Если Не kwargs.Свойство("response", response_type) Тогда
-			response_type = "json";
+			Иначе
+				Если Не kwargs.Свойство("params", params) Тогда
+					params = Новый Структура;
+				КонецЕсли;
+			КонецЕсли;			
+		Иначе
+			ВызватьИсключение ЗначениеВСтрокуВнутр(ExtException( Новый Структура("message, detail", "Неизвестный тип отправки запроса.", request_body_type), ));
 		КонецЕсли;
 		Если Не kwargs.Свойство("url", url) Тогда
 			url = context_params.url + "/service/?srv=1";
@@ -71,7 +84,7 @@
 				msg = msg + ?(Не ПустаяСтрока(msg), " ", "") + _details;
 			КонецЕсли;
 			ВызватьИсключение ЗначениеВСтрокуВнутр(ExtException( Новый Структура("message, detail", "Внешняя ошибка", msg), ));
-		Иначе
+		ИначеЕсли Не code_result.code = 200 Тогда
 			ВызватьИсключение ЗначениеВСтрокуВнутр(ExtException( Новый Структура("message, detail", "Неизвестная ошибка", "Код ошибки: " + code_result.code), ));
 		КонецЕсли;
 	Исключение
@@ -93,7 +106,7 @@
 
 Функция local_helper_auth_by_login(context_params, __kwargs = Неопределено)
 	Попытка
-		params = Новый Структура("login, password", context_params.login, context_params.password);
+		params = Новый Структура("Логин, Пароль", context_params.login, context_params.password);
 		url = context_params.url + "/auth/service/";
 		result = local_helper_exec_method(context_params, Новый Структура("url, method, params, auto_auth", url, "СБИС.Аутентифицировать", params, Ложь));
 	Исключение
@@ -156,9 +169,12 @@
 //context - Структура
 //headers - Соответствие
 Функция local_helper_add_auth_header(context_params, headers)
-	Если context_params.Свойство("session") Тогда
-		headers.Вставить("X-SBISSessionID", context_params.session);
+	Перем session;
+	Если Не context_params.Свойство("session", session) Тогда
+		session = "";
 	КонецЕсли;
+	headers.Вставить("X-SBISSessionID", session);
+	
 КонецФункции
 
 //post запрос
