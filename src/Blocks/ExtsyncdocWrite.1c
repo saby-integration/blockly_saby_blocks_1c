@@ -41,7 +41,7 @@
 		
 	Попытка
 		local_helper_extsyncdoc_write(
-            "",//ПараметрыВызова, //context.params,
+            context.params,
             connection_uuid,
             Новый Структура("Uuid, Direction", extsyncdoc_uuid, direction),
             objects
