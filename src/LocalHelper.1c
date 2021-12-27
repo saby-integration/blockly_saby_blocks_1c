@@ -55,7 +55,7 @@
 			ВызватьИсключение ЗначениеВСтрокуВнутр(ExtException( Новый Структура("message, detail", "Неизвестный тип отправки запроса.", request_body_type), ));
 		КонецЕсли;
 		Если Не kwargs.Свойство("url", url) Тогда
-			url = context_params.url + "/service/?srv=1";
+			url = context_params.api_url + "/service/?srv=1";
 		КонецЕсли;
 		Если Не kwargs.Свойство("type", type_request) Тогда
 			type_request = "post";
@@ -119,13 +119,50 @@
 
 Функция local_helper_integration_api(context_params, method, params)
 	Попытка
-		url = context_params.url + "/integration_config/service/";
+		url = context_params.api_url + "/integration_config/service/";
 		result = local_helper_exec_method(context_params, Новый Структура("url, method, params, auto_auth", url, method, params, Истина));
 	Исключение
 		ИнфОбОшибке = ИнформацияОбОшибке();
 		ВызватьИсключение(NewExtException(ИнфОбОшибке));
 	КонецПопытки;
 	Возврат result.result;
+КонецФункции
+
+Функция local_helper_extsyncdoc_prepare(context, extsyncdoc_uuid, direction)
+	Возврат local_helper_integration_api(context, "ExtSyncDoc.Prepare", 
+		Новый Структура("SyncDocId, Direction", extsyncdoc_uuid, direction)
+	);
+КонецФункции
+
+Функция local_helper_extsyncdoc_execute(context, extsyncdoc_uuid, direction)
+	Возврат local_helper_integration_api(context, "ExtSyncDoc.Execute", 
+		Новый Структура("SyncDocId, Direction", extsyncdoc_uuid, direction)
+	);
+КонецФункции
+
+Функция local_helper_extsyncdoc_get_obj_for_execute(context, extsyncdoc_uuid, direction)
+	Возврат local_helper_integration_api(context, "ExtSyncDoc.GetObjectsForExecute", 
+		Новый Структура("SyncDocId, Direction", extsyncdoc_uuid, direction)
+	);
+КонецФункции
+
+Функция local_helper_api3_extsyncdoc_read(context, extsyncdoc_uuid)
+	Возврат local_helper_integration_api(context, "API3.ExtSyncDocRead", 
+		Новый Структура("SyncDocId", extsyncdoc_uuid)
+	);
+КонецФункции
+
+Функция local_helper_mapping_obj_find_and_update(context, _filter, _data)
+	response = local_helper_integration_api(context, "MappingObject.FindAndUpdate", 
+		Новый Структура("Filter, Data", _filter, _data)
+	);
+    Если response.Свойство("result") Тогда
+        Возврат response.result;
+    Иначе
+        //ВызватьИсключение СокрЛП(response);
+		ИнфОбОшибке = ИнформацияОбОшибке();
+		ВызватьИсключение NewExtException(ИнфОбОшибке, СокрЛП(response) );
+	КонецЕсли;
 КонецФункции
 
 //Выполнение POST/GET запроса

@@ -1,6 +1,7 @@
+
 Функция block_extsyncdoc_write_calc_value(block_type, node, path, context, block_context)
     Попытка
-        direction	= block_context["direction"];
+        direction	= block_context.direction;
 	Исключение
 		ОшибкаСтрокой	= ЗначениеВСтрокуВнутр(
 			ExtException( 
@@ -10,7 +11,7 @@
 		ВызватьИсключение ОшибкаСтрокой;
 	КонецПопытки;
     Попытка
-        objects		= block_context["objects"];
+        objects		= block_context.objects;
 	Исключение
 		ОшибкаСтрокой	= ЗначениеВСтрокуВнутр(
 			ExtException( 
@@ -39,11 +40,11 @@
     extsyncdoc_uuid = "";
     connection_uuid = "";
 	Если ТипЗнч(context.params) = Тип("Структура") Тогда
-	    context.params.Свойство("operation_uuid", extsyncdoc_uuid);
-	    context.params.Свойство("connection_uuid", connection_uuid);
+	    context.operation.Свойство("operation_uuid", extsyncdoc_uuid);
+	    context.operation.Свойство("connection_uuid", connection_uuid);
 	ИначеЕсли ТипЗнч(context.params) = Тип("Соответствие") Тогда
-	    extsyncdoc_uuid = context.params.Получить("operation_uuid");
-	    connection_uuid = context.params.Получить("connection_uuid");
+	    extsyncdoc_uuid = context.operation.Получить("operation_uuid");
+	    connection_uuid = context.operation.Получить("connection_uuid");
 	КонецЕсли;
 		
 	Попытка
@@ -53,18 +54,19 @@
             Новый Структура("Uuid, Direction", extsyncdoc_uuid, direction),
             objects
         );
-        Возврат Ложь;
-	Исключение 
-	    block_set_variable(context, "_last_error", ИнформацияОбОшибке().Описание );
+        Возврат True;
+	Исключение
+		ИнфОбОшибке = ИнформацияОбОшибке();
+	    block_set_variable(context, "_last_error", NewExtException(ИнфОбОшибке) );
         Возврат Ложь;
 	КонецПопытки;
 	
-	Возврат block_context["result"];	
+	Возврат block_context.result;
 КонецФункции
 
 Функция block_extsyncdoc_write_ext_sync_objects(context, direction, objects)
     Для Каждого obj Из objects Цикл
-        obj["Action"] = direction;
+        obj.Вставить("Action", direction);
 	КонецЦикла;
     Возврат objects;
 КонецФункции
