@@ -3,11 +3,19 @@
 //context - структура
 //__kwargs - структура
 Функция local_helper_exec_method(context_params, __kwargs = Неопределено)
-	Перем headers, params, response_type, url, type_request;
+	Перем headers, params, response_type, url, type_request, request_body_type, data;
 	kwargs = __kwargs;
 	params = Новый Структура;
 	Если kwargs = Неопределено Тогда
 		kwargs = Новый Структура;
+	КонецЕсли;
+	Если Не kwargs.Свойство("body_type", request_body_type) Тогда
+		//Тип того, как отдаём тело запроса
+		request_body_type = "json";
+	КонецЕсли;
+	Если Не kwargs.Свойство("response", response_type) Тогда
+		//То, что ожидается в ответе
+		response_type = "json";
 	КонецЕсли;
 	Попытка
 		Если	Не	context_params.Свойство("session")
@@ -20,29 +28,34 @@
 			headers = Новый Соответствие;
 		КонецЕсли;
 		
-		Если kwargs.Свойство("method") Тогда
-			data = Новый Структура(
-				"jsonrpc,	id,	method",
-				"2.0",		1,	kwargs.method);
-			headers.Вставить("Content-Type", "application/json-rpc;charset=utf-8");
-			Если kwargs.Свойство("params") Тогда
-				data.Вставить("params", kwargs.params);
+		Если request_body_type = "json" Тогда
+			Если headers.Получить("Content-Type") = Неопределено Тогда
+				//headers.Вставить("Content-Type", "application/xml");
+				headers.Вставить("Content-Type", "application/json; charset=utf-8");
 			КонецЕсли;
-			Если kwargs.Свойство("protocol") Тогда
-				data.Вставить("protocol", kwargs.protocol);
-			КонецЕсли;
-			data = encode_xdto_xml(data);
-			params = Новый Структура;
-		Иначе
-			Если Не kwargs.Свойство("params", params) Тогда
+			Если kwargs.Свойство("method") Тогда
+				data = Новый Структура(
+					"jsonrpc,	id,	method",
+					"2.0",		1,	kwargs.method);
+				headers.Вставить("Content-Type", "application/json-rpc;charset=utf-8");
+				Если kwargs.Свойство("params") Тогда
+					data.Вставить("params", kwargs.params);
+				КонецЕсли;
+				Если kwargs.Свойство("protocol") Тогда
+					data.Вставить("protocol", kwargs.protocol);
+				КонецЕсли;
+				data = encode_xdto_json(data);
 				params = Новый Структура;
-			КонецЕсли;
-		КонецЕсли;
-		Если Не kwargs.Свойство("response", response_type) Тогда
-			response_type = "json";
+			Иначе
+				Если Не kwargs.Свойство("params", params) Тогда
+					params = Новый Структура;
+				КонецЕсли;
+			КонецЕсли;			
+		Иначе
+			ВызватьИсключение ЗначениеВСтрокуВнутр(ExtException( Новый Структура("message, detail", "Неизвестный тип отправки запроса.", request_body_type), ));
 		КонецЕсли;
 		Если Не kwargs.Свойство("url", url) Тогда
-			url = context_params.url + "/service/?srv=1";
+			url = context_params.api_url + "/service/?srv=1";
 		КонецЕсли;
 		Если Не kwargs.Свойство("type", type_request) Тогда
 			type_request = "post";
@@ -59,19 +72,19 @@
 		КонецЕсли;
 		Если code_result.code = 401 Тогда
 			ВызватьИсключение ЗначениеВСтрокуВнутр(ExtException( Новый Структура("message, detail", "Ошибка авторизации", ""), ));
-		ИначеЕсли	code_result.result.Свойство("error") 
+		ИначеЕсли	code_result.result.Получить("error") <> Неопределено
 				И	(	code_result.code = 500
 					Или	code_result.code = 501
 					Или	code_result.code = 404
 					Или	code_result.code = 200) Тогда
 			_details = Неопределено;
-			msg = code_result.result.error.message;
-			Если	code_result.result.error.Свойство("details", _details)
-				И	msg <> _details Тогда
+			msg = code_result.result["error"]["message"];
+			_details	= code_result.result["error"].Получить("details");
+			Если	(_details <> Неопределено) И	(msg <> _details) Тогда
 				msg = msg + ?(Не ПустаяСтрока(msg), " ", "") + _details;
 			КонецЕсли;
 			ВызватьИсключение ЗначениеВСтрокуВнутр(ExtException( Новый Структура("message, detail", "Внешняя ошибка", msg), ));
-		Иначе
+		ИначеЕсли Не code_result.code = 200 Тогда
 			ВызватьИсключение ЗначениеВСтрокуВнутр(ExtException( Новый Структура("message, detail", "Неизвестная ошибка", "Код ошибки: " + code_result.code), ));
 		КонецЕсли;
 	Исключение
@@ -93,26 +106,63 @@
 
 Функция local_helper_auth_by_login(context_params, __kwargs = Неопределено)
 	Попытка
-		params = Новый Структура("login, password", context_params.login, context_params.password);
-		url = context_params.url + "/auth/service/";
+		params = Новый Структура("Логин, Пароль", context_params.login, context_params.password);
+		url = context_params.api_url + "/auth/service/";
 		result = local_helper_exec_method(context_params, Новый Структура("url, method, params, auto_auth", url, "СБИС.Аутентифицировать", params, Ложь));
 	Исключение
 		ИнфОбОшибке = ИнформацияОбОшибке();
 		ВызватьИсключение(NewExtException(ИнфОбОшибке));		
 	КонецПопытки;
-	context_params.Вставить("session", result.result);
-	Возврат result.result
+	context_params.Вставить("session", result.Получить("result"));
+	Возврат result.Получить("result");
 КонецФункции
 
 Функция local_helper_integration_api(context_params, method, params)
 	Попытка
-		url = context_params.url + "/integration_config/service/";
+		url = context_params.api_url + "/integration_config/service/";
 		result = local_helper_exec_method(context_params, Новый Структура("url, method, params, auto_auth", url, method, params, Истина));
 	Исключение
 		ИнфОбОшибке = ИнформацияОбОшибке();
 		ВызватьИсключение(NewExtException(ИнфОбОшибке));
 	КонецПопытки;
-	Возврат result.result;
+	Возврат result.Получить("result");
+КонецФункции
+
+Функция local_helper_extsyncdoc_prepare(context, extsyncdoc_uuid, direction)
+	Возврат local_helper_integration_api(context, "ExtSyncDoc.Prepare", 
+		Новый Структура("SyncDocId, Direction", extsyncdoc_uuid, direction)
+	);
+КонецФункции
+
+Функция local_helper_extsyncdoc_execute(context, extsyncdoc_uuid, direction)
+	Возврат local_helper_integration_api(context, "ExtSyncDoc.Execute", 
+		Новый Структура("SyncDocId, Direction", extsyncdoc_uuid, direction)
+	);
+КонецФункции
+
+Функция local_helper_extsyncdoc_get_obj_for_execute(context, extsyncdoc_uuid, direction)
+	Возврат local_helper_integration_api(context, "ExtSyncDoc.GetObjectsForExecute", 
+		Новый Структура("SyncDocId, Direction", extsyncdoc_uuid, direction)
+	);
+КонецФункции
+
+Функция local_helper_api3_extsyncdoc_read(context, extsyncdoc_uuid)
+	Возврат local_helper_integration_api(context, "API3.ExtSyncDocRead", 
+		Новый Структура("SyncDocId", extsyncdoc_uuid)
+	);
+КонецФункции
+
+Функция local_helper_mapping_obj_find_and_update(context, _filter, _data)
+	response = local_helper_integration_api(context, "MappingObject.FindAndUpdate", 
+		Новый Структура("Filter, Data", _filter, _data)
+	);
+    Если response.Свойство("result") Тогда
+        Возврат response.result;
+    Иначе
+        //ВызватьИсключение СокрЛП(response);
+		ИнфОбОшибке = ИнформацияОбОшибке();
+		ВызватьИсключение NewExtException(ИнфОбОшибке, СокрЛП(response) );
+	КонецЕсли;
 КонецФункции
 
 //Выполнение POST/GET запроса
@@ -156,9 +206,12 @@
 //context - Структура
 //headers - Соответствие
 Функция local_helper_add_auth_header(context_params, headers)
-	Если context_params.Свойство("session") Тогда
-		headers.Вставить("X-SBISSessionID", context_params.session);
+	Перем session;
+	Если Не context_params.Свойство("session", session) Тогда
+		session = "";
 	КонецЕсли;
+	headers.Вставить("X-SBISSessionID", session);
+	
 КонецФункции
 
 //post запрос
@@ -248,7 +301,8 @@
 		ЧтениеJSON = Новый ЧтениеJSON;
 		ЧтениеJSON.УстановитьСтроку(response);
 		Попытка
-			Возврат ПрочитатьJSON(ЧтениеJSON);
+			СтрокаВСоответсвие	= ПрочитатьJSON(ЧтениеJSON, Истина); //Для просмотра в отладке
+			Возврат СтрокаВСоответсвие;
 		Исключение
 			ИнфоОбОшибке = ИнформацияОбОшибке();
 			ВызватьИсключение NewExtException(ИнфоОбОшибке, "Ошибка чтения JSON");

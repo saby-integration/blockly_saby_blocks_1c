@@ -11,21 +11,14 @@
 	КонецЕсли;
 
     Попытка
-        result = block_extsyncdoc_run_process_commands_result(context, block_context);
+        //result = block_extsyncdoc_run_process_commands_result(context, block_context);
         result = block_extsyncdoc_run_extsyncdoc_prepare_is(context, block_context);
         result = block_extsyncdoc_run_extsyncdoc_prepare_saby(context, block_context);
         result = block_extsyncdoc_run_extsyncdoc_execute_saby(context, block_context);
         result = block_extsyncdoc_run_extsyncdoc_execute_is(context, block_context);
 	Исключение
-		//except DeferredOperation as err:
-		//    raise err from err
-		//except StepForward as err:
-		//    raise err from err
-		//except LimitCommand as err:
-		//    raise err from err
-		//except Exception as err:
-		    Block_set_variable(context, "_last_error", ИнформацияОбОшибке().Описание );
-			Возврат Ложь;
+	    Block_set_variable(context, "_last_error", ИнформацияОбОшибке().Описание );
+		Возврат Ложь;
 	КонецПопытки;
 
     //result = await self.extsyncdoc_read_saby(context, block_context)
@@ -33,94 +26,57 @@
 КонецФункции
 
 Функция block_extsyncdoc_run_command_syncdocfill(context, block_context, ext_sync_obj)
-	//        raise NotImplemented()
+	//raise NotImplemented()
+	//ВызватьИсключение "Не реализовано";
+	ИнфОбОшибке = ИнформацияОбОшибке();
+	ВызватьИсключение(NewExtException(ИнфОбОшибке, "Не реализовано"));
 КонецФункции
 
 Функция block_extsyncdoc_run_command_processpredefineobject(context, block_context, ext_sync_obj)
 	//        raise NotImplemented()
+	//ВызватьИсключение "Не реализовано";
+	ИнфОбОшибке = ИнформацияОбОшибке();
+	ВызватьИсключение(NewExtException(ИнфОбОшибке, "Не реализовано"));
 КонецФункции
 
 Функция block_extsyncdoc_run_command_getobject(context, block_context, ext_sync_obj)
-	obj = ?(ext_sync_obj.get("Context"), ext_sync_obj.get.Context, Новый Структура() );
-	obj.Вставить("ИдИС", ext_sync_obj.ClientId);
+	obj = ?(ext_sync_obj.Получить("Context") = Неопределено, Новый Структура(), ext_sync_obj["Context"]);
+	obj.Вставить("ИдИС", ext_sync_obj.Получить("ClientId"));
 	Возврат block_extsyncdoc_run_add_command_calc_ini(context, block_context, "read", ext_sync_obj, obj);
 КонецФункции
 
 Функция block_extsyncdoc_run_command_update(context, block_context, ext_sync_obj)
-	//try:
-	//    obj = ext_sync_obj['Data']['data']
-	//except KeyError as key:
-	//    raise Exception(f'Объект не содержит необходимый параметр {key}')
-	//await block_extsyncdoc_run_add_command_calc_ini(context, block_context, 'update', ext_sync_obj, obj)
+	Попытка
+	    obj = ext_sync_obj.Data.data;
+	Исключение
+		ИнфОбОшибке = ИнформацияОбОшибке();
+		ВызватьИсключение(NewExtException(ИнфОбОшибке, "Объект не содержит необходимый параметр"));
+	КонецПопытки;
+	Возврат block_extsyncdoc_run_add_command_calc_ini(context, block_context, "update", ext_sync_obj, obj);
 КонецФункции
 
 Функция block_extsyncdoc_run_command_find(context, block_context, ext_sync_obj)
-	//try:
-	//    obj = ext_sync_obj['Data']['data']
-	//except KeyError as key:
-	//    raise Exception(f'Объект не содержит необходимый параметр {key}')
-	//await block_extsyncdoc_run_add_command_calc_ini(context, block_context, 'find', ext_sync_obj, obj)
+	Попытка
+	    obj = ext_sync_obj.Data.data;
+	Исключение
+		ИнфОбОшибке = ИнформацияОбОшибке();
+		ВызватьИсключение(NewExtException(ИнфОбОшибке, "Объект не содержит необходимый параметр"));
+	КонецПопытки;
+	Возврат block_extsyncdoc_run_add_command_calc_ini(context, block_context, "find", ext_sync_obj, obj);
 КонецФункции
 
 Функция block_extsyncdoc_run_add_command_calc_ini(context, block_context, command, ext_sync_obj, obj)
-	//obj_name = ext_sync_obj['Data']['ini_name'][13:]
-	//ini_name = f'{obj_name}_{command}'
-	//await update_ini(self.executor, context, ini_name)
-	//command_uuid = str(uuid4())
-	//block_context['__deferred'][command_uuid] = ext_sync_obj
-	//block_context['__deferred'][command_uuid]['_command'] = command
-	//self.executor.commands.append(
-	//    {
-	//        'name': 'calc_ini',
-	//        'params': {
-	//            'ini_name': ini_name,
-	//            'object': obj
-	//        },
-	//        'uuid': command_uuid
-	//    }
-	//)
+	obj_name = ext_sync_obj["Data"]["ini_name"];
+	//Сред(ext_sync_obj["Data"]["ini_name"][13:], 13); //В 1с счёт строк с 1 начинается
+    ini_name = obj_name+"_"+command;
+	//Пока тут
+	Load_Ini(ini_name);
+	//Пока тут
+	Возврат CalcIni(Новый Структура("ini_name, object", ini_name, obj));
 КонецФункции
 
-Функция block_extsyncdoc_run_process_commands_result(context, block_context)
-	//connection_uuid = context.operation['connection_uuid']
-	//extsyncdoc_uuid = context.operation['operation_uuid']
-	//objects = []
-	//if block_context['__deferred']:  # ждем команды
-	//    commands = list(block_context['__deferred'])
-	//    for command_uuid in commands:
-	//        command = block_context['__deferred'].pop(command_uuid)
-	//        try:
-	//            result = self.command_get_result(command_uuid)
-	//            await getattr(self, f'process_command_result_{command["_command"]}')(context, block_context,
-	//                                                                                 command, result, objects)
-	//        except ExtException as err:
-	//            _data = command[1]
-	//            _data['StatusId'] = 'Ошибка'
-	//            _data['StatusMsg'] = [err.message]
-	//            _data['Data']['error'] = err.to_dict()
-	//            objects.append(_data)
-	//        except Exception as err:
-	//            _data = command
-	//            _data['StatusId'] = 'Ошибка'
-	//            _data['StatusMsg'] = [str(err)]
-	//            objects.append(_data)
-	
-	//    try:
-	//        await self.executor.service.extsyncdoc_write(
-	//            context.params,
-	//            connection_uuid,
-	//            {
-	//                'Uuid': extsyncdoc_uuid,
-	//            },
-	//            objects
-	//        )
-	//    except Exception as err:
-	//        self.set_variable(context, '_last_error', str(err))
-	//        return False
-	
-	//    if block_context['__deferred']:  # добавились новые команды
-	//        raise LimitCommand()
-КонецФункции
+//Функция block_extsyncdoc_run_process_commands_result(context, block_context)
+//КонецФункции
 
 Функция block_extsyncdoc_run_process_command_result_read(context, block_context, command, result, objects)
 	Если result.Свйоство("ИдИС") Тогда
@@ -152,112 +108,120 @@
 КонецФункции
 
 Функция block_extsyncdoc_run_process_command_result_find(context, block_context, command, result, objects)
-	//if 'ИдИС' in result:
-	//    command['Data']['data']['ИдИС'] = result['ИдИС']
-	//await block_extsyncdoc_run_command_update(context, block_context, command)
+	Если result.Свойство("ИдИС") Тогда
+		command.Data.data.Вставить("ИдИС", result.ИдИС);
+	КонецЕсли;
+	Возврат block_extsyncdoc_run_command_update(context, block_context, command);
 КонецФункции
 
 Функция block_extsyncdoc_run_process_command_result_update(context, block_context, command, result, objects)
-	//connection_uuid = context.operation['connection_uuid']
+	connection_uuid = context.operation.Свойство("connection_uuid");
 	
-	//if 'ИдИС' not in command['Data']['data'] and 'ИдИС' in result:  # создаем объект в ИС
-	//    # записываем идентификатор в маппинг
-	//    _filter = {
-	//        'ConnectionId': connection_uuid,
-	//        'Type': command['Data']['data']['ИмяСБИС'],
-	//        'Id': command['Data']['data']['ИдСБИС'],
-	//        'IdType': 1
-	//    }
-	//    _data = {
-	//        'ClientId': result['ИдИС'],
-	//        'ClientName': result['Название']
-	//    }
-	//    self.executor.service.mapping_obj_find_and_update(
-	//        context.params,
-	//        _filter,
-	//        _data
-	//    )
-	//    pass
-	//objects.append({
-	//    'Uuid': command['Uuid'],
-	//    'StatusId': 'Синхронизирован'
-	//})
+	Если не command.Data.data.Свойство("ИдИС") И result.Свойство("ИдИС") Тогда
+	    //# записываем идентификатор в маппинг
+	    _filter = Новый Структура("ConnectionId, Type, Id, IdType",
+	        connection_uuid,
+	        command.Data.data.ИмяСБИС,
+	        command.Data.data.ИдСБИС,
+	        1
+	    );
+	    _data = Новый Структура("ClientId, ClientName",
+	        result.ИдИС,
+	        result.Название
+	    );
+	    local_helper_mapping_obj_find_and_update(
+	        context.params,
+	        _filter,
+	        _data
+	    );
+	    //pass
+	КонецЕсли;
+	objects.Добавить(Новый Структура("Uuid, StatusId",command.Uuid,"Синхронизирован") );
 КонецФункции
 
 Функция block_extsyncdoc_run_extsyncdoc_prepare_is(context, block_context)
-	//extsyncdoc_uuid = Неопределено;
-	//context.operation.Свойство("operation_uuid", extsyncdoc_uuid);
-	//connection_uuid = Неопределено;
-	//context.operation.Свойство("connection_uuid", connection_uuid);
-	//Пока Истина Цикл
-	//    block_context.Вставить("prepare_counter", block_context.prepare_counter + 1);
-	//    Если block_context.prepare_counter >= 3000 Тогда
-	//        ВызватьИсключение "Превышено количество циклов prepare для операции экспорта";
-	//	КонецЕсли;
-	//	
-	//	result = Неопределено;
-	//	Попытка
-	//		//Заглушка Андрей Ю
-	//        //result = await self.executor.service.extsyncdoc_prepare(context.params, extsyncdoc_uuid, 1)
-	//	Исключение
-	//		ИнфОбОшибке = ИнформацияОбОшибке();
-	//		ВызватьИсключение(NewExtException(ИнфОбОшибке));
-	//	КонецПопытки;
-	//	
-	//    Для Каждого key Из result Цикл
-	//        block_context.Вставить(key, result.key);
-	//	КонецЦикла;
-	//	
-	//    actions = ?(block_context.Свойство("requiredActions"), block_context.requiredActions, Новый Массив );
-	//    count_actions = actions.Количество();
-	//	Если count_actions > 0 Тогда
-	//		
-	//        //self.logger.debug(f"ExtSyncDoc.prepare actions: {len(result['requiredActions'])}")
-	//		
-	//        errors = Новый Массив;//  # ошибки запуска команд
-	//        Для Каждого command Из result.requiredActions Цикл
-	//            Попытка
-	//                //await getattr(self, f'command_{command[0].lower()}')(context, block_context, command[1])
-	//				Если НРег(command[0]) = "1" Тогда
-	//				ИначеЕсли НРег(command[0]) = "2" Тогда
-	//				ИначеЕсли НРег(command[0]) = "3" Тогда
-	//				КонецЕсли;
-	//			Исключение
-	//				ИнфОбОшибке = ИнформацияОбОшибке();
-	//				ВызватьИсключение(NewExtException(ИнфОбОшибке));
-	//			КонецПопытки;
-	//		КонецЦикла;
-	//			
-	//        Если errors.Количество() > 0 Тогда
-	//            res = local_helper_extsyncdoc_write(
-	//                context.params,
-	//                connection_uuid,
-	//                Новый Структура("Uuid", extsyncdoc_uuid),
-	//                errors
-	//            );
-	//		КонецЕсли;
-	//    	//raise DeferredOperation()
-	//		ВызватьИсключение "Отложенная операция"; 
-	//	КонецЕсли;	
-	//		
-	//    Если Не count_actions and block_context['all_objects'] <= block_context['count_processed'] + \
-	//            block_context['count_error']:
-	//        if block_context.count_error Тогда
-	//            raise Exception('Ошибки подготовки')
-	//	    Прервать;
-	//	КонецЕсли;
-	//КонецЦикла;
+	extsyncdoc_uuid = Неопределено;
+	context.operation.Свойство("operation_uuid", extsyncdoc_uuid);
+	connection_uuid = Неопределено;
+	context.operation.Свойство("connection_uuid", connection_uuid);
+	Пока Истина Цикл
+	    block_context.Вставить("prepare_counter", block_context.prepare_counter + 1);
+	    Если block_context.prepare_counter >= 3000 Тогда
+	        //ВызватьИсключение "Превышено количество циклов prepare для операции экспорта";
+			ИнфОбОшибке = ИнформацияОбОшибке();
+			ВызватьИсключение(NewExtException(ИнфОбОшибке, "Превышено количество циклов prepare для операции экспорта"));
+		КонецЕсли;
+		
+		result = Неопределено;
+		Попытка
+			result = local_helper_extsyncdoc_prepare(context.params, extsyncdoc_uuid, 1);
+		Исключение
+			ИнфОбОшибке = ИнформацияОбОшибке();
+			ВызватьИсключение(NewExtException(ИнфОбОшибке));
+		КонецПопытки;
+		
+		Для каждого key_ Из result Цикл
+	        block_context.Вставить(key_.Ключ, key_.Значение);
+		КонецЦикла;
+		
+	    actions = ?(block_context.Свойство("requiredActions"), block_context.requiredActions, Новый Массив );
+	    count_actions = actions.Количество();
+		Если count_actions > 0 Тогда
+			
+	        errors = Новый Массив;
+	        Для Каждого command_ Из result["requiredActions"] Цикл
+	            Попытка
+	                //await getattr(self, f'command_{command[0].lower()}')(context, block_context, command[1])
+					Если НРег(command_[0]) = "syncdocfill" Тогда
+						результат = block_extsyncdoc_run_command_syncdocfill(context, block_context, command_[1]);
+					ИначеЕсли НРег(command_[0]) = "processpredefineobject" Тогда
+						результат = block_extsyncdoc_run_command_processpredefineobject(context, block_context, command_[1]);
+					ИначеЕсли НРег(command_[0]) = "getobject" Тогда
+						результат = block_extsyncdoc_run_command_getobject(context, block_context, command_[1]);
+					ИначеЕсли НРег(command_[0]) = "update" Тогда
+						результат = block_extsyncdoc_run_command_update(context, block_context, command_[1]);
+					ИначеЕсли НРег(command_[0]) = "find" Тогда
+						результат = block_extsyncdoc_run_command_find(context, block_context, command_[1]);
+					КонецЕсли;
+				Исключение
+					ИнфОбОшибке	= ИнформацияОбОшибке();
+					ВызватьИсключение(NewExtException(ИнфОбОшибке));
+				КонецПопытки;
+			КонецЦикла;
+				
+	        Если errors.Количество() > 0 Тогда
+	            res = local_helper_extsyncdoc_write(
+	                context.params,
+	                connection_uuid,
+	                Новый Структура("Uuid", extsyncdoc_uuid),
+	                errors
+	            );
+			КонецЕсли;
+			//ВызватьИсключение "Отложенная операция"; 
+			ИнфОбОшибке = ИнформацияОбОшибке();
+			ВызватьИсключение(NewExtException(ИнфОбОшибке, "Отложенная операция"));
+		КонецЕсли;	
+			
+	    Если count_actions <= 0 И (block_context.all_objects <= block_context.count_processed + block_context.count_error) Тогда
+	        if block_context.count_error Тогда
+	            //ВызватьИсключение "Ошибки подготовки";
+				ИнфОбОшибке = ИнформацияОбОшибке();
+				ВызватьИсключение(NewExtException(ИнфОбОшибке, "Ошибки подготовки"));
+			КонецЕсли;
+		    Прервать;
+		КонецЕсли;
+	КонецЦикла;
+	Возврат результат;
 КонецФункции
 
 Функция block_extsyncdoc_run_extsyncdoc_prepare_saby(context, block_context)
-	//extsyncdoc_uuid = context.operation['operation_uuid']
-	//await self.executor.service.extsyncdoc_prepare_saby(context.params, extsyncdoc_uuid)
+	extsyncdoc_uuid = context.operation.Получить("operation_uuid");
+	Возврат block_extsyncdoc_run_extsyncdoc_prepare_saby(context.params, extsyncdoc_uuid);
 КонецФункции
 
 Функция block_extsyncdoc_run_extsyncdoc_execute_saby(context, block_context)
-	//extsyncdoc_uuid = context.operation['operation_uuid']
-	//result = await block_extsyncdoc_run_executor.service.extsyncdoc_execute(context.params, extsyncdoc_uuid, 1)
-	//return
+	extsyncdoc_uuid = context.operation.Получить("operation_uuid");
+	Возврат local_helper_extsyncdoc_execute(context.params, extsyncdoc_uuid, 1);
 КонецФункции
 
 Функция block_extsyncdoc_run_extsyncdoc_execute_is(context, block_context)
@@ -272,15 +236,15 @@
 		
 		result = Неопределено;
 		Попытка
-			//Заглушка Андрей Юферов
-	        //result = block_extsyncdoc_run_executor.service.extsyncdoc_get_obj_for_execute(context.params, extsyncdoc_uuid, 2)
+	        result = local_helper_extsyncdoc_get_obj_for_execute(context.params, extsyncdoc_uuid, 2)
 		Исключение 
-			//Exception as err:
-			ВызватьИсключение ИнформацияОбОшибке().Описание; 
+			//ВызватьИсключение ИнформацияОбОшибке().Описание; 
+			ИнфОбОшибке = ИнформацияОбОшибке();
+			ВызватьИсключение(NewExtException(ИнфОбОшибке));
 		КонецПопытки;
 		
 	    Если Не ЗначениеЗаполнено(result) Тогда
-	        return True;
+	        Возврат Истина;
 		КонецЕсли;
 		
 	    Для Каждого obj Из result Цикл
@@ -292,12 +256,14 @@
 		КонецЦикла;
 		
 		//raise LimitCommand()
-		ВызватьИсключение "Превышено количество циклов prepare для операции";
+		//ВызватьИсключение "Превышено количество циклов prepare для операции";
+		ИнфОбОшибке = ИнформацияОбОшибке();
+		ВызватьИсключение(NewExtException(ИнфОбОшибке,"Превышено количество циклов prepare для операции"));
 	КонецЦикла;
 КонецФункции
 
 Функция block_extsyncdoc_run_extsyncdoc_read_saby(context, block_context)
-	//extsyncdoc_uuid = context.operation['operation_uuid']
-	//result = await self.executor.service.api3_extsyncdoc_read(context.params, extsyncdoc_uuid)
-	//return result
+	extsyncdoc_uuid = context.operation.Получить("operation_uuid");
+	Возврат local_helper_api3_extsyncdoc_read(context.params, extsyncdoc_uuid);
 КонецФункции
+
