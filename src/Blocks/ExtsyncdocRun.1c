@@ -17,8 +17,10 @@
         result = block_extsyncdoc_run_extsyncdoc_execute_saby(context, block_context);
         result = block_extsyncdoc_run_extsyncdoc_execute_is(context, block_context);
 	Исключение
-	    Block_set_variable(context, "_last_error", ИнформацияОбОшибке().Описание );
-		Возврат Ложь;
+		ИнфОбОшибке	= ИнформацияОбОшибке();
+		ВызватьИсключение(NewExtException(ИнфОбОшибке));
+		//Block_set_variable(context, "_last_error", ИнформацияОбОшибке().Описание );
+		//Возврат Ложь;
 	КонецПопытки;
 
     //result = await self.extsyncdoc_read_saby(context, block_context)
@@ -66,8 +68,7 @@
 КонецФункции
 
 Функция block_extsyncdoc_run_add_command_calc_ini(context, block_context, command, ext_sync_obj, obj)
-	obj_name = ext_sync_obj["Data"]["ini_name"];
-	//Сред(ext_sync_obj["Data"]["ini_name"][13:], 13); //В 1с счёт строк с 1 начинается
+	obj_name = Сред(ext_sync_obj["Data"]["ini_name"], 14);
     ini_name = obj_name+"_"+command;
 	//Пока тут
 	Load_Ini(ini_name);
