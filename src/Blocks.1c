@@ -7,6 +7,12 @@
 #Область include_BlocklySabyBlocks_src_Blocks_C1RefToObj
 #КонецОбласти
 
+#Область include_BlocklySabyBlocks_src_Blocks_C1DocReadListPrintForms
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_C1DocReadPrintForms
+#КонецОбласти
+
 #Область include_BlocklySabyBlocks_src_Blocks_NewObj
 #КонецОбласти
 
