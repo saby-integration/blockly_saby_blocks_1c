@@ -46,6 +46,8 @@
 	    extsyncdoc_uuid = context.operation.Получить("operation_uuid");
 	    connection_uuid = context.operation.Получить("connection_uuid");
 	КонецЕсли;
+    context.operation.Вставить("operation_uuid", extsyncdoc_uuid);
+    context.operation.Вставить("connection_uuid", connection_uuid);
 	
 	Попытка
 		Если ПустаяСтрока(extsyncdoc_uuid) Тогда
