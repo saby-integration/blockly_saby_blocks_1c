@@ -69,7 +69,9 @@
 	obj_name = ext_sync_obj["Data"]["ini_name"];
 	//Сред(ext_sync_obj["Data"]["ini_name"][13:], 13); //В 1с счёт строк с 1 начинается
     ini_name = obj_name+"_"+command;
-	//Уточнить где - ini_name лежит.
+	//Пока тут
+	Load_Ini(ini_name);
+	//Пока тут
 	Возврат CalcIni(Новый Структура("ini_name, object", ini_name, obj));
 КонецФункции
 
