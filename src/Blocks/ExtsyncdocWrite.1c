@@ -46,14 +46,24 @@
 	    extsyncdoc_uuid = context.operation.Получить("operation_uuid");
 	    connection_uuid = context.operation.Получить("connection_uuid");
 	КонецЕсли;
-		
+	
 	Попытка
-		local_helper_extsyncdoc_write(
+		Если ПустаяСтрока(extsyncdoc_uuid) Тогда
+            ПараметрыВЫзова = Новый Структура("Direction", direction);
+		Иначе
+			//И почему тут будет новый uuid, а не от предыдущего вызовата? Миша!
+            ПараметрыВЫзова = Новый Структура("Uuid, Direction", extsyncdoc_uuid, direction);
+		КонецЕсли;
+		
+		ПолученыйUuid = local_helper_extsyncdoc_write(
             context.params,
             connection_uuid,
-            Новый Структура("Uuid, Direction", extsyncdoc_uuid, direction),
+			ПараметрыВЫзова,
             objects
         );
+		Если Не ПустаяСтрока(ПолученыйUuid) и ПолученыйUuid <> extsyncdoc_uuid Тогда
+			context.operation.Вставить("operation_uuid", ПолученыйUuid);
+		КонецЕсли;
         Возврат True;
 	Исключение
 		ИнфОбОшибке = ИнформацияОбОшибке();

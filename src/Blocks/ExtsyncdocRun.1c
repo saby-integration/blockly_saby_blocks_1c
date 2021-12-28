@@ -40,8 +40,8 @@
 КонецФункции
 
 Функция block_extsyncdoc_run_command_getobject(context, block_context, ext_sync_obj)
-	obj = ?(ext_sync_obj.get("Context"), ext_sync_obj.get.Context, Новый Структура() );
-	obj.Вставить("ИдИС", ext_sync_obj.ClientId);
+	obj = ?(ext_sync_obj.Получить("Context") = Неопределено, Новый Структура(), ext_sync_obj["Context"]);
+	obj.Вставить("ИдИС", ext_sync_obj.Получить("ClientId"));
 	Возврат block_extsyncdoc_run_add_command_calc_ini(context, block_context, "read", ext_sync_obj, obj);
 КонецФункции
 
@@ -66,8 +66,11 @@
 КонецФункции
 
 Функция block_extsyncdoc_run_add_command_calc_ini(context, block_context, command, ext_sync_obj, obj)
+	obj_name = ext_sync_obj["Data"]["ini_name"];
+	//Сред(ext_sync_obj["Data"]["ini_name"][13:], 13); //В 1с счёт строк с 1 начинается
+    ini_name = obj_name+"_"+command;
 	//Уточнить где - ini_name лежит.
-	Возврат CalcIni(Новый Структура("ini_name, object",context.ini_name, obj));
+	Возврат CalcIni(Новый Структура("ini_name, object", ini_name, obj));
 КонецФункции
 
 //Функция block_extsyncdoc_run_process_commands_result(context, block_context)
@@ -110,7 +113,7 @@
 КонецФункции
 
 Функция block_extsyncdoc_run_process_command_result_update(context, block_context, command, result, objects)
-	connection_uuid = context.operation.Получить("connection_uuid");
+	connection_uuid = context.operation.Свойство("connection_uuid");
 	
 	Если не command.Data.data.Свойство("ИдИС") И result.Свойство("ИдИС") Тогда
 	    //# записываем идентификатор в маппинг
@@ -155,8 +158,8 @@
 			ВызватьИсключение(NewExtException(ИнфОбОшибке));
 		КонецПопытки;
 		
-	    Для Каждого key Из result Цикл
-	        block_context.Вставить(key, result.key);
+		Для каждого key_ Из result Цикл
+	        block_context.Вставить(key_.Ключ, key_.Значение);
 		КонецЦикла;
 		
 	    actions = ?(block_context.Свойство("requiredActions"), block_context.requiredActions, Новый Массив );
@@ -164,19 +167,19 @@
 		Если count_actions > 0 Тогда
 			
 	        errors = Новый Массив;
-	        Для Каждого command Из result.requiredActions Цикл
+	        Для Каждого command_ Из result["requiredActions"] Цикл
 	            Попытка
 	                //await getattr(self, f'command_{command[0].lower()}')(context, block_context, command[1])
-					Если НРег(command[0]) = "syncdocfill" Тогда
-						результат = block_extsyncdoc_run_command_syncdocfill(context, block_context, command[1]);
-					ИначеЕсли НРег(command[0]) = "processpredefineobject" Тогда
-						результат = block_extsyncdoc_run_command_processpredefineobject(context, block_context, command[1]);
-					ИначеЕсли НРег(command[0]) = "getobject" Тогда
-						результат = block_extsyncdoc_run_command_getobject(context, block_context, command[1]);
-					ИначеЕсли НРег(command[0]) = "update" Тогда
-						результат = block_extsyncdoc_run_command_update(context, block_context, command[1]);
-					ИначеЕсли НРег(command[0]) = "find" Тогда
-						результат = block_extsyncdoc_run_command_find(context, block_context, command[1]);
+					Если НРег(command_[0]) = "syncdocfill" Тогда
+						результат = block_extsyncdoc_run_command_syncdocfill(context, block_context, command_[1]);
+					ИначеЕсли НРег(command_[0]) = "processpredefineobject" Тогда
+						результат = block_extsyncdoc_run_command_processpredefineobject(context, block_context, command_[1]);
+					ИначеЕсли НРег(command_[0]) = "getobject" Тогда
+						результат = block_extsyncdoc_run_command_getobject(context, block_context, command_[1]);
+					ИначеЕсли НРег(command_[0]) = "update" Тогда
+						результат = block_extsyncdoc_run_command_update(context, block_context, command_[1]);
+					ИначеЕсли НРег(command_[0]) = "find" Тогда
+						результат = block_extsyncdoc_run_command_find(context, block_context, command_[1]);
 					КонецЕсли;
 				Исключение
 					ИнфОбОшибке	= ИнформацияОбОшибке();

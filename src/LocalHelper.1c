@@ -72,15 +72,15 @@
 		КонецЕсли;
 		Если code_result.code = 401 Тогда
 			ВызватьИсключение ЗначениеВСтрокуВнутр(ExtException( Новый Структура("message, detail", "Ошибка авторизации", ""), ));
-		ИначеЕсли	code_result.result.Свойство("error") 
+		ИначеЕсли	code_result.result.Получить("error") <> Неопределено
 				И	(	code_result.code = 500
 					Или	code_result.code = 501
 					Или	code_result.code = 404
 					Или	code_result.code = 200) Тогда
 			_details = Неопределено;
-			msg = code_result.result.error.message;
-			Если	code_result.result.error.Свойство("details", _details)
-				И	msg <> _details Тогда
+			msg = code_result.result["error"]["message"];
+			_details	= code_result.result["error"].Получить("details");
+			Если	(_details <> Неопределено) И	(msg <> _details) Тогда
 				msg = msg + ?(Не ПустаяСтрока(msg), " ", "") + _details;
 			КонецЕсли;
 			ВызватьИсключение ЗначениеВСтрокуВнутр(ExtException( Новый Структура("message, detail", "Внешняя ошибка", msg), ));
@@ -107,14 +107,14 @@
 Функция local_helper_auth_by_login(context_params, __kwargs = Неопределено)
 	Попытка
 		params = Новый Структура("Логин, Пароль", context_params.login, context_params.password);
-		url = context_params.url + "/auth/service/";
+		url = context_params.api_url + "/auth/service/";
 		result = local_helper_exec_method(context_params, Новый Структура("url, method, params, auto_auth", url, "СБИС.Аутентифицировать", params, Ложь));
 	Исключение
 		ИнфОбОшибке = ИнформацияОбОшибке();
 		ВызватьИсключение(NewExtException(ИнфОбОшибке));		
 	КонецПопытки;
-	context_params.Вставить("session", result.result);
-	Возврат result.result
+	context_params.Вставить("session", result.Получить("result"));
+	Возврат result.Получить("result");
 КонецФункции
 
 Функция local_helper_integration_api(context_params, method, params)
@@ -125,7 +125,7 @@
 		ИнфОбОшибке = ИнформацияОбОшибке();
 		ВызватьИсключение(NewExtException(ИнфОбОшибке));
 	КонецПопытки;
-	Возврат result.result;
+	Возврат result.Получить("result");
 КонецФункции
 
 Функция local_helper_extsyncdoc_prepare(context, extsyncdoc_uuid, direction)
@@ -301,7 +301,8 @@
 		ЧтениеJSON = Новый ЧтениеJSON;
 		ЧтениеJSON.УстановитьСтроку(response);
 		Попытка
-			Возврат ПрочитатьJSON(ЧтениеJSON);
+			СтрокаВСоответсвие	= ПрочитатьJSON(ЧтениеJSON, Истина); //Для просмотра в отладке
+			Возврат СтрокаВСоответсвие;
 		Исключение
 			ИнфоОбОшибке = ИнформацияОбОшибке();
 			ВызватьИсключение NewExtException(ИнфоОбОшибке, "Ошибка чтения JSON");
