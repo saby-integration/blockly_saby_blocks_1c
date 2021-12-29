@@ -165,6 +165,12 @@
 	КонецЕсли;
 КонецФункции
 
+Функция local_helper_extsyncdoc_prepare_saby(context, extsyncdoc_uuid)
+    Возврат local_helper_integration_api( context, "Connector.Prepare",
+		Новый Структура("ConnectorName, SyncDocId","Saby", extsyncdoc_uuid)
+	);
+КонецФункции
+		
 //Выполнение POST/GET запроса
 Функция local_helper_exec_request(request_type, request_url, response_type, __kwargs = Неопределено)
 	kwargs = __kwargs;
