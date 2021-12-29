@@ -10,6 +10,9 @@
 #Область include_BlocklySabyBlocks_src_Blocks_C1DocReadListPrintForms
 #КонецОбласти
 
+#Область include_BlocklySabyBlocks_src_Blocks_SabyUploadFiles
+#КонецОбласти
+
 #Область include_BlocklySabyBlocks_src_Blocks_C1DocReadPrintForms
 #КонецОбласти
 
