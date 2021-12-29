@@ -13,7 +13,7 @@
 	ИначеЕсли Формат_Вар = "to_string" Тогда
 		ВставитьСвойствоЕслиНет(block_context, "result", Строка(res));
 	КонецЕсли;	
-    Возврат block_context["result"];
+	Возврат block_context["result"];
 КонецФункции
 
 Функция block_format_get_node_return(node)	

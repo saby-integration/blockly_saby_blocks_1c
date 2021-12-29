@@ -35,8 +35,8 @@
 			КонецЕсли;
 			Если kwargs.Свойство("method") Тогда
 				data = Новый Структура(
-					"jsonrpc,	id,	method",
-					"2.0",		1,	kwargs.method);
+				"jsonrpc,	id,	method",
+				"2.0",		1,	kwargs.method);
 				headers.Вставить("Content-Type", "application/json-rpc;charset=utf-8");
 				Если kwargs.Свойство("params") Тогда
 					data.Вставить("params", kwargs.params);
@@ -73,10 +73,10 @@
 		Если code_result.code = 401 Тогда
 			ВызватьИсключение ЗначениеВСтрокуВнутр(ExtException( Новый Структура("message, detail", "Ошибка авторизации", ""), ));
 		ИначеЕсли	code_result.result.Получить("error") <> Неопределено
-				И	(	code_result.code = 500
-					Или	code_result.code = 501
-					Или	code_result.code = 404
-					Или	code_result.code = 200) Тогда
+			И	(	code_result.code = 500
+			Или	code_result.code = 501
+			Или	code_result.code = 404
+			Или	code_result.code = 200) Тогда
 			_details = Неопределено;
 			msg = code_result.result["error"]["message"];
 			_details	= code_result.result["error"].Получить("details");
@@ -130,47 +130,47 @@
 
 Функция local_helper_extsyncdoc_prepare(context, extsyncdoc_uuid, direction)
 	Возврат local_helper_integration_api(context, "ExtSyncDoc.Prepare", 
-		Новый Структура("SyncDocId, Direction", extsyncdoc_uuid, direction)
+	Новый Структура("SyncDocId, Direction", extsyncdoc_uuid, direction)
 	);
 КонецФункции
 
 Функция local_helper_extsyncdoc_execute(context, extsyncdoc_uuid, direction)
-	Возврат local_helper_integration_api(context, "ExtSyncDoc.Execute", 
-		Новый Структура("SyncDocId, Direction", extsyncdoc_uuid, direction)
+	Возврат local_helper_integration_api(context, "ExtSyncDoc.Execute",
+	Новый Структура("param", Новый Структура("SyncDocId, Direction", extsyncdoc_uuid, direction) )
 	);
 КонецФункции
 
 Функция local_helper_extsyncdoc_get_obj_for_execute(context, extsyncdoc_uuid, direction)
 	Возврат local_helper_integration_api(context, "ExtSyncDoc.GetObjectsForExecute", 
-		Новый Структура("SyncDocId, Direction", extsyncdoc_uuid, direction)
+	Новый Структура("SyncDocId, Direction", extsyncdoc_uuid, direction)
 	);
 КонецФункции
 
 Функция local_helper_api3_extsyncdoc_read(context, extsyncdoc_uuid)
 	Возврат local_helper_integration_api(context, "API3.ExtSyncDocRead", 
-		Новый Структура("SyncDocId", extsyncdoc_uuid)
+	Новый Структура("SyncDocId", extsyncdoc_uuid)
 	);
 КонецФункции
 
 Функция local_helper_mapping_obj_find_and_update(context, _filter, _data)
 	response = local_helper_integration_api(context, "MappingObject.FindAndUpdate", 
-		Новый Структура("Filter, Data", _filter, _data)
+	Новый Структура("Filter, Data", _filter, _data)
 	);
-    Если response.Свойство("result") Тогда
-        Возврат response.result;
-    Иначе
-        //ВызватьИсключение СокрЛП(response);
+	Если response.Свойство("result") Тогда
+		Возврат response.result;
+	Иначе
+		//ВызватьИсключение СокрЛП(response);
 		ИнфОбОшибке = ИнформацияОбОшибке();
 		ВызватьИсключение NewExtException(ИнфОбОшибке, СокрЛП(response) );
 	КонецЕсли;
 КонецФункции
 
 Функция local_helper_extsyncdoc_prepare_saby(context, extsyncdoc_uuid)
-    Возврат local_helper_integration_api( context, "Connector.Prepare",
-		Новый Структура("ConnectorName, SyncDocId","Saby", extsyncdoc_uuid)
+	Возврат local_helper_integration_api( context, "Connector.Prepare",
+	Новый Структура("ConnectorName, SyncDocId","Saby", extsyncdoc_uuid)
 	);
 КонецФункции
-		
+
 //Выполнение POST/GET запроса
 Функция local_helper_exec_request(request_type, request_url, response_type, __kwargs = Неопределено)
 	kwargs = __kwargs;
@@ -184,8 +184,8 @@
 		Если		response.status = 200 Тогда
 			resp_result.result = response_handler(response_type, response.response);
 		ИначеЕсли	response.status = 404
-				Или	response.status = 500
-				Или	response.status = 501 Тогда
+			Или	response.status = 500
+			Или	response.status = 501 Тогда
 			resp_result.result = response_handler("json", response.response);
 		ИначеЕсли	response.status = 401 Тогда
 			resp_result.result = response.response;
@@ -207,7 +207,7 @@
 	КонецЕсли;
 	Возврат resp_result;
 КонецФункции
-	
+
 //Дополняет заголовки сессией
 //context - Структура
 //headers - Соответствие
@@ -274,31 +274,31 @@
 Функция session_get(url, kwargs)
 	//Надо дойти досюда, чтобы получить параметры для реализации get запроса.
 	ВызватьИсключение ЗначениеВСтрокуВнутр(ExtException( Новый Структура("message, detail", "Если видим это, то надо реализовать session_get.", "get:" + url), ));			
-		//Хост = Сред(request_url, 9);
-		//Слэш = Найти(Хост,"/"); //19
-		//Хост = Сред(Хост, 0, Слэш-1);
-		//Соединение = Новый HTTPСоединение(
-		//    Хост, // сервер (хост)
-		//    , // порт, по умолчанию для http используется 80, для https 443
-		//    , // пользователь для доступа к серверу (если он есть)
-		//    , // пароль для доступа к серверу (если он есть)
-		//    , // здесь указывается прокси, если он есть
-		//    , // таймаут в секундах, 0 или пусто - не устанавливать
-		//   Новый ЗащищенноеСоединениеOpenSSL()
-		//);
-		//Заголовки = Новый Соответствие;
-		//Заголовки.Вставить("X-SBISSessionID", ПолучитьИдентификаторСессии());
-		//Запрос = Новый HTTPЗапрос(Прав(Ссылка,СтрДлина(Ссылка) - 8 - СтрДлина(Хост)), Заголовки);
-		//
-		//Результат = Соединение.Получить(Запрос, Файл);
-		//ПроверкаФайл = Новый Файл(Файл);
-		//Счет = 1;
-		//
-		//Пока Счет = 1000 или Результат.КодСостояния = 500 Цикл
-		//	Результат = Соединение.Получить(Запрос, Файл);
-		//	ПроверкаФайл = Новый Файл(Файл);
-		//	Счет = Счет + 1;
-		//КонецЦикла;	
+	//Хост = Сред(request_url, 9);
+	//Слэш = Найти(Хост,"/"); //19
+	//Хост = Сред(Хост, 0, Слэш-1);
+	//Соединение = Новый HTTPСоединение(
+	//    Хост, // сервер (хост)
+	//    , // порт, по умолчанию для http используется 80, для https 443
+	//    , // пользователь для доступа к серверу (если он есть)
+	//    , // пароль для доступа к серверу (если он есть)
+	//    , // здесь указывается прокси, если он есть
+	//    , // таймаут в секундах, 0 или пусто - не устанавливать
+	//   Новый ЗащищенноеСоединениеOpenSSL()
+	//);
+	//Заголовки = Новый Соответствие;
+	//Заголовки.Вставить("X-SBISSessionID", ПолучитьИдентификаторСессии());
+	//Запрос = Новый HTTPЗапрос(Прав(Ссылка,СтрДлина(Ссылка) - 8 - СтрДлина(Хост)), Заголовки);
+	//
+	//Результат = Соединение.Получить(Запрос, Файл);
+	//ПроверкаФайл = Новый Файл(Файл);
+	//Счет = 1;
+	//
+	//Пока Счет = 1000 или Результат.КодСостояния = 500 Цикл
+	//	Результат = Соединение.Получить(Запрос, Файл);
+	//	ПроверкаФайл = Новый Файл(Файл);
+	//	Счет = Счет + 1;
+	//КонецЦикла;	
 КонецФункции
 
 //обработка результата
