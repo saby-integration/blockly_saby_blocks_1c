@@ -178,7 +178,6 @@
 		Если count_actions > 0 Тогда
 			
 			objects = Новый Массив;
-	        errors = Новый Массив;
 	        Для Каждого command_ Из result["requiredActions"] Цикл
 	            Попытка
 	                //await getattr(self, f'command_{command[0].lower()}')(context, block_context, command[1])
@@ -194,22 +193,30 @@
 						result = block_extsyncdoc_run_command_find(context, block_context, command_[1]);
 					КонецЕсли;
 				Исключение
-					ИнфОбОшибке	= ИнформацияОбОшибке();
-					ВызватьИсключение(NewExtException(ИнфОбОшибке));
+					ИнфОбОшибке		= ИнформацияОбОшибке();
+					ОшибкаСтруктура= NewExtExceptionСтруктура(ИнфОбОшибке,);
+					мОписаниеОшибки	= Новый Массив();
+					мОписаниеОшибки.Добавить(ОшибкаСтруктура.message);
+                    _data = command_[1];
+                    _data.Вставить("StatusId", "Ошибка");
+                    _data.Вставить("StatusMsg", мОписаниеОшибки);
+                    _data.Вставить("Data", 
+						Новый Структура("error",
+							ОшибкаСтруктура
+						)
+					);
+                    objects.Добавить(_data);
 				КонецПопытки;
 			КонецЦикла;
 				
-	        Если errors.Количество() > 0 Тогда
+	        Если objects.Количество() > 0 Тогда
 	            res = local_helper_extsyncdoc_write(
 	                context.params,
 	                connection_uuid,
 	                Новый Структура("Uuid", extsyncdoc_uuid),
-	                errors
+	                objects
 	            );
 			КонецЕсли;
-			//ВызватьИсключение "Отложенная операция"; 
-			ИнфОбОшибке = ИнформацияОбОшибке();
-			ВызватьИсключение(NewExtException(ИнфОбОшибке, "Отложенная операция"));
 		КонецЕсли;	
 			
 	    Если count_actions <= 0 И (block_context.all_objects <= block_context.count_processed + block_context.count_error) Тогда
