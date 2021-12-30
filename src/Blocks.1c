@@ -1,4 +1,10 @@
-#Область include_BlocklySabyBlocks_src_Blocks_Api3Link
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3Link
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3hiring
 #КонецОбласти
 
 #Область include_BlocklySabyBlocks_src_Blocks_ExtsysRead
