@@ -7,6 +7,36 @@
 #Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3hiring
 #КонецОбласти
 
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3changePosition
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3dismissal
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3leave
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3person
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3employee
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3org
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3department
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3position
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3planworkshedule
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3leave_type
+#КонецОбласти
+
 #Область include_BlocklySabyBlocks_src_Blocks_ExtsysRead
 #КонецОбласти
 
