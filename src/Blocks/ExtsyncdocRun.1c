@@ -13,9 +13,9 @@
 	Попытка
 		//result = block_extsyncdoc_run_process_commands_result(context, block_context);
 		result = block_extsyncdoc_run_extsyncdoc_prepare_is(context, block_context);
-		//result = block_extsyncdoc_run_extsyncdoc_prepare_saby(context, block_context);
+		result = block_extsyncdoc_run_extsyncdoc_prepare_saby(context, block_context);
 		result = block_extsyncdoc_run_extsyncdoc_execute_saby(context, block_context);
-		//result = block_extsyncdoc_run_extsyncdoc_execute_is(context, block_context);
+		result = block_extsyncdoc_run_extsyncdoc_execute_is(context, block_context);
 	Исключение
 		ИнфОбОшибке	= ИнформацияОбОшибке();
 		ВызватьИсключение(NewExtException(ИнфОбОшибке, "Ошибка в блоке", " (extsyncdoc_run_calc_value)" ));
@@ -44,7 +44,12 @@
 Функция block_extsyncdoc_run_command_getobject(context, block_context, ext_sync_obj, objects)
 	obj = ?(ext_sync_obj.Получить("Context") = Неопределено, Новый Соответствие(), ext_sync_obj["Context"]);
 	obj.Вставить("ИдИС", ext_sync_obj.Получить("ClientId"));
-	obj.Вставить("object", ext_sync_obj.Получить("Data").Получить("data_is"));
+	Обжект = ext_sync_obj.Получить("Data").Получить("data_is");
+	Если Обжект = Неопределено Тогда
+		Обжект	= Новый Соответствие;
+		Обжект.Вставить("ИдИС", ext_sync_obj.Получить("ClientId"));
+	КонецЕсли;
+	obj.Вставить("object", Обжект);
 	result = block_extsyncdoc_run_add_command_calc_ini(context, block_context, "read", ext_sync_obj, obj);
 	block_extsyncdoc_run_process_command_result_read(context, block_context, ext_sync_obj, result, objects); //block_context.objects
 КонецФункции
@@ -238,10 +243,7 @@
 		Если count_actions <= 0 И (block_context.all_objects <= block_context.count_processed + block_context.count_error) Тогда
 			Если block_context.count_error > 0 Тогда
 				//todo Взять за пример и сделать функцию вызова исключения 
-				ВызватьИсключение ЗначениеВСтрокуВнутр(
-				ExtException( 
-				Новый Структура("message", "Ошибки подготовки"), )
-				);		
+				ВызватьИсключение ЗначениеВСтрокуВнутр( ExtException(  Новый Структура("message", "Ошибки подготовки"), ) );		
 				//ИнфОбОшибке = ИнформацияОбОшибке();
 				//ВызватьИсключение(NewExtException(ИнфОбОшибке, "Ошибки подготовки"));
 			КонецЕсли;
