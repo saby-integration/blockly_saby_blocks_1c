@@ -89,7 +89,7 @@
 		_id = "";
 		obj.Свойство("ИдИС", _id);
 		ini_name	= "";
-		obj.Свойство("ini_name", ini_name);
+		//obj.Свойство("ini_name", ini_name);
 		//# await update_ini(self.executor, context, ini_name)
 		_object = Новый Структура(
 		"Id, Action, Title, Type, ClientId, Data, StatusId",
@@ -99,9 +99,10 @@
 		obj.ТипИС+"."+obj.ИмяИС,
 		_id,
 		Новый Структура(
-		"data_is, ini_name",
+		"data_is",
+		//"data_is, ini_name",
 		obj,
-		ini_name,
+		//ini_name,
 		),
 		Неопределено
 		);
