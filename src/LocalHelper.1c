@@ -148,7 +148,7 @@
 
 Функция local_helper_api3_extsyncdoc_read(context, extsyncdoc_uuid)
 	Возврат local_helper_integration_api(context, "API3.ExtSyncDocRead", 
-	Новый Структура("SyncDocId", extsyncdoc_uuid)
+		Новый Структура("param", Новый Структура("SyncDocId", extsyncdoc_uuid))
 	);
 КонецФункции
 

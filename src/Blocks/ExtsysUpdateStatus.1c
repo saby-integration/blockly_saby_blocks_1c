@@ -1,0 +1,4 @@
+Функция block_saby_extsys_update_status_calc_value(block_type, node, path, context, block_context)
+	
+	Возврат Истина;
+КонецФункции

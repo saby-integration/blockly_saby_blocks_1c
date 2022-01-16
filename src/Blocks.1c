@@ -104,3 +104,10 @@
 #Область include_BlocklySabyBlocks_src_Blocks_ExtsyncdocRun
 #КонецОбласти
 
+#Область include_BlocklySabyBlocks_src_Blocks_ExtsysUpdateStatus
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_SabyExtsyncobjList
+#КонецОбласти
+
+

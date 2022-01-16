@@ -23,7 +23,7 @@
 		//Возврат Ложь;
 	КонецПопытки;
 	
-	//result = await self.extsyncdoc_read_saby(context, block_context)
+	result = block_extsyncdoc_run_extsyncdoc_read_saby(context, block_context);
 	return Истина
 КонецФункции
 
@@ -307,7 +307,7 @@
 
 Функция block_extsyncdoc_run_extsyncdoc_read_saby(context, block_context)
 	extsyncdoc_uuid = "";
-	extsyncdoc_uuid = context.operation.Получить("operation_uuid");
+	extsyncdoc_uuid = context["operation"]["operation_uuid"];
 	Возврат local_helper_api3_extsyncdoc_read(context.params, extsyncdoc_uuid);
 КонецФункции
 
