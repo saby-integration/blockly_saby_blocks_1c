@@ -24,7 +24,7 @@
 	КонецПопытки;
 	
 	result = block_extsyncdoc_run_extsyncdoc_read_saby(context, block_context);
-	return Истина
+	return result
 КонецФункции
 
 Функция block_extsyncdoc_run_command_syncdocfill(context, block_context, ext_sync_obj)

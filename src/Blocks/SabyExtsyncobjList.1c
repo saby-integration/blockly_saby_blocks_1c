@@ -1,46 +1,50 @@
 Функция	saby_extsyncobj_list_calc_value(block_type, node, path, context, block_context)
-
+	
+	Результат = local_helper_integration_api(context.params, "ExtSyncObj.List", 
+	Новый Структура("ExtraFields,Filter,Sorting,Pagination",
+	Новый Массив,
+	Новый Структура("SyncDocId", context.variables["complete"]["Uuid"] ),
+	Новый Массив,
+	Новый Структура(),
+	)
+	);
+	
+	
 	Если Не block_context.Свойство("items") Тогда
-	    block_context.Вставить("items", Новый Массив);
+		block_context.Вставить("items", Результат["Result"]);
+	КонецЕсли;
+	Если Не block_context.Свойство("index") Тогда
+		block_context.Вставить("index", 0);
 	КонецЕсли;
 	
-    Попытка
-        node_loop	= node[1];
+	Попытка
+		node_loop	= node.ДочерниеУзлы[1];
 	Исключение
 		ИнфОбОшибке = ИнформацияОбОшибке();
 		ВызватьИсключение(NewExtException(ИнфОбОшибке, "Отсутствует узел цикла.", "extsyncobject_list" ));
 	КонецПопытки;
 	
-	Пока Истина Цикл
-	    Если block_context["items"].Количество() = 0 Тогда
-	        Попытка
-	            block_context["page"] = block_context["page"] + 1;
-			Исключение
-	            block_context["page"] = 0;
-			КонецПопытки;
-
-	        //block_context["items"] = _get_items(context, block_context);
-	        block_context["index"] = 0;
-		КонецЕсли;
-		
-	    Для i = block_context["index"] По block_context["items"].Количество() Цикл
-	        block_context["index"] = i;
-	        saby_extsyncobj_list_on_loop(node, path, context, block_context);
-	        saby_extsyncobj_list_check_step(context, block_context);
-	        Попытка
-	            result = saby_extsyncobj_list_execute_item(node_loop, path+"."+block_context["page"]+"_"+block_context["index"],context, block_context);
-			Исключение
-				ИнфОбОшибке = ИнформацияОбОшибке();
-				ВызватьИсключение(NewExtException(ИнфОбОшибке, "Ошибка в блоке", " (" + block_type + "."+path+")", Новый Структура("__id", block_context.__id)));
-			КонецПопытки;
-	        saby_extsyncobj_list_set_step(block_context);
-	        context.clear_child_context(block_context)
-		КонецЦикла;
-	    block_context["items"] = Новый Массив;
-		
+	context.params.Вставить("api_service", "/service/");
+	Для i = 0 По Результат["Result"].Количество() - 1 Цикл
+		block_context["index"] = i;
+		//todo++
+		РезДокументИд = local_helper_integration_api(context.params, "Документ.ПолучитьДанныеОДокументе", Новый Структура("guid,ido,ВИИд,ТипДок,ПодТипДок","",Результат["Result"][i]["SbisId"],"","","",) );
+		//Результат["Result"][i].Вставить("ИдентификаторВИ", РезДокументИд["d"]["ИдентификаторДокумента"]);
+		//todo--
+		saby_extsyncobj_list_on_loop(node, path, context, block_context);
+		block_check_step(context, block_context);
+		Попытка
+			result = saby_extsyncobj_list_execute_item(node_loop, path+".0_"+block_context["index"],context, block_context);
+		Исключение
+			ИнфОбОшибке = ИнформацияОбОшибке();
+			ВызватьИсключение(NewExtException(ИнфОбОшибке, "Ошибка в блоке", " (" + block_type + "."+path+")", Новый Структура("__id", block_context.__id)));
+		КонецПопытки;
+		saby_extsyncobj_list_set_step(block_context);
 	КонецЦикла;
+	context.params.Удалить("api_service");
+	block_context["items"] = Новый Массив;
 	
-	Возврат Истина;
+	Возврат Неопределено;
 КонецФункции
 
 Функция  saby_extsyncobj_list_execute_item(node_loop, path, context, block_context)
@@ -49,8 +53,8 @@
 
 Функция  saby_extsyncobj_list_set_step(block_context)
 	Если StepByStep Тогда
-	    NextStep = Ложь;
-	    Step = block_context.__id;
+		NextStep = Ложь;
+		Step = block_context.__id;
 	КонецЕсли;
 КонецФункции
 
@@ -61,33 +65,6 @@
 КонецФункции
 
 Функция  saby_extsyncobj_list_on_loop(node, path, context, block_context)
-	Block_set_variable(context, node[0].text, block_context["items"][block_context["index"]])
-КонецФункции
-
-Функция  saby_extsyncobj_list_check_step(context, block_context)
-    Если context.executor.step_by_step Тогда
-        Если context.executor.selected Тогда
-            Если context.block_id = context.executor.selected Тогда
-				ОшибкаСтруктура = ExtException( Новый Структура("type", "StepForward") );
-				ОшибкаСтрокой	= ЗначениеВСтрокуВнутр(ОшибкаСтруктура);
-				ВызватьИсключение ОшибкаСтрокой;
-                //ВызватьИсключение StepForward(self.block_id, context, block_context);
-			КонецЕсли;
-		ИначеЕсли context.executor.next_step Тогда
-				ОшибкаСтруктура = ExtException( Новый Структура("type", "StepForward") );
-				ОшибкаСтрокой	= ЗначениеВСтрокуВнутр(ОшибкаСтруктура);
-				ВызватьИсключение ОшибкаСтрокой;
-            //ВызватьИсключение StepForward(self.block_id, context, block_context);
-        ИначеЕсли context.block_id = context.executor.step Тогда
-            Если Не context.executor.next_step Тогда
-				ОшибкаСтруктура = ExtException( Новый Структура("type", "StepForward") );
-				ОшибкаСтрокой	= ЗначениеВСтрокуВнутр(ОшибкаСтруктура);
-				ВызватьИсключение ОшибкаСтрокой;
-                //ВызватьИсключение StepForward(self.block_id, context, block_context);
-            Иначе
-                context.executor.next_step = Истина;
-			КонецЕсли;
-		КонецЕсли;
-	КонецЕсли;
+	Block_set_variable(context, node.ДочерниеУзлы[0].ТекстовоеСодержимое, block_context["items"][block_context["index"]])
 КонецФункции
 
