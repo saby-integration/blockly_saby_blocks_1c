@@ -1,3 +1,4 @@
+
 Функция	saby_extsyncobj_list_calc_value(block_type, node, path, context, block_context)
 	
 	Результат = local_helper_integration_api(context.params, "ExtSyncObj.List", 
@@ -47,24 +48,24 @@
 	Возврат Неопределено;
 КонецФункции
 
-Функция  saby_extsyncobj_list_execute_item(node_loop, path, context, block_context)
+Функция	saby_extsyncobj_list_execute_item(node_loop, path, context, block_context)
 	Возврат block_execute_all_next(node_loop, path, context, block_context, Истина);
 КонецФункции
 
-Функция  saby_extsyncobj_list_set_step(block_context)
+Функция	saby_extsyncobj_list_set_step(block_context)
 	Если StepByStep Тогда
 		NextStep = Ложь;
 		Step = block_context.__id;
 	КонецЕсли;
 КонецФункции
 
-Функция  saby_extsyncobj_list_clear_child_context(block_context, result=Неопределено, delete_children=Истина)
+Функция	saby_extsyncobj_list_clear_child_context(block_context, result=Неопределено, delete_children=Истина)
 	Если delete_children Тогда
 		block_context.Вставить("__child", Неопределено);
 	КонецЕсли;
 КонецФункции
 
-Функция  saby_extsyncobj_list_on_loop(node, path, context, block_context)
+Функция	saby_extsyncobj_list_on_loop(node, path, context, block_context)
 	Block_set_variable(context, node.ДочерниеУзлы[0].ТекстовоеСодержимое, block_context["items"][block_context["index"]])
 КонецФункции
 

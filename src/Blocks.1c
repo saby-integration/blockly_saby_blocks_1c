@@ -79,7 +79,6 @@
 #Область include_BlocklySabyBlocks_src_Blocks_C1MetaCreate
 #КонецОбласти
 
-
 #Область include_BlocklySabyBlocks_src_Blocks_C1MetaUpdate
 #КонецОбласти
 
@@ -110,4 +109,9 @@
 #Область include_BlocklySabyBlocks_src_Blocks_SabyExtsyncobjList
 #КонецОбласти
 
+#Область include_BlocklySabyBlocks_src_Blocks_SabyReadChanges
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_SabyReadDocument
+#КонецОбласти
 
