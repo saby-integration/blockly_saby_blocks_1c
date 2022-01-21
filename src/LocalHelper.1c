@@ -240,9 +240,11 @@
 КонецФункции
 
 Функция local_helper_read_changes(context, _filter)
+	context.Вставить("api_service", "/service/");
 	Результат	=	local_helper_integration_api(context, "СБИС.СписокИзменений", 
 	Новый Структура("Фильтр", _filter)
 	);
+	context.Удалить("api_service");
 	Возврат Результат;
 КонецФункции
 

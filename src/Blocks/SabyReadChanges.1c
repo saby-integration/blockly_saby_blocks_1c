@@ -1,15 +1,14 @@
-Функция saby_read_changes_get_items_calc_value(context, block_context)
+
+Функция saby_read_changes_calc_value(block_type, node, path, context, block_context)
+	ЗнчПоУмолчанию = Новый Структура("id, date","",Формат(ТекущаяДата(), "ДФ='dd.MM.yyyy HH.mm.ss'"));
+	last_event		= ОбщегоНазначения.ХранилищеОбщихНастроекЗагрузить("Saby_last_event", "Saby_last_event", ЗнчПоУмолчанию,,);
+	Если ТипЗнч(last_event) <> Тип("Структура") Тогда
+		last_event		= ЗнчПоУмолчанию;
+	КонецЕсли;
 	
 	//Получем идентификато и дату от послденего запроса списка изменений
-	last_event = Новый Структура;
-	Если НЕ context.params.Свойство("last_event", last_event) Тогда
-		last_event = Новый Структура;
-	КонецЕсли;
-	last_event_id = Неопределено;
-	Если НЕ last_event.Свойство("id", last_event_id) Тогда
-		last_event_id = Неопределено;
-	КонецЕсли;
-	
+	context.params.Вставить("last_event", last_event);
+	last_event_id		= last_event["id"];
 	last_event_datetime = last_event["date"];
 	if Не ЗначениеЗаполнено(last_event_datetime) and Не ЗначениеЗаполнено(last_event_id) Тогда
 		last_event_datetime = local_helper_get_server_datetime(context.params);
@@ -36,9 +35,44 @@
 	КонецЕсли;
 	
 	events = local_helper_read_changes(context.params, _filter);
-	Если Не events.get("Документ", events) Тогда
+	
+	context.params.Вставить("api_service", "/service/");
+	Если events["Документ"] = Неопределено Тогда
 	 	events = Новый Массив;
+	Иначе
+		events = events["Документ"];
 	КонецЕсли;
+	//TODO
+	last_event.Вставить("date",Формат(ТекущаяДата()-(3600*10), "ДФ='dd.MM.yyyy HH.mm.ss'"));
+	ОбщегоНазначения.ХранилищеОбщихНастроекСохранить("Saby_last_event", "Saby_last_event", last_event,,);
+	context.params.Вставить("last_event", last_event);
+	
+	Если Не block_context.Свойство("items") Тогда
+		block_context.Вставить("items", events);
+	КонецЕсли;
+	Если Не block_context.Свойство("index") Тогда
+		block_context.Вставить("index", 0);
+	КонецЕсли;
+	Попытка
+		node_loop	= node.ДочерниеУзлы[1];
+	Исключение
+		ИнфОбОшибке = ИнформацияОбОшибке();
+		ВызватьИсключение(NewExtException(ИнфОбОшибке, "Отсутствует узел цикла.", "extsyncobject_list" ));
+	КонецПопытки;
+	
+	Для i = 0 По events.Количество() - 1 Цикл
+		block_context["index"] = i;
+		saby_extsyncobj_list_on_loop(node, path, context, block_context);
+		block_check_step(context, block_context);
+		Попытка
+			result = saby_extsyncobj_list_execute_item(node_loop, path+".0_"+block_context["index"],context, block_context);
+		Исключение
+			ИнфОбОшибке = ИнформацияОбОшибке();
+			ВызватьИсключение(NewExtException(ИнфОбОшибке, "Ошибка в блоке", " (" + block_type + "."+path+")", Новый Структура("__id", block_context.__id)));
+		КонецПопытки;
+		saby_extsyncobj_list_set_step(block_context);
+	КонецЦикла;
+	
 	return events
 КонецФункции
 

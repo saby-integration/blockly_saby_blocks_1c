@@ -206,7 +206,7 @@
 					Если НРег(command_[0]) = "syncdocfill" Тогда
 						result = block_extsyncdoc_run_command_syncdocfill(context, block_context, command_[1]);
 					ИначеЕсли НРег(command_[0]) = "processpredefineobject" Тогда
-						result = block_extsyncdoc_run_command_processpredefineobject(context, block_context, command_[1]);
+						//result = block_extsyncdoc_run_command_processpredefineobject(context, block_context, command_[1]);
 					ИначеЕсли НРег(command_[0]) = "getobject" Тогда
 						result = block_extsyncdoc_run_command_getobject(context, block_context, command_[1], objects);
 					ИначеЕсли НРег(command_[0]) = "update" Тогда
