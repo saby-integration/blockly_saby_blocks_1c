@@ -34,7 +34,58 @@
 #Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3planworkshedule
 #КонецОбласти
 
-#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3leave_type
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3leavetype
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3kinship
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3truancy
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3documenttype
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3businesstrip
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3timesheets
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3sicknessreason
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3familymember
+#КонецОбласти
+    
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3timeoff
+#КонецОбласти
+			  	 
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3timeofftype
+#КонецОбласти
+			       		
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3vacationschedule
+#КонецОбласти
+			   	
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3indexation
+#КонецОбласти
+			  
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3childcareleave
+#КонецОбласти
+			        
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3reason
+#КонецОбласти
+			    
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3sickleave
+#КонецОбласти
+			            
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3changetermsemploym
+#КонецОбласти
+			        	
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3employmenttype
+#КонецОбласти
+			       
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3paymentcharacter
 #КонецОбласти
 
 #Область include_BlocklySabyBlocks_src_Blocks_ExtsysRead
