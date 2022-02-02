@@ -10,6 +10,9 @@
 #Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3changePosition
 #КонецОбласти
 
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3changePosition
+#КонецОбласти
+
 #Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3dismissal
 #КонецОбласти
 
@@ -86,6 +89,9 @@
 #КонецОбласти
 			       
 #Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3paymentcharacter
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3leave_type
 #КонецОбласти
 
 #Область include_BlocklySabyBlocks_src_Blocks_ExtsysRead
