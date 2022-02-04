@@ -116,27 +116,18 @@
 Функция block_extsyncdoc_write_api3_objects(context, direction, objects)
 	_objects = Новый Массив;
 	Для Каждого obj Из objects Цикл
-		_id = "";
-		obj.Свойство("ИдИС", _id);
-		ini_name	= "";
-		obj.Свойство("ini_name", ini_name);
+		_id = obj["ИдИС"];
+		ini_name	= obj["ini_name"];
 		//# await update_ini(self.executor, context, ini_name)
-		_object = Новый Структура(
-		"Id, Action, Title, Type, ClientId, Data, StatusId",
-		_id,
-		direction,
-		?(obj.Свойство("Название"), obj.Название, _id),
-		obj.ТипИС+"."+obj.ИмяИС,
-		_id,
-		Новый Структура(
-		"data_is, ini_name",
-		obj,
-		ini_name,
-		),
-		Неопределено
-		);
-		
-		_objects.Добавить(_object);
+		_object = Новый Структура("Action, Title, Type, ClientId, Data, StatusId",
+			direction,
+			?(obj["Название"]<>неопределено, obj["Название"], _id),
+			obj["ТипИС"]+"."+obj["ИмяИС"], 
+			_id,
+			Новый Структура("data_is, ini_name",obj,ini_name,),
+			"Получен");
+
+	_objects.Добавить(_object);
 	КонецЦикла;
 	
 	Возврат _objects;
