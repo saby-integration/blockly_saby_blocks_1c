@@ -1,14 +1,11 @@
-Функция block_c1_meta_read_execute(block_type, node, path, context, block_context)
-	variable = block_c1_meta_read_get_node_field(node);
+Функция block_c1_meta_read_calc_value(block_type, node, path, context, block_context)
+	variable = block_context.variable;
 	НовыйОбъект = context.variables[variable];
 	Попытка
-		Возврат НовыйОбъект.ПолучитьОбъект();
+		context.variables[variable] = НовыйОбъект.ПолучитьОбъект();
 	Исключение
-		Сообщить("Переменная " + variable + " не возвращает объекта по ссылке.");
+		ИнфОбОшибке	= ИнформацияОбОшибке();
+		ВызватьИсключение(NewExtException(ИнфОбОшибке, "Переменная " + variable + " не возвращает объекта по ссылке.", " ИмяСБИС в блоке " + block_type + "", Новый Структура("__id, path", block_context.__id, path)));
 	КонецПопытки;	
 	Возврат Неопределено;
-КонецФункции
-
-Функция block_c1_meta_read_get_node_field(node)	
-	Возврат Root.ВычислитьВыражениеXpath("./b:field", node, размыватель).ПолучитьСледующий().ТекстовоеСодержимое; 
 КонецФункции

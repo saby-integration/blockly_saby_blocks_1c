@@ -143,6 +143,18 @@
 	);
 КонецФункции
 
+Функция local_helper_extsyncdoc_write_predefined(context_params, ConnectionId, Type, ClientType, Objects)
+	
+	Попытка
+		params = Новый Структура("ConnectionId, Type, ClientType, Objects", ConnectionId, Type, ClientType, Objects);
+		Возврат local_helper_integration_api(context_params, "MappingObject.WritePredefined", params);
+	Исключение
+		ИнфОбОшибке = ИнформацияОбОшибке();
+		ВызватьИсключение(NewExtException(ИнфОбОшибке));		
+	КонецПопытки;
+
+КонецФункции
+
 Функция local_helper_extsyncdoc_get_obj_for_execute(context, extsyncdoc_uuid, direction)
 	Возврат local_helper_integration_api(context, "ExtSyncDoc.GetObjectsForExecute", 
 	Новый Структура("SyncDocId, Direction", extsyncdoc_uuid, direction)
