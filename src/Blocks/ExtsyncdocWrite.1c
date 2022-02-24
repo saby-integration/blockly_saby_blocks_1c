@@ -3,22 +3,12 @@
 	Попытка
 		direction	= block_context.direction;
 	Исключение
-		ОшибкаСтрокой	= ЗначениеВСтрокуВнутр(
-		ExtException( 
-		Новый Структура("message, detail", "Не указан обязательный параметр", block_type+" direction"),
-		)
-		);
-		ВызватьИсключение ОшибкаСтрокой;
+		ВызватьИсключение ЗначениеВСтрокуВнутр( ExtException(  Новый Структура("message, detail", "Не указан обязательный параметр", block_type+" direction"), ) );
 	КонецПопытки;
 	Попытка
 		objects		= block_context.objects;
 	Исключение
-		ОшибкаСтрокой	= ЗначениеВСтрокуВнутр(
-		ExtException( 
-		Новый Структура("message, detail", "Не указан обязательный параметр", block_type+" objects"),
-		)
-		);
-		ВызватьИсключение ОшибкаСтрокой;
+		ВызватьИсключение ЗначениеВСтрокуВнутр( ExtException(  Новый Структура("message, detail", "Не указан обязательный параметр", block_type+" objects"), ) );
 	КонецПопытки;
 	
 	Если direction = "import" Тогда
@@ -34,7 +24,7 @@
 		direction = 1;
 		objects = block_extsyncdoc_write_api3_link(context, direction, objects);
 	Иначе
-		ВызватьИсключение "Хрень какая то";
+		ВызватьИсключение ЗначениеВСтрокуВнутр( ExtException(  Новый Структура("message, detail", "Неизвестное действие.", "direction - "+СокрЛП(direction)), ) );
 	КонецЕсли;
 	
 	extsyncdoc_uuid = "";

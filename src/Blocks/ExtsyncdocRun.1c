@@ -255,10 +255,7 @@
 		
 		Если count_actions <= 0 И (block_context.all_objects <= block_context.count_processed + block_context.count_error) Тогда
 			Если block_context.count_error > 0 Тогда
-				//todo Взять за пример и сделать функцию вызова исключения 
-				ВызватьИсключение ЗначениеВСтрокуВнутр( ExtException(  Новый Структура("message", "Ошибки подготовки"), ) );		
-				//ИнфОбОшибке = ИнформацияОбОшибке();
-				//ВызватьИсключение(NewExtException(ИнфОбОшибке, "Ошибки подготовки"));
+				ВызватьИсключение ЗначениеВСтрокуВнутр( ExtException(  Новый Структура("message, detail", "Ошибки подготовки", "extsyncdoc_run_extsyncdoc_prepare_is"), ) );
 			КонецЕсли;
 			Прервать;
 		КонецЕсли;
@@ -285,7 +282,7 @@
 	Пока Истина Цикл
 		block_context.Вставить("prepare_counter", block_context.prepare_counter + 1);
 		Если block_context.prepare_counter >= 3000 Тогда
-			ВызватьИсключение "Превышено количество циклов prepare для операции";
+			ВызватьИсключение ЗначениеВСтрокуВнутр( ExtException(  Новый Структура("message, detail", "Превышено количество циклов prepare для операции", ""), ) );
 		КонецЕсли;
 		
 		result = Неопределено;

@@ -22,7 +22,7 @@
 		node_loop	= node.ДочерниеУзлы[1];
 	Исключение
 		ИнфОбОшибке = ИнформацияОбОшибке();
-		ВызватьИсключение(NewExtException(ИнфОбОшибке, "Отсутствует узел цикла.", "extsyncobject_list" ));
+		ВызватьИсключение(NewExtException(ИнфОбОшибке, "Отсутствует узел цикла.", "saby_extsyncobj_list" ));
 	КонецПопытки;
 	
 	context.params.Вставить("api_service", "/service/");
