@@ -22,7 +22,7 @@
 		node_loop	= node.ДочерниеУзлы[1];
 	Исключение
 		ИнфОбОшибке = ИнформацияОбОшибке();
-		ВызватьИсключение(NewExtException(ИнфОбОшибке, "Отсутствует узел цикла.", "saby_extsyncobj_list" ));
+		ВызватьИсключение(NewExtExceptionСтрока(ИнфОбОшибке, "Отсутствует узел цикла.", "extsyncobject_list" ));
 	КонецПопытки;
 	
 	context.params.Вставить("api_service", "/service/");
@@ -38,7 +38,7 @@
 			result = saby_extsyncobj_list_execute_item(node_loop, path+".0_"+block_context["index"],context, block_context);
 		Исключение
 			ИнфОбОшибке = ИнформацияОбОшибке();
-			ВызватьИсключение(NewExtException(ИнфОбОшибке, "Ошибка в блоке", " (" + block_type + "."+path+")", Новый Структура("__id", block_context.__id)));
+			ВызватьИсключение NewExtExceptionСтрока(ИнфОбОшибке,,,,add_block_to_dump(block_context));
 		КонецПопытки;
 		saby_extsyncobj_list_set_step(block_context);
 	КонецЦикла;

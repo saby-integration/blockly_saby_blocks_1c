@@ -89,7 +89,7 @@
 		КонецЕсли;
 	Исключение
 		ИнфОбОшибке = ИнформацияОбОшибке();
-		ВызватьИсключение(NewExtException(ИнфОбОшибке));
+		ВызватьИсключение(NewExtExceptionСтрока(ИнфОбОшибке));
 	КонецПопытки;
 	Возврат code_result.result;
 КонецФункции
@@ -100,7 +100,7 @@
 		Возврат local_helper_integration_api(context_params, "ExtSyncDoc.Write", params);
 	Исключение
 		ИнфОбОшибке = ИнформацияОбОшибке();
-		ВызватьИсключение(NewExtException(ИнфОбОшибке));		
+		ВызватьИсключение(NewExtExceptionСтрока(ИнфОбОшибке));		
 	КонецПопытки;
 КонецФункции
 
@@ -111,7 +111,7 @@
 		result = local_helper_exec_method(context_params, Новый Структура("url, method, params, auto_auth", url, "СБИС.Аутентифицировать", params, Ложь));
 	Исключение
 		ИнфОбОшибке = ИнформацияОбОшибке();
-		ВызватьИсключение(NewExtException(ИнфОбОшибке));		
+		ВызватьИсключение(NewExtExceptionСтрока(ИнфОбОшибке));		
 	КонецПопытки;
 	context_params.Вставить("session", result.Получить("result"));
 	Возврат result.Получить("result");
@@ -126,7 +126,7 @@
 		result = local_helper_exec_method(context_params, Новый Структура("url, method, params, auto_auth", url, method, params, Истина));
 	Исключение
 		ИнфОбОшибке = ИнформацияОбОшибке();
-		ВызватьИсключение(NewExtException(ИнфОбОшибке));
+		ВызватьИсключение(NewExtExceptionСтрока(ИнфОбОшибке,"Ошибка выполнения метода "+method));
 	КонецПопытки;
 	Возврат result.Получить("result");
 КонецФункции
@@ -150,7 +150,7 @@
 		Возврат local_helper_integration_api(context_params, "MappingObject.WritePredefined", params);
 	Исключение
 		ИнфОбОшибке = ИнформацияОбОшибке();
-		ВызватьИсключение(NewExtException(ИнфОбОшибке));		
+		ВызватьИсключение(NewExtExceptionСтрока(ИнфОбОшибке));		
 	КонецПопытки;
 
 КонецФункции
@@ -162,9 +162,7 @@
 КонецФункции
 
 Функция local_helper_api3_extsyncdoc_read(context, extsyncdoc_uuid)
-	Возврат local_helper_integration_api(context, "API3.ExtSyncDocRead", 
-	Новый Структура("param", Новый Структура("SyncDocId", extsyncdoc_uuid))
-	);
+	Возврат local_helper_integration_api(context, "API3.ExtSyncDocRead", Новый Структура("param", Новый Структура("SyncDocId", extsyncdoc_uuid)));
 КонецФункции
 
 Функция local_helper_mapping_obj_find_and_update(context, _filter, _data)
@@ -176,7 +174,7 @@
 	Иначе
 		//ВызватьИсключение СокрЛП(response);
 		ИнфОбОшибке = ИнформацияОбОшибке();
-		ВызватьИсключение NewExtException(ИнфОбОшибке, СокрЛП(response) );
+		ВызватьИсключение NewExtExceptionСтрока(ИнфОбОшибке, СокрЛП(response));
 	КонецЕсли;
 КонецФункции
 
@@ -363,9 +361,10 @@
 			Возврат СтрокаВСоответсвие;
 		Исключение
 			ИнфоОбОшибке = ИнформацияОбОшибке();
-			ВызватьИсключение NewExtException(ИнфоОбОшибке, "Ошибка чтения JSON");
+			ВызватьИсключение NewExtExceptionСтрока(ИнфоОбОшибке, "Ошибка чтения JSON");
 		КонецПопытки;
 	ИначеЕсли	response_type = "binary" Тогда
+		//Заглушка
 		ВызватьИсключение ЗначениеВСтрокуВнутр(ExtException( Новый Структура("message, detail", "Неизвестный тип HTTP ответа", response_type), ));		
 	ИначеЕсли	response_type = "text" Тогда
 		//Заглушка

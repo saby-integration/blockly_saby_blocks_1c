@@ -27,8 +27,6 @@
 КонецФункции
 
 Функция saby_read_changes_calc_value(block_type, node, path, context, block_context)
-	//todo - class SabyReadChanges(MultiThreadLoop)
-	
 	//Дата и время по москве, т.е. +3 к гринвичу
 	//Какая то не интуитивная рапбота со временем получается, почему вместо +3 от гринвича, делаем -3??? 1Ц, вы там что курите?
 	ДатаНачалаСобытия = УниверсальноеВремя(ТекущаяУниверсальнаяДата(), "GMT-3");
@@ -99,7 +97,7 @@
 		node_loop	= node.ДочерниеУзлы[1];
 	Исключение
 		ИнфОбОшибке = ИнформацияОбОшибке();
-		ВызватьИсключение(NewExtException(ИнфОбОшибке, "Отсутствует узел цикла.", "saby_read_changes" ));
+		ВызватьИсключение(NewExtExceptionСтрока(ИнфОбОшибке, "Отсутствует узел цикла.", "extsyncobject_list"));
 	КонецПопытки;
 	
 	Для i = 0 По events.Количество() - 1 Цикл
@@ -110,7 +108,7 @@
 			result = saby_extsyncobj_list_execute_item(node_loop, path+".0_"+block_context["index"],context, block_context);
 		Исключение
 			ИнфОбОшибке = ИнформацияОбОшибке();
-			ВызватьИсключение(NewExtException(ИнфОбОшибке, "Ошибка в блоке", " (" + block_type + "."+path+")", Новый Структура("__id", block_context.__id)));
+			ВызватьИсключение NewExtExceptionСтрока(ИнфОбОшибке,,,,add_block_to_dump(block_context));
 		КонецПопытки;
 		saby_extsyncobj_list_set_step(block_context);
 	КонецЦикла;

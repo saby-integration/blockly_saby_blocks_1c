@@ -18,7 +18,7 @@
 		//result = block_extsyncdoc_run_extsyncdoc_execute_is(context, block_context);
 	Исключение
 		ИнфОбОшибке	= ИнформацияОбОшибке();
-		ВызватьИсключение(NewExtException(ИнфОбОшибке, "Ошибка в блоке", " (extsyncdoc_run_calc_value)" ));
+		ВызватьИсключение NewExtExceptionСтрока(ИнфОбОшибке,,,,add_block_to_dump(block_context));
 		//Block_set_variable(context, "_last_error", ИнформацияОбОшибке().Описание );
 		//Возврат Ложь;
 	КонецПопытки;
@@ -31,7 +31,7 @@
 	//raise NotImplemented()
 	//ВызватьИсключение "Не реализовано";
 	ИнфОбОшибке = ИнформацияОбОшибке();
-	ВызватьИсключение(NewExtException(ИнфОбОшибке, "Не реализовано"));
+	ВызватьИсключение(NewExtExceptionСтрока(ИнфОбОшибке, "Не реализовано"));
 КонецФункции
 
 Функция block_extsyncdoc_run_command_processpredefineobject(context, block_context, ext_sync_obj)
@@ -68,7 +68,7 @@
 		obj = ext_sync_obj.Data.data;
 	Исключение
 		ИнфОбОшибке = ИнформацияОбОшибке();
-		ВызватьИсключение(NewExtException(ИнфОбОшибке, "Объект не содержит необходимый параметр"));
+		ВызватьИсключение(NewExtExceptionСтрока(ИнфОбОшибке, "Объект не содержит необходимый параметр"));
 	КонецПопытки;
 	Возврат block_extsyncdoc_run_add_command_calc_ini(context, block_context, "update", ext_sync_obj, obj);
 КонецФункции
@@ -78,7 +78,7 @@
 		obj = ext_sync_obj.Data.data;
 	Исключение
 		ИнфОбОшибке = ИнформацияОбОшибке();
-		ВызватьИсключение(NewExtException(ИнфОбОшибке, "Объект не содержит необходимый параметр"));
+		ВызватьИсключение(NewExtExceptionСтрока(ИнфОбОшибке, "Объект не содержит необходимый параметр"));
 	КонецПопытки;
 	Возврат block_extsyncdoc_run_add_command_calc_ini(context, block_context, "find", ext_sync_obj, obj);
 КонецФункции
@@ -97,48 +97,55 @@
 	Исключение
 		delete_last_context();
 		ИнфОбОшибке = ИнформацияОбОшибке();
-		ВызватьИсключение(NewExtException(ИнфОбОшибке, "Объект не содержит необходимый параметр"));
+		ВызватьИсключение(NewExtExceptionСтрока(ИнфОбОшибке, "Объект не содержит необходимый параметр"));
 	КонецПопытки;
 КонецФункции
 
 //Функция block_extsyncdoc_run_process_commands_result(context, block_context)
 //КонецФункции
 
-Функция block_extsyncdoc_run_process_command_result_read(context, block_context, command_, result, objects)
+Процедура block_extsyncdoc_run_process_command_result_read(context, block_context, ext_sync_obj, result, objects)
 	Если result.status = "complete" Тогда
 		result = result["data"];
-		Если result.Получить("ИдИС") <> Неопределено Тогда
-			objects.Добавить(
-			Новый Структура("ClientId,Id,Type,StatusId,Action,Data",
-			result["ИдИС"],
-			result["ИдИС"],
-			result["ТипИС"]+"."+result["ИмяИС"],
-			"Получен",
-			1,
-			Новый Структура("ini_name,data_is,subobject,name",
-			command_["Data"]["ini_name"],
-			result,
-			command_["Data"]["subobject"],
-			result.Получить("Название")
-			),
-			)
-			);
-		Иначе
-			_data = command_;
-			_data.Вставить("Data", 
-			Новый Структура("ini_name, raw_data, subobject",
-			command_["Data"]["ini_name"],
-			result,
-			?(command_["Data"].Получить("subobject") = Неопределено, command_["Data"]["subobject"], Ложь)
-			)
-			);
-			objects.Добавить(_data);
+		Если ЗначениеЗаполнено(result) И НЕ ЗначениеЗаполнено(get_prop(ext_sync_obj,"Uuid")) Тогда
+			Возврат;
 		КонецЕсли;
+		Попытка
+			ПроверитьНаличиеОбязательныхПараметров(result, "ИдИС,ТипИС,ИмяИС,Название", ext_sync_obj["Type"]+" "+get_prop(ext_sync_obj,"Title",ext_sync_obj["ClientId"]));
+		Исключение
+			ИнфОбОшибке = ИнформацияОбОшибке();
+			ОшибкаСтруктура = NewExtExceptionСтруктура(ИнфОбОшибке);
+			_data = ext_sync_obj;
+			_data.Вставить("Title", ОшибкаСтруктура.detail);
+			_data.Вставить("StatusId", "Ошибка");
+			_data.Вставить("StatusMsg", ОшибкаСтруктура.message);
+			_data.Вставить("Data", 
+			Новый Структура("error", ОшибкаСтруктура));
+			objects.Добавить(_data);
+			Возврат;
+		КонецПопытки;
+		
+		objects.Добавить(
+		Новый Структура("ClientId,Id,Type,StatusId,Action,Data",
+		result["ИдИС"],
+		result["ИдИС"],
+		result["ТипИС"]+"."+result["ИмяИС"],
+		"Получен",
+		1,
+		Новый Структура("ini_name,data_is,subobject,name",
+		ext_sync_obj["Data"]["ini_name"],
+		result,
+		ext_sync_obj["Data"]["subobject"],
+		result.Получить("Название")
+		),
+		)
+		);
+		
 	ИначеЕсли result.status = "error" Тогда
 		ОшибкаСтруктура= result["data"];
 		мОписаниеОшибки	= Новый Массив();
 		мОписаниеОшибки.Добавить(ОшибкаСтруктура.message);
-		_data = command_;
+		_data = ext_sync_obj;
 		_data.Вставить("Title", ОшибкаСтруктура.detail);
 		_data.Вставить("StatusId", "Ошибка");
 		_data.Вставить("StatusMsg", мОписаниеОшибки);
@@ -147,7 +154,7 @@
 		);
 		objects.Добавить(_data);
 	КонецЕсли;
-КонецФункции
+КонецПроцедуры
 
 Функция block_extsyncdoc_run_process_command_result_find(context, block_context, command, result, objects)
 	Если result.Свойство("ИдИС") Тогда
@@ -191,7 +198,7 @@
 		Если block_context.prepare_counter >= 3000 Тогда
 			//ВызватьИсключение "Превышено количество циклов prepare для операции экспорта";
 			ИнфОбОшибке = ИнформацияОбОшибке();
-			ВызватьИсключение(NewExtException(ИнфОбОшибке, "Превышено количество циклов prepare для операции экспорта"));
+			ВызватьИсключение(NewExtExceptionСтрока(ИнфОбОшибке, "Превышено количество циклов prepare для операции экспорта"));
 		КонецЕсли;
 		
 		result = Неопределено;
@@ -199,7 +206,7 @@
 			result = local_helper_extsyncdoc_prepare(context.params, extsyncdoc_uuid, 1);
 		Исключение
 			ИнфОбОшибке = ИнформацияОбОшибке();
-			ВызватьИсключение(NewExtException(ИнфОбОшибке));
+			ВызватьИсключение(NewExtExceptionСтрока(ИнфОбОшибке));
 		КонецПопытки;
 		
 		Для каждого key_ Из result Цикл
@@ -226,8 +233,8 @@
 						result = block_extsyncdoc_run_command_find(context, block_context, command_[1]);
 					КонецЕсли;
 				Исключение
-					ИнфОбОшибке		= ИнформацияОбОшибке();
-					ОшибкаСтруктура= NewExtExceptionСтруктура(ИнфОбОшибке,"Ошибка в блоке", " (extsyncdoc_prepare_is)");
+					ИнфОбОшибке = ИнформацияОбОшибке();
+					ОшибкаСтруктура = NewExtExceptionСтруктура(ИнфОбОшибке,,,,add_block_to_dump(block_context));
 					мОписаниеОшибки	= Новый Массив();
 					мОписаниеОшибки.Добавить(ОшибкаСтруктура.message);
 					_data = command_[1];
@@ -255,7 +262,8 @@
 		
 		Если count_actions <= 0 И (block_context.all_objects <= block_context.count_processed + block_context.count_error) Тогда
 			Если block_context.count_error > 0 Тогда
-				ВызватьИсключение ЗначениеВСтрокуВнутр( ExtException(  Новый Структура("message, detail", "Ошибки подготовки", "extsyncdoc_run_extsyncdoc_prepare_is"), ) );
+				//todo Взять за пример и сделать функцию вызова исключения 
+				ВызватьИсключение NewExtExceptionСтрока(,"Ошибки подготовки");
 			КонецЕсли;
 			Прервать;
 		КонецЕсли;
@@ -282,16 +290,16 @@
 	Пока Истина Цикл
 		block_context.Вставить("prepare_counter", block_context.prepare_counter + 1);
 		Если block_context.prepare_counter >= 3000 Тогда
-			ВызватьИсключение ЗначениеВСтрокуВнутр( ExtException(  Новый Структура("message, detail", "Превышено количество циклов prepare для операции", ""), ) );
+			ВызватьИсключение "Превышено количество циклов prepare для операции";
 		КонецЕсли;
 		
 		result = Неопределено;
 		Попытка
 			result = local_helper_extsyncdoc_get_obj_for_execute(context.params, extsyncdoc_uuid, 2)
 		Исключение 
-			//ВызватьИсключение ИнформацияОбОшибке().Описание; 
+			
 			ИнфОбОшибке = ИнформацияОбОшибке();
-			ВызватьИсключение(NewExtException(ИнфОбОшибке));
+			ВызватьИсключение(NewExtExceptionСтрока(ИнфОбОшибке));
 		КонецПопытки;
 		
 		Если Не ЗначениеЗаполнено(result) Тогда
@@ -306,10 +314,10 @@
 			КонецЕсли;
 		КонецЦикла;
 		
-		//raise LimitCommand()
-		//ВызватьИсключение "Превышено количество циклов prepare для операции";
+		
+		
 		ИнфОбОшибке = ИнформацияОбОшибке();
-		ВызватьИсключение(NewExtException(ИнфОбОшибке,"Превышено количество циклов prepare для операции"));
+		ВызватьИсключение(NewExtExceptionСтрока(ИнфОбОшибке,"Превышено количество циклов prepare для операции"));
 	КонецЦикла;
 КонецФункции
 
