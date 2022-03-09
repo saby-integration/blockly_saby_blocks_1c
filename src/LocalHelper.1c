@@ -139,7 +139,7 @@
 
 Функция local_helper_extsyncdoc_execute(context, extsyncdoc_uuid, direction)
 	Возврат local_helper_integration_api(context, "ExtSyncDoc.Execute",
-		Новый Структура("param", Новый Структура("SyncDocId, Direction", extsyncdoc_uuid, direction)));
+	Новый Структура("param", Новый Структура("SyncDocId, Direction", extsyncdoc_uuid, direction)));
 КонецФункции
 
 Функция local_helper_extsyncdoc_execute_lrs(context, extsyncdoc_uuid, direction)
@@ -155,7 +155,7 @@
 		ИнфОбОшибке = ИнформацияОбОшибке();
 		ВызватьИсключение(NewExtExceptionСтрока(ИнфОбОшибке));		
 	КонецПопытки;
-
+	
 КонецФункции
 
 Функция local_helper_extsyncdoc_get_obj_for_execute(context, extsyncdoc_uuid, direction)

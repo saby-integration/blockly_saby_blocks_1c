@@ -110,20 +110,20 @@
 	Для Каждого obj Из objects Цикл
 		ПроверитьНаличиеОбязательныхПараметров(obj, "ИдИС,Название,ТипИС");
 		_id = obj["ИдИС"];
-        ini_name = get_prop(obj, "ini_name");
+		ini_name = get_prop(obj, "ini_name");
 		Data = Новый Структура("data_is",obj);
 		Если ЗначениеЗаполнено(ini_name) Тогда
 			Data.Вставить("ini_name", ini_name);
 		КонецЕсли;
 		_object = Новый Структура("Action, Title, Type, ClientId, Data, StatusId",
-            direction,
-            ?(obj["Название"]<>неопределено, obj["Название"], _id),
-            obj["ТипИС"]+"."+obj["ИмяИС"],
-            _id,
-           Data,
-		   "Получен");
-    _objects.Добавить(_object);
-    КонецЦикла;	
+		direction,
+		?(obj["Название"]<>неопределено, obj["Название"], _id),
+		obj["ТипИС"]+"."+obj["ИмяИС"],
+		_id,
+		Data,
+		"Получен");
+		_objects.Добавить(_object);
+	КонецЦикла;	
 	Возврат _objects;
 КонецФункции
 

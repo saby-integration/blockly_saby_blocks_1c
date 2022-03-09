@@ -57,34 +57,34 @@
 
 #Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3familymember
 #КонецОбласти
-    
+
 #Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3timeoff
 #КонецОбласти
-			  	 
+
 #Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3timeofftype
 #КонецОбласти
-			       		
+
 #Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3vacationschedule
 #КонецОбласти
-			   	
+
 #Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3indexation
 #КонецОбласти
-			  
+
 #Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3childcareleave
 #КонецОбласти
-			        
+
 #Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3reason
 #КонецОбласти
-			    
+
 #Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3sickleave
 #КонецОбласти
-			            
+
 #Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3changetermsemploym
 #КонецОбласти
-			        	
+
 #Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3employmenttype
 #КонецОбласти
-			       
+
 #Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3paymentcharacter
 #КонецОбласти
 
@@ -98,9 +98,6 @@
 #КонецОбласти
 
 #Область include_BlocklySabyBlocks_src_Blocks_C1RefToObj
-#КонецОбласти
-
-#Область include_BlocklySabyBlocks_src_Blocks_C1DocReadListPrintForms
 #КонецОбласти
 
 #Область include_BlocklySabyBlocks_src_Blocks_SabyUploadFiles
