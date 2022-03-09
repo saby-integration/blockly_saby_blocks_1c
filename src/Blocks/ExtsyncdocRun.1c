@@ -14,7 +14,7 @@
 		//result = block_extsyncdoc_run_process_commands_result(context, block_context);
 		result = block_extsyncdoc_run_extsyncdoc_prepare_is(context, block_context);
 		//result = block_extsyncdoc_run_extsyncdoc_prepare_saby(context, block_context);
-		result = block_extsyncdoc_run_extsyncdoc_execute_saby(context, block_context);
+		result = block_extsyncdoc_run_extsyncdoc_execute_saby_lrs(context, block_context);
 		//result = block_extsyncdoc_run_extsyncdoc_execute_is(context, block_context);
 	Исключение
 		ИнфОбОшибке	= ИнформацияОбОшибке();
@@ -214,7 +214,8 @@
 		КонецЦикла;
 		
 		actions = ?(block_context.Свойство("requiredActions"), block_context.requiredActions, Новый Массив );
-		count_actions = actions.Количество();
+		count_actions = actions.Количество(); 
+		Saby_ФоновыеЗаданияСервер.СообщитьПрогресс(,Строка(block_context.all_objects)+" объектов получено, в т.ч. с ошибками "+block_context.count_error);//фз
 		Если count_actions > 0 Тогда
 			
 			objects = Новый Массив;
@@ -283,6 +284,23 @@
 	Возврат local_helper_extsyncdoc_execute(context.params, extsyncdoc_uuid, 1);
 КонецФункции
 
+Функция block_extsyncdoc_run_extsyncdoc_execute_saby_lrs(context, block_context)
+	extsyncdoc_uuid = "";
+	context.operation.Свойство("operation_uuid", extsyncdoc_uuid);
+	local_helper_extsyncdoc_execute_lrs(context.params, extsyncdoc_uuid, 1);
+	Пока Истина Цикл
+		result = block_extsyncdoc_run_extsyncdoc_read_saby(context, block_context);
+		ТекстСтатуса = "Загружено " + result["CountConfirmed"]+"/"+result["CountObjects"]+", ошибок "+result["CountErrors"];
+		Если result["CountObjects"] = result["CountErrors"] + result["CountConfirmed"] Тогда
+			Saby_ФоновыеЗаданияСервер.СообщитьПрогресс(,ТекстСтатуса);
+			Прервать;
+		Иначе
+			ОбменДаннымиСервер.Пауза(2);
+			Saby_ФоновыеЗаданияСервер.СообщитьПрогресс(,ТекстСтатуса);
+		КонецЕсли;
+	КонецЦикла;
+КонецФункции
+
 Функция block_extsyncdoc_run_extsyncdoc_execute_is(context, block_context)
 	extsyncdoc_uuid = "";
 	context.Свойство("operation_uuid", extsyncdoc_uuid);
@@ -323,7 +341,7 @@
 
 Функция block_extsyncdoc_run_extsyncdoc_read_saby(context, block_context)
 	extsyncdoc_uuid = "";
-	extsyncdoc_uuid = context["operation"]["operation_uuid"];
-	Возврат local_helper_api3_extsyncdoc_read(context.params, extsyncdoc_uuid);
+	context.operation.Свойство("operation_uuid", extsyncdoc_uuid);
+	Возврат local_helper_extsyncdoc_read(context.params, extsyncdoc_uuid);
 КонецФункции
 

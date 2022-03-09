@@ -139,8 +139,11 @@
 
 Функция local_helper_extsyncdoc_execute(context, extsyncdoc_uuid, direction)
 	Возврат local_helper_integration_api(context, "ExtSyncDoc.Execute",
-	Новый Структура("param", Новый Структура("SyncDocId, Direction", extsyncdoc_uuid, direction) )
-	);
+		Новый Структура("param", Новый Структура("SyncDocId, Direction", extsyncdoc_uuid, direction)));
+КонецФункции
+
+Функция local_helper_extsyncdoc_execute_lrs(context, extsyncdoc_uuid, direction)
+	Возврат local_helper_integration_api(context, "ExtSyncDoc.ExecuteLRS", Новый Структура("SyncDocId", extsyncdoc_uuid));
 КонецФункции
 
 Функция local_helper_extsyncdoc_write_predefined(context_params, ConnectionId, Type, ClientType, Objects)
@@ -161,7 +164,7 @@
 	);
 КонецФункции
 
-Функция local_helper_api3_extsyncdoc_read(context, extsyncdoc_uuid)
+Функция local_helper_extsyncdoc_read(context, extsyncdoc_uuid)
 	Возврат local_helper_integration_api(context, "API3.ExtSyncDocRead", Новый Структура("param", Новый Структура("SyncDocId", extsyncdoc_uuid)));
 КонецФункции
 

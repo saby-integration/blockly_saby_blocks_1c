@@ -17,6 +17,6 @@
 			Возврат "";
 		КонецЕсли;
 	Иначе
-		Возврат block_obj_get_path_value(obj, path);
+		Возврат block_obj_get_path_value(obj, path, block_context["VAR"]);
 	КонецЕсли;	
 КонецФункции

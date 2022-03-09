@@ -37,17 +37,8 @@
 		ВызватьИсключение "Хрень какая то";
 	КонецЕсли;
 	
-	extsyncdoc_uuid = "";
-	connection_uuid = "";
-	Если ТипЗнч(context.params) = Тип("Структура") Тогда
-		context.operation.Свойство("operation_uuid", extsyncdoc_uuid);
-		context.operation.Свойство("connection_uuid", connection_uuid);
-	ИначеЕсли ТипЗнч(context.params) = Тип("Соответствие") Тогда
-		extsyncdoc_uuid = context.operation.Получить("operation_uuid");
-		connection_uuid = context.operation.Получить("connection_uuid");
-	КонецЕсли;
-	context.operation.Вставить("operation_uuid", extsyncdoc_uuid);
-	context.operation.Вставить("connection_uuid", connection_uuid);
+	extsyncdoc_uuid = get_prop(context.operation,"operation_uuid","");
+	connection_uuid = get_prop(context.operation,"connection_uuid","");
 	
 	Попытка
 		Если ПустаяСтрока(extsyncdoc_uuid) Тогда
