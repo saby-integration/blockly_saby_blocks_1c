@@ -107,9 +107,9 @@
 Процедура block_extsyncdoc_run_process_command_result_read(context, block_context, ext_sync_obj, result, objects)
 	Если result.status = "complete" Тогда
 		result = result["data"];
-		Если ЗначениеЗаполнено(result) И НЕ ЗначениеЗаполнено(get_prop(ext_sync_obj,"Uuid")) Тогда
-			Возврат;
-		КонецЕсли;
+		//Если ЗначениеЗаполнено(result) И НЕ ЗначениеЗаполнено(get_prop(ext_sync_obj,"Uuid")) Тогда
+		//	Возврат;
+		//КонецЕсли;
 		Попытка
 			ПроверитьНаличиеОбязательныхПараметров(result, "ИдИС,ТипИС,ИмяИС,Название", ext_sync_obj["Type"]+" "+get_prop(ext_sync_obj,"Title",ext_sync_obj["ClientId"]));
 		Исключение
