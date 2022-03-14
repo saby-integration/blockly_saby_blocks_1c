@@ -6,7 +6,7 @@
 		Если Найти(Строка(obj), "ТабличнаяЧасть") Тогда
 			_variable = obj.Добавить();
 		Иначе	
-			obj.append(block_context["VALUE"]);
+			obj.Добавить(block_context["VALUE"]);
 		КонецЕсли; 
 	КонецЕсли;	
 	block_set_variable(context, block_context["VAR"], obj);
