@@ -1,0 +1,174 @@
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3Link
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3hiring
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3changePosition
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3dismissal
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3leave
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3person
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3employee
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3org
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3department
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3position
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3planworkshedule
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3leavetype
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3kinship
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3truancy
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3documenttype
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3businesstrip
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3timesheets
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3sicknessreason
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3familymember
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3timeoff
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3timeofftype
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3vacationschedule
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3indexation
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3childcareleave
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3reason
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3sickleave
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3changetermsemploym
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3employmenttype
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3paymentcharacter
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3leave_type
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3Predefined
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_ExtsysRead
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_C1RefToObj
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_SabyUploadFiles
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_C1DocReadPrintForms
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_NewObj
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_GetCurrentDatetime
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_ObjPropSet
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Format 
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_ObjPropGet
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_C1CallSelect 
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_C1Ref
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_C1MetaRead 
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_C1MetaCreate
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_C1MetaUpdate
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_C1CallFilter
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_C1ClearTable 
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_C1GetUuid
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_C1Execute
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_ObjPropAppend
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_LocalHelper
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_ExtsyncdocWrite
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_ExtsyncdocRun
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_ExtsysUpdateStatus
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_SabyExtsyncobjList
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_SabyReadChanges
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_SabyReadDocument
+#КонецОбласти
+
