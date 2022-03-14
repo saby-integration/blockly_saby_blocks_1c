@@ -1,7 +1,6 @@
 Функция block_format_calc_value(block_type, node, path, context, block_context)
-	Узел = block_format_get_node_return(node);
-	res = block_execute_all_next(Узел, path + "." + "main", context, block_context);
-	Формат_Вар = block_format_get_node_field(node);
+	res			= block_context["value"];
+	Формат_Вар	= block_context["type"];
 	Если Формат_Вар = "to_date" Тогда
 		Попытка
 			Если не ТипЗнч(res) = Тип("Дата") Тогда
@@ -10,10 +9,19 @@
 		Исключение
 			Сообщить("Преоразование строки в дату не удалось");
 		КонецПопытки	
+	ИначеЕсли Формат_Вар = "from_date" Тогда
+		Попытка
+			ВставитьСвойствоЕслиНет(block_context, "result", Формат(res, block_context["template"]));
+		Исключение
+			Сообщить("Преоразование дату в строку не удалось");
+		КонецПопытки	
 	ИначеЕсли Формат_Вар = "to_string" Тогда
+		Если значениеЗаполнено(block_context["template"]) Тогда
+			res = Формат(res, block_context["template"]);
+		КонецЕсли;
 		ВставитьСвойствоЕслиНет(block_context, "result", Строка(res));
 	КонецЕсли;	
-    Возврат block_context["result"];
+	Возврат block_context["result"];
 КонецФункции
 
 Функция block_format_get_node_return(node)	
