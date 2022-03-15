@@ -25,11 +25,10 @@
 		ВызватьИсключение(NewExtExceptionСтрока(ИнфОбОшибке, "Отсутствует узел цикла.", "extsyncobject_list" ));
 	КонецПопытки;
 	
-	context.params.Вставить("api_service", "/service/");
 	Для i = 0 По Результат["Result"].Количество() - 1 Цикл
 		block_context["index"] = i;
 		//todo++
-		РезДокументИд = local_helper_integration_api(context.params, "Документ.ПолучитьДанныеОДокументе", Новый Структура("guid,ido,ВИИд,ТипДок,ПодТипДок","",Результат["Result"][i]["SbisId"],"","","",) );
+		РезДокументИд = local_helper_api(context.params, "Документ.ПолучитьДанныеОДокументе", Новый Структура("guid,ido,ВИИд,ТипДок,ПодТипДок","",Результат["Result"][i]["SbisId"],"","","",) );
 		//Результат["Result"][i].Вставить("ИдентификаторВИ", РезДокументИд["d"]["ИдентификаторДокумента"]);
 		//todo--
 		saby_extsyncobj_list_on_loop(node, path, context, block_context);
@@ -42,7 +41,6 @@
 		КонецПопытки;
 		saby_extsyncobj_list_set_step(block_context);
 	КонецЦикла;
-	context.params.Удалить("api_service");
 	block_context["items"] = Новый Массив;
 	
 	Возврат Неопределено;
