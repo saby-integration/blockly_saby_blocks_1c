@@ -123,9 +123,12 @@
 		ИнфОбОшибке = ИнформацияОбОшибке();
 		ВызватьИсключение NewExtExceptionСтрока(ИнфОбОшибке,,,,,"Unauthorized" );
 	КонецПопытки;
-	context_params.Вставить("session", result.Получить("result"));
-	//в context_param вставить session_begin, датавремя
-	Возврат result.Получить("result");
+	session = result.Получить("result");
+	context_params.Вставить("session", session );
+	context_params.Вставить("session_begin", ТекущаяДата());
+	context_params.Вставить("need_ticket", Истина);
+	НастройкиПодключенияЗаписать(context_params);
+	Возврат result.Получить(session);
 КонецФункции
 
 Функция local_helper_integration_api(context_params, method, params)
@@ -293,7 +296,7 @@
 				response.result = ИмяФайлаОтвета;
 			КонецЕсли;
 		Иначе
-			Если content_type = "application/json" Тогда
+			Если Найти(content_type, "application/json") > 0 Тогда
 				response.result = local_helper_json_loads(http_response.ПолучитьТелоКакСтроку());	
 			иначе
 				response.result = http_response.ПолучитьТелоКакСтроку();
@@ -461,4 +464,6 @@
     КонецЕсли;
 	
 КонецПроцедуры	
+
+
 
