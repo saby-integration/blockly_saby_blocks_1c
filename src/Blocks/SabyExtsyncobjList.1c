@@ -1,69 +1,21 @@
+		
+Функция	saby_extsyncobj_list_items(context, block_context)
+	extsyncdoc_uuid = context.variables["complete"]["Uuid"];
+	extra_fields = Новый Массив;
 
-Функция	saby_extsyncobj_list_calc_value(block_type, node, path, context, block_context)
-	
-	Результат = local_helper_integration_api(context.params, "ExtSyncObj.List", 
-	Новый Структура("ExtraFields,Filter,Sorting,Pagination",
-	Новый Массив,
-	Новый Структура("SyncDocId", context.variables["complete"]["Uuid"] ),
-	Новый Массив,
-	Новый Структура(),
-	)
-	);
-	
-	
-	Если Не block_context.Свойство("items") Тогда
-		block_context.Вставить("items", Результат["Result"]);
+	filter = Новый Структура();
+
+	sorting = Новый Массив;
+	Страниц	= 0;
+	Если НЕ block_context.Свойстово("page", Страниц) Тогда
+		Страниц = 0;
 	КонецЕсли;
-	Если Не block_context.Свойство("index") Тогда
-		block_context.Вставить("index", 0);
+	pagination = Новый Структура("PageSize, Page", 50, Страниц );
+
+	result = local_helper_extsyncobj_list(context, extsyncdoc_uuid, extra_fields, filter, sorting, pagination);
+	result = result["Result"];
+	Если result = Неопределено Тогда
+		result = Новый Массив;
 	КонецЕсли;
-	
-	Попытка
-		node_loop	= node.ДочерниеУзлы[1];
-	Исключение
-		ИнфОбОшибке = ИнформацияОбОшибке();
-		ВызватьИсключение(NewExtExceptionСтрока(ИнфОбОшибке, "Отсутствует узел цикла.", "extsyncobject_list" ));
-	КонецПопытки;
-	
-	Для i = 0 По Результат["Result"].Количество() - 1 Цикл
-		block_context["index"] = i;
-		//todo++ 
-		РезДокументИд = local_helper_api(context.params, "Документ.ПолучитьДанныеОДокументе", Новый Структура("guid,ido,ВИИд,ТипДок,ПодТипДок","",Результат["Result"][i]["SbisId"],"","","",) );
-		//Результат["Result"][i].Вставить("ИдентификаторВИ", РезДокументИд["d"]["ИдентификаторДокумента"]);
-		//todo--
-		saby_extsyncobj_list_on_loop(node, path, context, block_context);
-		block_check_step(context, block_context);
-		Попытка
-			result = saby_extsyncobj_list_execute_item(node_loop, path+".0_"+block_context["index"],context, block_context);
-		Исключение
-			ИнфОбОшибке = ИнформацияОбОшибке();
-			ВызватьИсключение NewExtExceptionСтрока(ИнфОбОшибке,,,,add_block_to_dump(block_context));
-		КонецПопытки;
-		saby_extsyncobj_list_set_step(block_context);
-	КонецЦикла;
-	block_context["items"] = Новый Массив;
-	
-	Возврат Неопределено;
+	return result;
 КонецФункции
-
-Функция	saby_extsyncobj_list_execute_item(node_loop, path, context, block_context)
-	Возврат block_execute_all_next(node_loop, path, context, block_context, Истина);
-КонецФункции
-
-Функция	saby_extsyncobj_list_set_step(block_context)
-	Если StepByStep Тогда
-		NextStep = Ложь;
-		Step = block_context.__id;
-	КонецЕсли;
-КонецФункции
-
-Функция	saby_extsyncobj_list_clear_child_context(block_context, result=Неопределено, delete_children=Истина)
-	Если delete_children Тогда
-		block_context.Вставить("__child", Неопределено);
-	КонецЕсли;
-КонецФункции
-
-Функция	saby_extsyncobj_list_on_loop(node, path, context, block_context)
-	Block_set_variable(context, node.ДочерниеУзлы[0].ТекстовоеСодержимое, block_context["items"][block_context["index"]])
-КонецФункции
-

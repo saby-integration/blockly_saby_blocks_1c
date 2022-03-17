@@ -281,19 +281,17 @@
 	Возврат Результат;
 КонецФункции
 
-Функция local_helper_get_server_datetime(context)
-	Результат	=	local_helper_integration_api(context, "СБИС.ИнформацияОВерсии", 
+Функция local_helper_get_server_datetime(context_params) Экспорт
+	Результат	=	local_helper_api(context_params, "СБИС.ИнформацияОВерсии", 
 	Новый Структура("Параметр", Новый Структура()) 
 	);
 	Возврат Результат["ВнешнийИнтерфейс"]["ДатаВремяЗапроса"];
 КонецФункции
 
 Функция local_helper_read_changes(context, _filter)
-	context.Вставить("api_service", "/service/");
-	Результат	=	local_helper_integration_api(context, "СБИС.СписокИзменений", 
+	Результат	=	local_helper_api(context, "СБИС.СписокИзменений", 
 	Новый Структура("Фильтр", _filter)
 	);
-	context.Удалить("api_service");
 	Возврат Результат;
 КонецФункции
 
@@ -305,6 +303,18 @@
 	result = local_helper_exec_request("get", link, "binary", Новый Структура("headers", headers) );
 	context.params.Удалить("api_service");
 	Возврат result;
+КонецФункции
+
+Функция local_helper_extsyncobj_list(context, extsyncdoc_uuid, extra_fields, filter, sorting, pagination)
+	Результат	=	local_helper_api(context, "ExtSyncObj.List", 
+	Новый Структура("ExtraFields,Filter,Sorting,Pagination",
+		extra_fields,
+        filter,
+        sorting,
+        pagination
+	)
+	);
+	Возврат Результат;
 КонецФункции
 
 //post запрос
