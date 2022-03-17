@@ -3,17 +3,17 @@
 	extsyncdoc_uuid = context.variables["complete"]["Uuid"];
 	extra_fields = Новый Массив;
 
-	filter = Новый Структура();
-
+	filter = Новый Структура("SyncDocId", extsyncdoc_uuid);
+	
 	sorting = Новый Массив;
 	Страниц	= 0;
-	Если НЕ block_context.Свойстово("page", Страниц) Тогда
+	Если НЕ block_context.Свойство("page", Страниц) Тогда
 		Страниц = 0;
 	КонецЕсли;
 	pagination = Новый Структура("PageSize, Page", 50, Страниц );
 
-	result = local_helper_extsyncobj_list(context, extsyncdoc_uuid, extra_fields, filter, sorting, pagination);
-	result = result["Result"];
+	result = local_helper_extsyncobj_list(context.params, extsyncdoc_uuid, extra_fields, filter, sorting, pagination);
+	result = result["result"]["Result"];
 	Если result = Неопределено Тогда
 		result = Новый Массив;
 	КонецЕсли;

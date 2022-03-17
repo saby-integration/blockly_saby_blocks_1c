@@ -305,14 +305,20 @@
 	Возврат result;
 КонецФункции
 
-Функция local_helper_extsyncobj_list(context, extsyncdoc_uuid, extra_fields, filter, sorting, pagination)
-	Результат	=	local_helper_api(context, "ExtSyncObj.List", 
-	Новый Структура("ExtraFields,Filter,Sorting,Pagination",
-		extra_fields,
-        filter,
-        sorting,
-        pagination
-	)
+Функция local_helper_extsyncobj_list(context_params, extsyncdoc_uuid, extra_fields, filter, sorting, pagination)
+	Результат = local_helper_exec_method(
+		context_params,
+		Новый Структура("url, method, params, auto_auth",
+			context_params.api_url+"/integration_config/service/",
+			"ExtSyncObj.List",
+			Новый Структура("ExtraFields,Filter,Sorting,Pagination",
+				extra_fields,
+		        filter,
+		        sorting,
+		        pagination
+			),
+			Ложь,
+		)
 	);
 	Возврат Результат;
 КонецФункции
