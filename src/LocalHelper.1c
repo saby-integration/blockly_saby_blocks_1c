@@ -268,7 +268,13 @@
 		КонецПопытки;
 	ИначеЕсли request_type = "get" Тогда
 		Попытка
+			Счет = 1;
 			http_response	= http_connection.Получить(http_request, ИмяФайлаОтвета);
+			Пока Счет < 1000 и http_response.КодСостояния = 500 Цикл
+				http_response	= http_connection.Получить(http_request, ИмяФайлаОтвета);
+				Если http_response.КодСостояния = 200 Тогда Прервать; КонецЕсли; //Асинхронное получение вложения
+				Счет = Счет + 1;
+			КонецЦикла;	
 		Исключение
 			ИнфОбОшибке = ИнформацияОбОшибке();
 			ВызватьИсключение NewExtExceptionСтрока(ИнфОбОшибке, "Ошибка выполнения HTTP запроса");
@@ -334,7 +340,7 @@
 	Индекс = Найти(СтрокаАдреса, "?");
 	Если Индекс > 0 Тогда
 		ПараметрыРесурса = Сред(СтрокаАдреса, Индекс );
-		СтрокаАдреса = Сред(СтрокаАдреса, 0, Индекс);
+		СтрокаАдреса = Сред(СтрокаАдреса, 0, Индекс-1);
 	Иначе
 		ПараметрыРесурса = "";
 	КонецЕсли;
@@ -410,7 +416,7 @@
 	local_helper_add_auth_header(context_params, headers);
 	_repeat_count = 0;
 	result = local_helper_exec_request("get", link, "binary", Новый Структура("headers", headers) );
-	Возврат result;
+	Возврат result["result"];
 КонецФункции
 
 Функция local_helper_extsyncobj_list(context_params, extsyncdoc_uuid, extra_fields, filter, sorting, pagination)
