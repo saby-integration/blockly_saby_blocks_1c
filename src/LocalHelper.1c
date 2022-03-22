@@ -268,13 +268,7 @@
 		КонецПопытки;
 	ИначеЕсли request_type = "get" Тогда
 		Попытка
-			Счет = 1;
-			http_response	= http_connection.Получить(http_request, ИмяФайлаОтвета);
-			Пока Счет < 1000 и http_response.КодСостояния = 500 Цикл
-				http_response	= http_connection.Получить(http_request, ИмяФайлаОтвета);
-				Если http_response.КодСостояния = 200 Тогда Прервать; КонецЕсли; //Асинхронное получение вложения
-				Счет = Счет + 1;
-			КонецЦикла;	
+			http_response	= http_connection.Получить(http_request, ИмяФайлаОтвета);	
 		Исключение
 			ИнфОбОшибке = ИнформацияОбОшибке();
 			ВызватьИсключение NewExtExceptionСтрока(ИнфОбОшибке, "Ошибка выполнения HTTP запроса");
@@ -416,6 +410,14 @@
 	local_helper_add_auth_header(context_params, headers);
 	_repeat_count = 0;
 	result = local_helper_exec_request("get", link, "binary", Новый Структура("headers", headers) );
+	Пока _repeat_count < 5 и result.code = 500 Цикл
+		result = local_helper_exec_request("get", link, "binary", Новый Структура("headers", headers) );
+		Если result.code = 200 Тогда
+			Прервать;
+		КонецЕсли;
+		local_helper_pause(1);
+		_repeat_count = _repeat_count + 1;
+	КонецЦикла;	
 	Возврат result["result"];
 КонецФункции
 
