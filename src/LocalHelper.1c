@@ -409,15 +409,13 @@
 	headers = Новый Соответствие;
 	local_helper_add_auth_header(context_params, headers);
 	_repeat_count = 0;
+	
 	result = local_helper_exec_request("get", link, "binary", Новый Структура("headers", headers) );
-	Пока _repeat_count < 5 и result.code = 500 Цикл
+	Пока result["code"] = 500 Цикл
+		//Файл еще формируется
+		local_helper_pause(2);
 		result = local_helper_exec_request("get", link, "binary", Новый Структура("headers", headers) );
-		Если result.code = 200 Тогда
-			Прервать;
-		КонецЕсли;
-		local_helper_pause(1);
-		_repeat_count = _repeat_count + 1;
-	КонецЦикла;	
+	КонецЦикла;		
 	Возврат result["result"];
 КонецФункции
 
