@@ -220,7 +220,7 @@
 // request_type: get, post, post_binary (в дата лежит имя временного файла)
 // response_type: json, text, binary (в ответе будет лежать имя временного файла)
 
-Функция local_helper_exec_request(request_type, request_url, response_type, __kwargs = Неопределено)
+Функция local_helper_exec_request(request_type, Знач request_url, response_type, __kwargs = Неопределено)
 	Перем ИмяФайлаОтвета, proxy, proxy_param, ssl, headers;
 	
 	Адрес = РазобратьСтрокуУРЛ(request_url);
@@ -296,10 +296,21 @@
 				response.result = ИмяФайлаОтвета;
 			КонецЕсли;
 		Иначе
-			Если Найти(content_type, "application/json") > 0 Тогда
-				response.result = local_helper_json_loads(http_response.ПолучитьТелоКакСтроку());	
-			иначе
-				response.result = http_response.ПолучитьТелоКакСтроку();
+			Если ИмяФайлаОтвета = Неопределено Тогда
+				Тело = http_response.ПолучитьТелоКакСтроку();
+			Иначе
+				ФайлСОтветом = Новый ЧтениеТекста;
+				ФайлСОтветом.Открыть(ИмяФайлаОтвета,КодировкаТекста.UTF8);              
+				Тело = ФайлСОтветом.ПрочитатьСтроку();
+			КонецЕсли;
+			Если Тело = Неопределено Тогда
+				response.result = СокрЛП(response.code) + " Неизвестная ошибка";
+			Иначе
+				Если Найти(content_type, "application/json") > 0 Тогда
+					response.result = local_helper_json_loads(Тело);	
+				иначе
+					response.result = Тело;
+				КонецЕсли;
 			КонецЕсли;
 		КонецЕсли;
 		Возврат response;		
@@ -408,15 +419,34 @@
 Функция local_helper_download_from_link(context_params, link)
 	headers = Новый Соответствие;
 	local_helper_add_auth_header(context_params, headers);
-	_repeat_count = 0;
 	
-	result = local_helper_exec_request("get", link, "binary", Новый Структура("headers", headers) );
-	Пока result["code"] = 500 Цикл
-		//Файл еще формируется
-		local_helper_pause(2);
-		result = local_helper_exec_request("get", link, "binary", Новый Структура("headers", headers) );
+	Пока Истина Цикл
+		response = local_helper_exec_request("get", link, "binary", Новый Структура("headers", headers) );
+		Если response["code"] <> 200 Тогда
+			Попытка 
+				КодОшибки = response["result"]["error"]["data"]["classid"];
+			Исключение
+				КодОшибки = Неопределено;
+			КонецПопытки;
+			Если КодОшибки = "{00000000-0000-0000-0000-1aa0000f1002}" Тогда
+				local_helper_pause(1);
+				Продолжить;
+			КонецЕсли;
+			Попытка
+				message = response["result"]["error"]["message"];
+				detail = response["result"]["error"]["message"];
+				Если message = detail Тогда
+					detail = Неопределено;
+				КонецЕсли;
+			Исключение
+				message = ЗначениеВСтрокуВнутр(response["result"]);
+				detail = Неопределено;
+			КонецПопытки;
+			ВызватьИсключение NewExtExceptionСтрока(,message,detail);
+		КонецЕсли;
+		Прервать;
 	КонецЦикла;		
-	Возврат result["result"];
+	Возврат response["result"];
 КонецФункции
 
 Функция local_helper_extsyncobj_list(context_params, extsyncdoc_uuid, extra_fields, filter, sorting, pagination)
