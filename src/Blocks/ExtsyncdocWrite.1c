@@ -84,18 +84,18 @@
 		//obj.Свойство("ini_name", ini_name);
 		//# await update_ini(self.executor, context, ini_name)
 		_object = Новый Структура(
-		"Id, Action, Title, Type, ClientId, StatusId",
+		"Id, Action, Title, Type, ClientId, Data, StatusId",
 		_id,
 		direction,
 		?(obj.Свойство("Название"), obj.Название, _id),
 		obj.ТипИС+"."+obj.ИмяИС,
 		_id,
-		//Новый Структура(
-		//"data_is",
-		////"data_is, ini_name",
-		//obj,
-		////ini_name,
-		//),
+		Новый Структура(
+		"data_is",
+		//"data_is, ini_name",
+		obj,
+		//ini_name,
+		),
 		Неопределено
 		);
 		
