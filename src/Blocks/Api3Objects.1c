@@ -108,3 +108,11 @@
 
 #Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3TimesheetTag
 #КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3Leaveschedule
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3LeavescheduleTable
+#КонецОбласти
+
+

@@ -55,8 +55,17 @@
 	obj.Вставить("ИдИС", ext_sync_obj.Получить("ClientId"));
 	data_is = ext_sync_obj.Получить("Data").Получить("data_is");
 	Если data_is = Неопределено Тогда
+		Если get_prop(ext_sync_obj, "ClientType") <> Неопределено Тогда
+			Type = "ClientType";
+		Иначе
+			Type = "Type";
+		КонецЕсли;	
+		type_list = СтрРазделить(ext_sync_obj.Получить(Type),".");
 		data_is	= Новый Соответствие;
 		data_is.Вставить("ИдИС", ext_sync_obj.Получить("ClientId"));
+		data_is.Вставить("ТипИС", type_list[0]);
+		data_is.Вставить("ИмяИС", type_list[1]);
+		data_is.Вставить("_print_forms", ext_sync_obj.Получить("Data").Получить("_print_forms")); //TODO убрать костыли
 	КонецЕсли;
 	obj.Вставить("object", data_is);
 	result = block_extsyncdoc_run_add_command_calc_ini(context, block_context, "read", ext_sync_obj, obj);
@@ -84,8 +93,10 @@
 КонецФункции
 
 Функция block_extsyncdoc_run_add_command_calc_ini(context, block_context, command, ext_sync_obj, obj)
-	obj_name = СтрЗаменить(ext_sync_obj["Data"]["ini_name"], "Данные_","");
-	obj_name = СтрЗаменить(obj_name, "СинхВыгрузка_","");
+	//obj_name = СтрЗаменить(ext_sync_obj["Data"]["ini_name"], "Данные_","");
+	//obj_name = СтрЗаменить(obj_name, "СинхВыгрузка_","");
+	type_list = СтрРазделить(ext_sync_obj["Type"],".");
+	obj_name = type_list[type_list.Количество() - 1];
 	
 	ini_name = obj_name+"_"+command;
 	Load_ini(ini_name);
