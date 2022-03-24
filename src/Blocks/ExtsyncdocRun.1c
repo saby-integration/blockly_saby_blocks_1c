@@ -65,6 +65,7 @@
 		data_is.Вставить("ИдИС", ext_sync_obj.Получить("ClientId"));
 		data_is.Вставить("ТипИС", type_list[0]);
 		data_is.Вставить("ИмяИС", type_list[1]);
+		data_is.Вставить("_print_forms", ext_sync_obj.Получить("Data").Получить("_print_forms")); //TODO убрать костыли
 	КонецЕсли;
 	obj.Вставить("object", data_is);
 	result = block_extsyncdoc_run_add_command_calc_ini(context, block_context, "read", ext_sync_obj, obj);
