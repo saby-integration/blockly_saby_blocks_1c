@@ -304,7 +304,7 @@
 		ТекстСтатуса = "Загружено " + result["CountConfirmed"]+"/"+result["CountObjects"]+", ошибок "+result["CountErrors"];
 		Если result["CountObjects"] > 0 и result["CountObjects"] = (result["CountErrors"] + result["CountConfirmed"] + result["CountProcessed"]) Тогда
 			Saby_ФоновыеЗаданияСервер.СообщитьПрогресс(,ТекстСтатуса);
-			local_helper_pause(1);
+			local_helper_pause(1); // Если не поставить паузу, то сообщение может не успеть долететь и обновить строку состояния выгрузки.
 			Прервать;
 		Иначе			
 			Saby_ФоновыеЗаданияСервер.СообщитьПрогресс(,ТекстСтатуса);
