@@ -302,12 +302,13 @@
 	Пока Истина Цикл
 		result = block_extsyncdoc_run_extsyncdoc_read_saby(context, block_context);
 		ТекстСтатуса = "Загружено " + result["CountConfirmed"]+"/"+result["CountObjects"]+", ошибок "+result["CountErrors"];
-		Если result["CountObjects"] = result["CountErrors"] + result["CountConfirmed"] Тогда
+		Если result["CountObjects"] > 0 и result["CountObjects"] = (result["CountErrors"] + result["CountConfirmed"] + result["CountProcessed"]) Тогда
 			Saby_ФоновыеЗаданияСервер.СообщитьПрогресс(,ТекстСтатуса);
+			local_helper_pause(1);
 			Прервать;
-		Иначе
-			local_helper_pause(2);
+		Иначе			
 			Saby_ФоновыеЗаданияСервер.СообщитьПрогресс(,ТекстСтатуса);
+			local_helper_pause(1);
 		КонецЕсли;
 	КонецЦикла;
 КонецФункции
