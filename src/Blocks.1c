@@ -5,6 +5,9 @@
 #Область include_BlocklySabyBlocks_src_Blocks_C1RefToObj
 #КонецОбласти
 
+#Область include_BlocklySabyBlocks_src_Blocks_C1RefFromId
+#КонецОбласти
+
 #Область include_BlocklySabyBlocks_src_Blocks_SabyUploadFiles
 #КонецОбласти
 
