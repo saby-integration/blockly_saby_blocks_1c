@@ -32,11 +32,13 @@
 	Если ЗначениеЗаполнено(last_event_id) Тогда
 		_filter.Вставить("ИдентификаторСобытия", last_event_id);
 	КонецЕсли;	
-	//Если ЗначениеЗаполнено(last_event_id) Тогда
-	//    _filter.Вставить("ИдентификаторСобытия", last_event_id);
-	//КонецЕсли;
-	events = local_helper_read_changes(context.params, _filter);
-	events = events["Документ"];
+	Попытка
+		events = local_helper_read_changes(context.params, _filter);
+	Исключение
+		_filter.Удалить("ИдентификаторСобытия");
+		events = local_helper_read_changes(context.params, _filter);
+	КонецПопытки;	
+		events = events["Документ"];
 	Если events = Неопределено Тогда
 		events = Новый Массив;
 	КонецЕсли;
