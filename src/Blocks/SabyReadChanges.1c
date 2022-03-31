@@ -32,10 +32,17 @@
 	Если ЗначениеЗаполнено(last_event_id) Тогда
 		_filter.Вставить("ИдентификаторСобытия", last_event_id);
 	КонецЕсли;	
-	//Если ЗначениеЗаполнено(last_event_id) Тогда
-	//    _filter.Вставить("ИдентификаторСобытия", last_event_id);
-	//КонецЕсли;
-	events = local_helper_read_changes(context.params, _filter);
+	Попытка
+		events = local_helper_read_changes(context.params, _filter);
+	Исключение
+		ИнфОбОшибке = ИнформацияОбОшибке();
+		Если Найти(ИнфОбОшибке.Описание, "Неверный фильтр. Не найдено событие с идентификатором") Тогда
+			_filter.Удалить("ИдентификаторСобытия");
+			events = local_helper_read_changes(context.params, _filter);
+		Иначе
+			ВызватьИсключение NewExtExceptionСтрока(ИнфОбОшибке,,,,add_block_to_dump(block_context));
+		КонецЕсли;	
+	КонецПопытки;	
 	events = events["Документ"];
 	Если events = Неопределено Тогда
 		events = Новый Массив;
