@@ -1,8 +1,6 @@
-Функция block_c1_get_uuid_execute(block_type, node, path, context, block_context)
-	value_node = block_c1_get_uuid_get_value_node(node);
-	value = block_execute_all_next(value_node, path + "." + "value", context, block_context);
-	Если ЗначениеЗаполнено(value) Тогда
-		Возврат Строка(value.УникальныйИдентификатор());
+Функция block_c1_get_uuid_calc_value(block_type, node, path, context, block_context)
+	Если ЗначениеЗаполнено(block_context.REF) Тогда
+		Возврат Строка(block_context.REF.УникальныйИдентификатор());
 	Иначе
 		Возврат Неопределено;
 	КонецЕсли;	
