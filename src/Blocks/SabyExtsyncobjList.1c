@@ -1,6 +1,6 @@
 		
 Функция	saby_extsyncobj_list_items(context, block_context)
-	extsyncdoc_uuid = context.variables["complete"]["Uuid"];
+	extsyncdoc_uuid = context.operation.operation_uuid;
 	extra_fields = Новый Массив;
 
 	filter = Новый Структура("SyncDocId", extsyncdoc_uuid);
