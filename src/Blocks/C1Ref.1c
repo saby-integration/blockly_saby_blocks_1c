@@ -2,7 +2,7 @@
 	Результат = Неопределено;
 	Если block_context.Свойство("subtype") И block_context.Свойство("type") Тогда
 		_Менеджер = Новый (block_context.type + "Менеджер" + "." + block_context.subtype);	
-		Если block_context.Свойство("uuid") И ЗначениеЗаполнено(block_context.uuid) Тогда
+		Если block_context.Свойство("uuid") Тогда
 			Если block_context.type = "Перечисление" Тогда 
 				Результат = _Менеджер[block_context.uuid];
 			Иначе
