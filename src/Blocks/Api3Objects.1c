@@ -103,10 +103,10 @@
 #Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3Predefined
 #КонецОбласти
 
-#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3OvertimeEmployee
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3Overtime
 #КонецОбласти
 
-#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3TimesheetTag
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3TimesheetsTag
 #КонецОбласти
 
 #Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3Leaveschedule
@@ -115,6 +115,12 @@
 #Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3LeavescheduleTable
 #КонецОбласти
 
-#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3AccrualTypee
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3ContactType
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3CadresOther
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3AccrualType
 #КонецОбласти
 
