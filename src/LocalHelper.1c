@@ -468,14 +468,8 @@
 КонецФункции
 
 Функция local_helper_read_version_info(api_url, product_name)
-	Если api_url = Неопределено Тогда
-		prefix = "https://";
-	Иначе
-		prefix = Лев(api_url, Найти(api_url, "."));
-		prefix = Лев(prefix, СтрДлина(prefix) - 7);
-	КонецЕсли;
-	
-	link = prefix + "update0.sbis.ru/1C/" + product_name + ".json";
+	link = get_update_url(api_url, product_name);
+	link = link + product_name +".json";
 	response = local_helper_exec_request("get", link, "json");
 	Если response.code = 200 Тогда
 		Возврат response.result
