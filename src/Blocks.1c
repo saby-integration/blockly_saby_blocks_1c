@@ -53,6 +53,10 @@
 #Область include_BlocklySabyBlocks_src_Blocks_C1GetUuid
 #КонецОбласти
 
+#Область include_BlocklySabyBlocks_src_Blocks_SabyExecuteAction
+#КонецОбласти
+
+
 #Область include_BlocklySabyBlocks_src_Blocks_C1Execute
 #КонецОбласти
 

@@ -1,0 +1,93 @@
+Функция block_saby_execute_action_calc_value(block_type, node, path, context, block_context)
+	//block_check_props(node, path, context, block_context);
+	doc = block_context["DOCUMENT"];
+	easy_send = block_get_mutation(node, "EASY_SEND");
+	Если easy_send = "TRUE" Тогда
+		action_name = "ПростоОтправить";
+	Иначе
+		action_name = block_context["ACTION"];
+	КонецЕсли;	
+	comment = get_prop(block_context,"COMMENT", "");
+	
+	stage = ?(ТипЗнч(doc["Этап"]) = Тип("Массив"), doc["Этап"][0], doc["Этап"]);
+	ВставитьСвойствоЕслиНет(stage, "Действие", Новый Соответствие);
+	ВставитьСвойствоЕслиНет(stage["Действие"], "Название", action_name);
+	ВставитьСвойствоЕслиНет(stage["Действие"], "Комментарий", comment);
+	
+	Если easy_send = "TRUE" Тогда
+		stage["Действие"]["Название"] = "ПростоОтправить";
+		stage["Название"] = "ПростаяОтправка";
+	КонецЕсли;	
+	attachments = block_saby_execute_action_get_attachment(node, path, context, block_context); //TODO
+	doc1 = Новый Соответствие;
+	ВставитьСвойствоЕслиНет(doc1, "Идентификатор", doc["Идентификатор"]);
+	ВставитьСвойствоЕслиНет(doc1, "Этап", stage);
+	Если attachments.Количество() > 0 Тогда
+		ВставитьСвойствоЕслиНет(doc1, "Вложение", attachments);
+		Попытка
+			local_helper_write_attachment(context.params, doc1);
+		Исключение
+			ИнфОбОшибке = ИнформацияОбОшибке();
+			Возврат Ложь;
+		КонецПопытки;	
+	КонецЕсли;
+	
+	Попытка
+		prepare_result = local_helper_prepare_action(context.params, doc1)
+	Исключение
+		ИнфОбОшибке = ИнформацияОбОшибке();
+		Возврат Ложь;
+	КонецПопытки;
+	
+	Попытка
+		prepared_stage = get_prop(prepare_result,"Этап");
+		execute_action = Новый Соответствие;
+		ВставитьСвойствоЕслиНет(execute_action, "Идентификатор", get_prop(prepare_result,"Идентификатор"));
+		Если prepared_stage = Неопределено Тогда
+			ИнфОбОшибке = ИнформацияОбОшибке(); //Failed to prepare the document stage
+		КонецЕсли;	
+		Если ТипЗнч(prepared_stage) = Тип("Массив") Тогда
+			ВставитьСвойствоЕслиНет(execute_action, "Этап", prepared_stage[0]); 
+		КонецЕсли;	
+		Возврат local_helper_execute_action(context.params, execute_action);
+	Исключение
+		ИнфОбОшибке = ИнформацияОбОшибке();
+		Возврат Ложь;
+	КонецПопытки;	
+КонецФункции
+
+Функция block_saby_execute_action_get_attachment(node, path, context, block_context)
+	attachments = Новый Массив;
+        attachment_types = block_get_mutation(node, "attachment_types");
+        Если не attachment_types = Неопределено Тогда
+            attachment_types = СтрРазделить(attachment_types,",");
+		КонецЕсли;
+		att_index = 0;
+        Для каждого att_type из attachment_types Цикл
+            Если att_type = "att_array" Тогда
+                Попытка
+                    attachment_array = block_context["ATT"+att_index];
+                Исключение
+                    ИнфОбОшибке = ИнформацияОбОшибке(); // не указаны данные вложения
+				КонецПопытки;	
+				Для каждого att из attachment_array Цикл 
+					attachments.Добавить(att);
+				КонецЦикла;
+            ИначеЕсли att_type = "att_b64" Тогда
+                Попытка
+                    attachment_data = block_context["ATT"+att_index+"_DATA"];
+                Исключение
+                    ИнфОбОшибке = ИнформацияОбОшибке(); // не указаны данные вложения
+				КонецПопытки;	
+                attachment_title = get_prop(block_context, "ATT"+att_index+"_TITLE");
+				attachment = Новый Соответствие;
+				ВставитьСвойствоЕслиНет(attachment, "Имя", attachment_title);
+				ВставитьСвойствоЕслиНет(attachment, "ДвоичныеДанные", attachment_data);
+				attachments.append(attachment);
+            Иначе
+                ИнфОбОшибке = ИнформацияОбОшибке(); //неподдерживаемы тип вложения
+			КонецЕсли;	
+		КонецЦикла;		
+        return attachments
+КонецФункции	
+	
