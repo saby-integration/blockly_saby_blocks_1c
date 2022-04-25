@@ -128,7 +128,7 @@
 	context_params.Вставить("session_begin", ТекущаяДата());
 	context_params.Вставить("need_ticket", Истина);
 	НастройкиПодключенияЗаписать(context_params);
-	Возврат result.Получить(session);
+	Возврат session;
 КонецФункции
 
 Функция local_helper_integration_api(context_params, method, params)
