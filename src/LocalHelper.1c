@@ -128,7 +128,7 @@
 	context_params.Вставить("session_begin", ТекущаяДата());
 	context_params.Вставить("need_ticket", Истина);
 	НастройкиПодключенияЗаписать(context_params);
-	Возврат result.Получить(session);
+	Возврат session;
 КонецФункции
 
 Функция local_helper_integration_api(context_params, method, params)
@@ -332,6 +332,21 @@
 	КонецПопытки;
 КонецФункции
 
+Функция local_helper_write_attachment(context, document)
+	Результат	=	local_helper_api(context, "СБИС.ЗаписатьВложение", Новый Структура("Документ", document));
+	Возврат Результат;	
+КонецФункции
+
+Функция local_helper_prepare_action(context, document)
+	Результат	=	local_helper_api(context, "СБИС.ПодготовитьДействие",Новый Структура("Документ", document));
+	Возврат Результат;	
+КонецФункции
+
+Функция local_helper_execute_action(context, document)
+	Результат	=	local_helper_api(context, "СБИС.ВыполнитьДействие",Новый Структура("Документ", document));
+	Возврат Результат;	
+КонецФункции	
+
 Функция РазобратьСтрокуУРЛ(СтрокаАдреса, ПротоколПоУмолчанию = "http")
 	Адрес = Новый Структура("scheme, host, port, resource");
 	Индекс = Найти(СтрокаАдреса, "://");
@@ -468,14 +483,8 @@
 КонецФункции
 
 Функция local_helper_read_version_info(api_url, product_name)
-	Если api_url = Неопределено Тогда
-		prefix = "https://";
-	Иначе
-		prefix = Лев(api_url, Найти(api_url, "."));
-		prefix = Лев(prefix, СтрДлина(prefix) - 7);
-	КонецЕсли;
-	
-	link = prefix + "update0.sbis.ru/1C/" + product_name + ".json";
+	link = get_update_url(api_url, product_name);
+	link = link + product_name +".json";
 	response = local_helper_exec_request("get", link, "json");
 	Если response.code = 200 Тогда
 		Возврат response.result
