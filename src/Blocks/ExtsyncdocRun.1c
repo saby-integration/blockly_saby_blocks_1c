@@ -226,7 +226,7 @@
 		
 		actions = ?(block_context.Свойство("requiredActions"), block_context.requiredActions, Новый Массив );
 		count_actions = actions.Количество(); 
-		Saby_ФоновыеЗаданияСервер.СообщитьПрогресс(,Строка(block_context.all_objects)+" объектов получено, в т.ч. с ошибками "+block_context.count_error);//фз
+		СообщитьПрогрессОперации(,Строка(block_context.all_objects)+" объектов получено, в т.ч. с ошибками "+block_context.count_error);
 		Если count_actions > 0 Тогда
 			
 			objects = Новый Массив;
@@ -303,11 +303,11 @@
 		result = block_extsyncdoc_run_extsyncdoc_read_saby(context, block_context);
 		ТекстСтатуса = "Загружено " + result["CountConfirmed"]+"/"+result["CountObjects"]+", ошибок "+result["CountErrors"];
 		Если result["CountObjects"] > 0 и result["CountObjects"] = (result["CountErrors"] + result["CountConfirmed"] + result["CountProcessed"]) Тогда
-			Saby_ФоновыеЗаданияСервер.СообщитьПрогресс(,ТекстСтатуса);
+			СообщитьПрогрессОперации(, ТекстСтатуса);
 			local_helper_pause(1); // Если не поставить паузу, то сообщение может не успеть долететь и обновить строку состояния выгрузки.
 			Прервать;
 		Иначе			
-			Saby_ФоновыеЗаданияСервер.СообщитьПрогресс(,ТекстСтатуса);
+			СообщитьПрогрессОперации(, ТекстСтатуса);
 			local_helper_pause(1);
 		КонецЕсли;
 	КонецЦикла;
