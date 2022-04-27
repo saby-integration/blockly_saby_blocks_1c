@@ -488,6 +488,13 @@
 	response = local_helper_exec_request("get", link, "json");
 	Если response.code = 200 Тогда
 		Возврат response.result
+	ИначеЕсли response.code = 302 Тогда
+		Если найти(response.result,"Found. Redirecting to ")> 0 Тогда
+			response = local_helper_exec_request("get", Сред(response.result, 23), "json");
+			Если response.code = 200 Тогда
+				Возврат response.result;
+			КонецЕсли;
+		КонецЕсли;	
 	КонецЕсли;
 	ВызватьИсключение NewExtExceptionСтрока(,"Ошибка запроса", response.code,,response.result);
 КонецФункции
