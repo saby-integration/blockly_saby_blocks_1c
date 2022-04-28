@@ -294,6 +294,7 @@
 	extsyncdoc_uuid = "";
 	context.operation.Свойство("operation_uuid", extsyncdoc_uuid);
 	result = local_helper_extsyncdoc_prepare_saby(context.params, extsyncdoc_uuid);
+	//Пробросим ключи с данными статистики для формы длительных операциий
 	Для каждого key_ Из result Цикл
 		block_context.Вставить(key_.Ключ, key_.Значение);
 	КонецЦикла;
@@ -357,7 +358,7 @@
 				block_extsyncdoc_run_command_update(context, block_context, obj, objects)
 			КонецЕсли;
 		КонецЦикла;
-		
+		//Устанавливаем статус маппинга
 		Если objects.Количество() > 0 Тогда
 			res = local_helper_extsyncdoc_write(
 			context.params,
@@ -366,6 +367,7 @@
 			objects
 			);
 		КонецЕсли;
+		//Читаем статистику обмена
 		СтатусЗагрузки = block_extsyncdoc_run_extsyncdoc_read_saby(context, block_context);
 		ТекстСтатуса = "Загружено " + СтатусЗагрузки["CountConfirmed"]+"/"+СтатусЗагрузки["CountObjects"]+", ошибок "+СтатусЗагрузки["CountErrors"];
 		СообщитьПрогрессОперации(, ТекстСтатуса);
