@@ -201,8 +201,8 @@
 	response = local_helper_integration_api(context, "MappingObject.FindAndUpdate", 
 	Новый Структура("Filter, Data", _filter, _data)
 	);
-	Если response.Свойство("result") Тогда
-		Возврат response.result;
+	Если ЗначениеЗаполнено(response) Тогда
+		Возврат response;
 	Иначе
 		//ВызватьИсключение СокрЛП(response);
 		ИнфОбОшибке = ИнформацияОбОшибке();

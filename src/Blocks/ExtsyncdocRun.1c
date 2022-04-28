@@ -11,16 +11,20 @@
 	КонецЕсли;
 	
 	Попытка
-		//result = block_extsyncdoc_run_process_commands_result(context, block_context);
-		result = block_extsyncdoc_run_extsyncdoc_prepare_is(context, block_context);
-		//result = block_extsyncdoc_run_extsyncdoc_prepare_saby(context, block_context);
-		result = block_extsyncdoc_run_extsyncdoc_execute_saby_lrs(context, block_context);
-		//result = block_extsyncdoc_run_extsyncdoc_execute_is(context, block_context);
+		result = block_extsyncdoc_run_extsyncdoc_read_saby(context, block_context);
+		Если result["Direction"] = 1 Тогда //Из 1С в СБИС 
+			result = block_extsyncdoc_run_extsyncdoc_prepare_is(context, block_context);
+			result = block_extsyncdoc_run_extsyncdoc_execute_saby_lrs(context, block_context);
+		ИначеЕсли result["Direction"] = 2 Тогда //Из СБИС в 1С
+			//result = block_extsyncdoc_run_process_commands_result(context, block_context);
+			result = block_extsyncdoc_run_extsyncdoc_prepare_saby(context, block_context);
+			result = block_extsyncdoc_run_extsyncdoc_execute_is(context, block_context);
+		Иначе	
+			//ВызватьИсключение NewExtExceptionСтрока(ИнфОбОшибке,,,,add_block_to_dump(block_context));
+		КонецЕсли;
 	Исключение
 		ИнфОбОшибке	= ИнформацияОбОшибке();
 		ВызватьИсключение NewExtExceptionСтрока(ИнфОбОшибке,,,,add_block_to_dump(block_context));
-		//Block_set_variable(context, "_last_error", ИнформацияОбОшибке().Описание );
-		//Возврат Ложь;
 	КонецПопытки;
 	
 	result = block_extsyncdoc_run_extsyncdoc_read_saby(context, block_context);
@@ -72,24 +76,26 @@
 	block_extsyncdoc_run_process_command_result_read(context, block_context, ext_sync_obj, result, objects); //block_context.objects
 КонецФункции
 
-Функция block_extsyncdoc_run_command_update(context, block_context, ext_sync_obj)
+Функция block_extsyncdoc_run_command_update(context, block_context, ext_sync_obj, objects)
 	Попытка
-		obj = ext_sync_obj.Data.data;
+		obj = ext_sync_obj["Data"]["data"];
 	Исключение
 		ИнфОбОшибке = ИнформацияОбОшибке();
 		ВызватьИсключение(NewExtExceptionСтрока(ИнфОбОшибке, "Объект не содержит необходимый параметр"));
 	КонецПопытки;
-	Возврат block_extsyncdoc_run_add_command_calc_ini(context, block_context, "update", ext_sync_obj, obj);
+	result = block_extsyncdoc_run_add_command_calc_ini(context, block_context, "update", ext_sync_obj, objects);
+	block_extsyncdoc_run_process_command_result_update(context, block_context, ext_sync_obj, result, objects); //block_context.objects
 КонецФункции
 
-Функция block_extsyncdoc_run_command_find(context, block_context, ext_sync_obj)
+Функция block_extsyncdoc_run_command_find(context, block_context, ext_sync_obj, objects)
 	Попытка
-		obj = ext_sync_obj.Data.data;
+		obj = ext_sync_obj["Data"]["data"];
 	Исключение
 		ИнфОбОшибке = ИнформацияОбОшибке();
 		ВызватьИсключение(NewExtExceptionСтрока(ИнфОбОшибке, "Объект не содержит необходимый параметр"));
 	КонецПопытки;
-	Возврат block_extsyncdoc_run_add_command_calc_ini(context, block_context, "find", ext_sync_obj, obj);
+	result = block_extsyncdoc_run_add_command_calc_ini(context, block_context, "find", ext_sync_obj, objects);
+	block_extsyncdoc_run_process_command_result_find(context, block_context, ext_sync_obj, result, objects);
 КонецФункции
 
 Функция block_extsyncdoc_run_add_command_calc_ini(context, block_context, command, ext_sync_obj, obj)
@@ -168,26 +174,27 @@
 КонецПроцедуры
 
 Функция block_extsyncdoc_run_process_command_result_find(context, block_context, command, result, objects)
-	Если result.Свойство("ИдИС") Тогда
-		command.Data.data.Вставить("ИдИС", result.ИдИС);
+	Если get_prop(result["data"], "ИдИС") <> Неопределено Тогда
+		command["Data"]["data"].Вставить("ИдИС", result["data"]["ИдИС"]);
 	КонецЕсли;
-	Возврат block_extsyncdoc_run_command_update(context, block_context, command);
+	Возврат block_extsyncdoc_run_command_update(context, block_context, command, objects);
 КонецФункции
 
 Функция block_extsyncdoc_run_process_command_result_update(context, block_context, command, result, objects)
-	connection_uuid = context.operation.Свойство("connection_uuid");
+	connection_uuid = Неопределено;
+	context.operation.Свойство("connection_uuid", connection_uuid);
 	
-	Если не command.Data.data.Свойство("ИдИС") И result.Свойство("ИдИС") Тогда
+	Если get_prop(command["Data"]["data"], "ИдИС") = Неопределено И get_prop(result["data"], "ИдИС") <> Неопределено Тогда
 		//# записываем идентификатор в маппинг
 		_filter = Новый Структура("ConnectionId, Type, Id, IdType",
 		connection_uuid,
-		command.Data.data.ИмяСБИС,
-		command.Data.data.ИдСБИС,
+		command["Data"]["data"]["ИмяСБИС"],
+		command["Data"]["data"]["ИдСБИС"],
 		1
 		);
 		_data = Новый Структура("ClientId, ClientName",
-		result.ИдИС,
-		result.Название
+		result["data"]["ИдИС"],
+		result["data"]["Название"]
 		);
 		local_helper_mapping_obj_find_and_update(
 		context.params,
@@ -196,7 +203,7 @@
 		);
 		//pass
 	КонецЕсли;
-	objects.Добавить(Новый Структура("Uuid, StatusId",command.Uuid,"Синхронизирован") );
+	objects.Добавить(Новый Структура("Uuid, StatusId",command["Uuid"],"Синхронизирован") );
 КонецФункции
 
 Функция block_extsyncdoc_run_extsyncdoc_prepare_is(context, block_context)
@@ -226,7 +233,7 @@
 		
 		actions = ?(block_context.Свойство("requiredActions"), block_context.requiredActions, Новый Массив );
 		count_actions = actions.Количество(); 
-		СообщитьПрогрессОперации(,Строка(block_context.all_objects)+" объектов получено, в т.ч. с ошибками "+block_context.count_error);
+		СообщитьПрогрессОперации(,Строка(block_context.all_objects)+" объектов получено, в т.ч. с ошибками "+block_context.count_error, Новый Структура("ВсегоОбъектов", block_context.all_objects));
 		Если count_actions > 0 Тогда
 			
 			objects = Новый Массив;
@@ -240,9 +247,9 @@
 					ИначеЕсли НРег(command_[0]) = "getobject" Тогда
 						result = block_extsyncdoc_run_command_getobject(context, block_context, command_[1], objects);
 					ИначеЕсли НРег(command_[0]) = "update" Тогда
-						result = block_extsyncdoc_run_command_update(context, block_context, command_[1]);
+						result = block_extsyncdoc_run_command_update(context, block_context, command_[1], objects);
 					ИначеЕсли НРег(command_[0]) = "find" Тогда
-						result = block_extsyncdoc_run_command_find(context, block_context, command_[1]);
+						result = block_extsyncdoc_run_command_find(context, block_context, command_[1], objects);
 					КонецЕсли;
 				Исключение
 					ИнфОбОшибке = ИнформацияОбОшибке();
@@ -286,7 +293,11 @@
 Функция block_extsyncdoc_run_extsyncdoc_prepare_saby(context, block_context)
 	extsyncdoc_uuid = "";
 	context.operation.Свойство("operation_uuid", extsyncdoc_uuid);
-	Возврат local_helper_extsyncdoc_prepare_saby(context.params, extsyncdoc_uuid);
+	result = local_helper_extsyncdoc_prepare_saby(context.params, extsyncdoc_uuid);
+	Для каждого key_ Из result Цикл
+		block_context.Вставить(key_.Ключ, key_.Значение);
+	КонецЦикла;
+	Возврат result;
 КонецФункции
 
 Функция block_extsyncdoc_run_extsyncdoc_execute_saby(context, block_context)
@@ -315,8 +326,11 @@
 
 Функция block_extsyncdoc_run_extsyncdoc_execute_is(context, block_context)
 	extsyncdoc_uuid = "";
-	context.Свойство("operation_uuid", extsyncdoc_uuid);
+	context.operation.Свойство("operation_uuid", extsyncdoc_uuid);
+	connection_uuid = Неопределено;
+	context.operation.Свойство("connection_uuid", connection_uuid);
 	
+	СообщитьПрогрессОперации(,Строка(block_context.all_objects)+" объектов получено, в т.ч. с ошибками "+block_context.count_error, Новый Структура("ВсегоОбъектов", block_context.all_objects));
 	Пока Истина Цикл
 		block_context.Вставить("prepare_counter", block_context.prepare_counter + 1);
 		Если block_context.prepare_counter >= 3000 Тогда
@@ -327,7 +341,6 @@
 		Попытка
 			result = local_helper_extsyncdoc_get_obj_for_execute(context.params, extsyncdoc_uuid, 2)
 		Исключение 
-			
 			ИнфОбОшибке = ИнформацияОбОшибке();
 			ВызватьИсключение(NewExtExceptionСтрока(ИнфОбОшибке));
 		КонецПопытки;
@@ -336,19 +349,28 @@
 			Возврат Истина;
 		КонецЕсли;
 		
+		objects = Новый Массив;
 		Для Каждого obj Из result Цикл
-			Если Не obj.Всвойство("ИдИС") Тогда
-				block_extsyncdoc_run_command_find(context, block_context, obj)
+			Если get_prop(obj, "ИдИС") = Неопределено Тогда
+				block_extsyncdoc_run_command_find(context, block_context, obj, objects)
 			Иначе
-				block_extsyncdoc_run_command_update(context, block_context, obj)
+				block_extsyncdoc_run_command_update(context, block_context, obj, objects)
 			КонецЕсли;
 		КонецЦикла;
 		
-		
-		
-		ИнфОбОшибке = ИнформацияОбОшибке();
-		ВызватьИсключение(NewExtExceptionСтрока(ИнфОбОшибке,"Превышено количество циклов prepare для операции"));
+		Если objects.Количество() > 0 Тогда
+			res = local_helper_extsyncdoc_write(
+			context.params,
+			connection_uuid,
+			Новый Структура("Uuid", extsyncdoc_uuid),
+			objects
+			);
+		КонецЕсли;
+		СтатусЗагрузки = block_extsyncdoc_run_extsyncdoc_read_saby(context, block_context);
+		ТекстСтатуса = "Загружено " + СтатусЗагрузки["CountConfirmed"]+"/"+СтатусЗагрузки["CountObjects"]+", ошибок "+СтатусЗагрузки["CountErrors"];
+		СообщитьПрогрессОперации(, ТекстСтатуса);
 	КонецЦикла;
+	local_helper_pause(1); //Для прогрузки состояния на форме длительных операций
 КонецФункции
 
 Функция block_extsyncdoc_run_extsyncdoc_read_saby(context, block_context)
