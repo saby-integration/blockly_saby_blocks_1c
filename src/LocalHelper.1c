@@ -516,3 +516,72 @@
     КонецЕсли;
 	
 КонецПроцедуры	
+
+Процедура local_helper_transmit_log(context_params = Неопределено, action_name, action_param, КоличествоОбъектов = 0) Экспорт
+	Если context_params = Неопределено Тогда
+		context_params = Saby_Core.НастройкиПодключенияПрочитать();
+	КонецЕсли;
+	
+	Попытка
+         ПараметрыМетода = Новый Структура("stat", 
+         Новый Структура("service, module, subsystem, action_name, action_param, connection_id, count",
+            context_params.service,
+            ПолучитьНазваниеПродукта(),
+            context_params.subsystem,
+            action_name,
+            action_param,
+            context_params.ConnectionId,
+            КоличествоОбъектов
+        	)
+        );
+        
+        РезультатПередачи = local_helper_exec_method(
+		context_params,
+		Новый Структура("url, method, params, auto_auth",
+			context_params.api_url+"/integration_config/service/",
+			"API3.WriteStat",
+			ПараметрыМетода,
+			Ложь,
+			)
+		);	
+	Исключение
+		ИнфОбОшибке = ИнформацияОбОшибке();
+	КонецПопытки;
+         
+КонецПроцедуры
+
+Процедура local_helper_transmit_error(context_params = Неопределено, action_name, action_param, error_name, error_detail, data, code, КоличествоОбъектов = 0) Экспорт
+	Если context_params = Неопределено Тогда
+		context_params = Saby_Core.НастройкиПодключенияПрочитать();
+	КонецЕсли;
+	
+	Попытка
+         ПараметрыМетода = Новый Структура("error",
+         Новый Структура("service, module, subsystem, action_name, action_param, error_name, error_detail, data, code, count",
+            context_params.service,
+            ПолучитьНазваниеПродукта(),
+            context_params.subsystem,
+            action_name,
+            action_param,
+            error_name,
+            error_detail,
+            data,
+            code,
+            КоличествоОбъектов
+        	)
+        );
+		РезультатПередачи = local_helper_exec_method(
+		context_params,
+		Новый Структура("url, method, params, auto_auth",
+			context_params.api_url+"/integration_config/service/",
+			"API3.WriteError",
+			ПараметрыМетода,
+			Ложь,
+			)
+		);	
+	Исключение
+		ИнфОбОшибке = ИнформацияОбОшибке();
+	КонецПопытки;
+         
+КонецПроцедуры
+
