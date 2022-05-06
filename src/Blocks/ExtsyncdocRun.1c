@@ -233,7 +233,7 @@
 		
 		actions = ?(block_context.Свойство("requiredActions"), block_context.requiredActions, Новый Массив );
 		count_actions = actions.Количество(); 
-		СообщитьПрогрессОперации(,Строка(block_context.all_objects)+" объектов получено, в т.ч. с ошибками "+block_context.count_error);
+		СообщитьПрогрессОперации(,Строка(block_context.all_objects)+" объектов получено, в т.ч. с ошибками "+block_context.count_error, Новый Структура("ВсегоОбъектов", block_context.all_objects));
 		Если count_actions > 0 Тогда
 			
 			objects = Новый Массив;
@@ -331,7 +331,7 @@
 	connection_uuid = Неопределено;
 	context.operation.Свойство("connection_uuid", connection_uuid);
 	
-	СообщитьПрогрессОперации(,Строка(block_context.all_objects)+" объектов получено, в т.ч. с ошибками "+block_context.count_error);
+	СообщитьПрогрессОперации(,Строка(block_context.all_objects)+" объектов получено, в т.ч. с ошибками "+block_context.count_error, Новый Структура("ВсегоОбъектов", block_context.all_objects));
 	Пока Истина Цикл
 		block_context.Вставить("prepare_counter", block_context.prepare_counter + 1);
 		Если block_context.prepare_counter >= 3000 Тогда
