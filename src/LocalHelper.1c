@@ -128,7 +128,7 @@
 	context_params.Вставить("session_begin", ТекущаяДата());
 	context_params.Вставить("need_ticket", Истина);
 	НастройкиПодключенияЗаписать(context_params);
-	Возврат result.Получить(session);
+	Возврат session;
 КонецФункции
 
 Функция local_helper_integration_api(context_params, method, params)
@@ -332,6 +332,21 @@
 	КонецПопытки;
 КонецФункции
 
+Функция local_helper_write_attachment(context, document)
+	Результат	=	local_helper_api(context, "СБИС.ЗаписатьВложение", Новый Структура("Документ", document));
+	Возврат Результат;	
+КонецФункции
+
+Функция local_helper_prepare_action(context, document)
+	Результат	=	local_helper_api(context, "СБИС.ПодготовитьДействие",Новый Структура("Документ", document));
+	Возврат Результат;	
+КонецФункции
+
+Функция local_helper_execute_action(context, document)
+	Результат	=	local_helper_api(context, "СБИС.ВыполнитьДействие",Новый Структура("Документ", document));
+	Возврат Результат;	
+КонецФункции	
+
 Функция РазобратьСтрокуУРЛ(СтрокаАдреса, ПротоколПоУмолчанию = "http")
 	Адрес = Новый Структура("scheme, host, port, resource");
 	Индекс = Найти(СтрокаАдреса, "://");
@@ -468,17 +483,18 @@
 КонецФункции
 
 Функция local_helper_read_version_info(api_url, product_name)
-	Если api_url = Неопределено Тогда
-		prefix = "https://";
-	Иначе
-		prefix = Лев(api_url, Найти(api_url, "."));
-		prefix = Лев(prefix, СтрДлина(prefix) - 7);
-	КонецЕсли;
-	
-	link = prefix + "update0.sbis.ru/1C/" + product_name + ".json";
+	link = get_update_url(api_url, product_name);
+	link = link + product_name +".json";
 	response = local_helper_exec_request("get", link, "json");
 	Если response.code = 200 Тогда
 		Возврат response.result
+	ИначеЕсли response.code = 302 Тогда
+		Если найти(response.result,"Found. Redirecting to ")> 0 Тогда
+			response = local_helper_exec_request("get", Сред(response.result, 23), "json");
+			Если response.code = 200 Тогда
+				Возврат response.result;
+			КонецЕсли;
+		КонецЕсли;	
 	КонецЕсли;
 	ВызватьИсключение NewExtExceptionСтрока(,"Ошибка запроса", response.code,,response.result);
 КонецФункции
@@ -500,3 +516,73 @@
     КонецЕсли;
 	
 КонецПроцедуры	
+
+//Передача ошибок и статуса выполнения на сервер статистик
+Процедура local_helper_write_stat(context_params = Неопределено, action_name, action_param, КоличествоОбъектов = 0) Экспорт
+	Если context_params = Неопределено Тогда
+		context_params = Saby_Core.НастройкиПодключенияПрочитать();
+	КонецЕсли;
+	
+	Попытка
+         ПараметрыМетода = Новый Структура("stat", 
+         Новый Структура("service, module, subsystem, action_name, action_param, connection_id, count",
+            context_params.service,
+            ПолучитьНазваниеПродукта(),
+            context_params.subsystem,
+            action_name,
+            action_param,
+            context_params.ConnectionId,
+            КоличествоОбъектов
+        	)
+        );
+        
+        РезультатПередачи = local_helper_exec_method(
+		context_params,
+		Новый Структура("url, method, params, auto_auth",
+			context_params.api_url+"/integration_config/service/",
+			"API3.WriteStat",
+			ПараметрыМетода,
+			Ложь,
+			)
+		);	
+	Исключение
+		ИнфОбОшибке = ИнформацияОбОшибке();
+	КонецПопытки;
+         
+КонецПроцедуры
+
+Процедура local_helper_write_error(context_params = Неопределено, action_name, action_param, error_name, error_detail, data, code, КоличествоОбъектов = 0) Экспорт
+	Если context_params = Неопределено Тогда
+		context_params = Saby_Core.НастройкиПодключенияПрочитать();
+	КонецЕсли;
+	
+	Попытка
+         ПараметрыМетода = Новый Структура("error",
+         Новый Структура("service, module, subsystem, action_name, action_param, error_name, error_detail, data, code, count",
+            context_params.service,
+            ПолучитьНазваниеПродукта(),
+            context_params.subsystem,
+            action_name,
+            action_param,
+            error_name,
+            error_detail,
+            data,
+            code,
+            КоличествоОбъектов
+        	)
+        );
+		РезультатПередачи = local_helper_exec_method(
+		context_params,
+		Новый Структура("url, method, params, auto_auth",
+			context_params.api_url+"/integration_config/service/",
+			"API3.WriteError",
+			ПараметрыМетода,
+			Ложь,
+			)
+		);	
+	Исключение
+		ИнфОбОшибке = ИнформацияОбОшибке();
+	КонецПопытки;
+         
+КонецПроцедуры
+

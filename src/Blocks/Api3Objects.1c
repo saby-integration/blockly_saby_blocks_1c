@@ -3,7 +3,7 @@
 	param.Вставить("ТипСБИС", ТипСБИС);
 	param.Вставить("ИмяСБИС", ИмяСБИС);
 	Для каждого Поле из block_context цикл
-		Если лев(Поле.Ключ,1) <> "_" Тогда
+		Если лев(Поле.Ключ,1) <> "_" и не Поле.Значение = Неопределено Тогда
 			param.Вставить(Поле.Ключ, Поле.Значение);
 		КонецЕсли;
 	КонецЦикла;
@@ -103,10 +103,10 @@
 #Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3Predefined
 #КонецОбласти
 
-#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3OvertimeEmployee
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3Overtime
 #КонецОбласти
 
-#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3TimesheetTag
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3TimesheetsTag
 #КонецОбласти
 
 #Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3Leaveschedule
@@ -115,4 +115,12 @@
 #Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3LeavescheduleTable
 #КонецОбласти
 
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3ContactType
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3CadresOther
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3AccrualType
+#КонецОбласти
 
