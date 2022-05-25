@@ -19,8 +19,10 @@
 	ИначеЕсли operation = "to_string" Тогда
 		Если значениеЗаполнено(format_string) Тогда
 			result = Формат(value, format_string);
+		Иначе
+			result = Строка(value);	
 		КонецЕсли;
-		ВставитьСвойствоЕслиНет(block_context, "result", Строка(value));
+		ВставитьСвойствоЕслиНет(block_context, "result", result);
 	КонецЕсли;	
 	Возврат block_context["result"];
 КонецФункции
