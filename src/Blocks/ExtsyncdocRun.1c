@@ -101,7 +101,12 @@
 Функция block_extsyncdoc_run_add_command_calc_ini(context, block_context, command, ext_sync_obj, obj)
 	//obj_name = СтрЗаменить(ext_sync_obj["Data"]["ini_name"], "Данные_","");
 	//obj_name = СтрЗаменить(obj_name, "СинхВыгрузка_","");
-	type_list = СтрРазделить(ext_sync_obj["Type"],".");
+	Если get_prop(ext_sync_obj, "ClientType") <> Неопределено Тогда
+		Type = "ClientType";
+	Иначе
+		Type = "Type";
+	КонецЕсли;
+	type_list = СтрРазделить(ext_sync_obj[Type],".");
 	obj_name = type_list[type_list.Количество() - 1];
 	
 	ini_name = obj_name+"_"+command;
@@ -146,7 +151,7 @@
 		Новый Структура("ClientId,Id,Type,StatusId,Action,Data",
 		result["ИдИС"],
 		result["ИдИС"],
-		result["ТипИС"]+"."+result["ИмяИС"],
+		ext_sync_obj.Получить("Type"),
 		"Получен",
 		1,
 		Новый Структура("ini_name,data_is,subobject,name",

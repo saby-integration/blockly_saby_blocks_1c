@@ -84,10 +84,11 @@
 		//obj.Свойство("ini_name", ini_name);
 		//# await update_ini(self.executor, context, ini_name)
 		_object = Новый Структура(
-		"Id, Action, Title, Type, ClientId, Data, StatusId",
+		"Id, Action, Title, Type, ClientType, ClientId, Data, StatusId",
 		_id,
 		direction,
 		?(obj.Свойство("Название"), obj.Название, _id),
+		obj.ТипИС+"."+obj.ИмяИС,
 		obj.ТипИС+"."+obj.ИмяИС,
 		_id,
 		Новый Структура( "_print_forms", get_prop(obj, "_print_forms")
