@@ -520,7 +520,7 @@
 //Передача ошибок и статуса выполнения на сервер статистик
 Процедура local_helper_write_stat(context_params = Неопределено, action_name, action_param, КоличествоОбъектов = 0) Экспорт
 	Если context_params = Неопределено Тогда
-		context_params = Saby_Core.НастройкиПодключенияПрочитать();
+		context_params = НастройкиПодключенияПрочитать();
 	КонецЕсли;
 	
 	Попытка
@@ -553,7 +553,7 @@
 
 Процедура local_helper_write_error(context_params = Неопределено, action_name, action_param, error_name, error_detail, data, code, КоличествоОбъектов = 0) Экспорт
 	Если context_params = Неопределено Тогда
-		context_params = Saby_Core.НастройкиПодключенияПрочитать();
+		context_params = НастройкиПодключенияПрочитать();
 	КонецЕсли;
 	
 	Попытка
