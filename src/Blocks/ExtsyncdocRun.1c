@@ -148,9 +148,10 @@
 		КонецПопытки;
 		
 		objects.Добавить(
-		Новый Структура("ClientId,Id,Type,StatusId,Action,Data",
+		Новый Структура("ClientId,Id,Type,ClientType,StatusId,Action,Data",
 		result["ИдИС"],
 		result["ИдИС"],
+		ext_sync_obj.Получить("Type"),
 		ext_sync_obj.Получить("ClientType"),
 		"Получен",
 		1,
