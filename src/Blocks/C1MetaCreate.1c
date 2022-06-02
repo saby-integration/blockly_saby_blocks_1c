@@ -2,9 +2,12 @@
 	type = block_c1_meta_create_get_node_field(node);
 	subtype = block_c1_meta_create_get_node_subtype(node);
 	res = block_execute_all_next(subtype, path + "." + "main", context, block_context);
-	НовыйОбъект = Новый (type + "Менеджер" + "." + res);
 	Если type = "Документ" Тогда
+		НовыйОбъект = Новый (type + "Менеджер" + "." + res);
 		Возврат НовыйОбъект.СоздатьДокумент();
+	ИначеЕсли type = "Справочник" Тогда
+		НовыйОбъект = Новый (type + "Менеджер" + "." + res);
+		Возврат НовыйОбъект.СоздатьЭлемент();
 	Иначе
 		ВызватьИсключение NewExtExceptionСтрока(,"Не реализовано создание объекта",type,,add_block_to_dump(block_context))
 	КонецЕсли;	
