@@ -2,6 +2,7 @@
 Функция	saby_extsyncobj_list_items(context, block_context)
 	extsyncdoc_uuid = context.operation.operation_uuid;
 	extra_fields = Новый Массив;
+	extra_fields.Добавить("ClientType");
 
 	filter = Новый Структура("SyncDocId", extsyncdoc_uuid);
 	
