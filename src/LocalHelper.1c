@@ -347,6 +347,11 @@
 	Возврат Результат;	
 КонецФункции	
 
+Функция local_helper_find_sbis_object(context, type, filter)
+	Результат	=	local_helper_api(context, "API3.FindSbisObject",Новый Структура("Type, Filter", type, filter));
+	Возврат Результат;
+КонецФункции
+
 Функция РазобратьСтрокуУРЛ(СтрокаАдреса, ПротоколПоУмолчанию = "http")
 	Адрес = Новый Структура("scheme, host, port, resource");
 	Индекс = Найти(СтрокаАдреса, "://");
