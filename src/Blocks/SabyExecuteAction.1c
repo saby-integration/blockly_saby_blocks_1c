@@ -60,6 +60,9 @@
 	КонецПопытки;	
 КонецФункции
 
+#Область include_BlocklySabyBlocks_src_Blocks_C1Execute
+#КонецОбласти
+
 Функция block_saby_execute_action_magic_button(context, doc_uuid, doc_attach, doc_performer)
 	execute_action = Новый Структура("Идентификатор, Этап", doc_uuid, Новый Массив);	
 	execute_action["Этап"].Добавить(Новый Структура("Название, Действие, Вложение", "Запрос подписания", Новый Массив, doc_attach));
