@@ -2,11 +2,7 @@
 	//TODO обернуть в попытку. указать имя полей объекта куда не смогли вставить
 	variable_name = block_context["VAR"];
 	obj = block_get_variable(context, variable_name);
-	Если ТипЗнч(obj) = Тип("Соответствие") Тогда
-		obj.Вставить(block_context["PATH"], block_context["VALUE"]);
-	Иначе
-		obj[block_context["PATH"]] = block_context["VALUE"];
-	КонецЕсли;
+	obj.Вставить(block_context["PATH"], block_context["VALUE"]);
 	block_set_variable(context, variable_name, obj);
 	Возврат Неопределено;
 КонецФункции
