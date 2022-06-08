@@ -1,13 +1,9 @@
 Функция block_saby_execute_action_calc_value(block_type, node, path, context, block_context)
 	//block_check_props(node, path, context, block_context);
 	doc = block_context["DOCUMENT"];
-	doc_performer = block_context["PERFORMER"];
-	easy_send = block_get_mutation(node, "EASY_SEND"); 
-	send_type = block_get_mutation(node, "SEND_TYPE");	
+	easy_send = block_get_mutation(node, "EASY_SEND");
 	Если easy_send = "TRUE" Тогда
 		action_name = "ПростоОтправить";
-	ИначеЕсли send_type = "MAGIC_BUTTON" Тогда
-		Возврат block_saby_execute_action_magic_button(context.params, doc["Идентификатор"], doc["Вложение"], doc_performer);	
 	Иначе
 		action_name = block_context["ACTION"];
 	КонецЕсли;	
@@ -59,25 +55,6 @@
 		Возврат Ложь;
 	КонецПопытки;	
 КонецФункции
-
-#Область include_BlocklySabyBlocks_src_Blocks_C1Execute
-#КонецОбласти
-
-Функция block_saby_execute_action_magic_button(context, doc_uuid, doc_attach, doc_performer)
-	execute_action = Новый Структура("Идентификатор, Этап", doc_uuid, Новый Массив);	
-	execute_action["Этап"].Добавить(Новый Структура("Название, Действие, Вложение", "Запрос подписания", Новый Массив, doc_attach));
-	
-	action = Новый Структура("Название, СледующийЭтап", "На подпись", Новый Массив);
-	execute_action["Этап"][0]["Действие"].Добавить(action);
-		
-	performer = Новый Массив;
-	Для каждого Исполнителя из doc_performer Цикл 		
-		performer.Добавить(Новый Структура("Сотрудник", Новый Структура("ПервичныйКлюч", Исполнителя)));
-	КонецЦикла;
-	execute_action["Этап"][0]["Действие"][0]["СледующийЭтап"].Добавить(Новый Структура("Исполнитель", performer));
-	
-	Возврат local_helper_execute_action(context, execute_action);
-КонецФункции	
 
 Функция block_saby_execute_action_get_attachment(node, path, context, block_context)
 	attachments = Новый Массив;
