@@ -134,38 +134,73 @@
 		//Если ЗначениеЗаполнено(result) И НЕ ЗначениеЗаполнено(get_prop(ext_sync_obj,"Uuid")) Тогда
 		//	Возврат;
 		//КонецЕсли;
-		Попытка
-			ПроверитьНаличиеОбязательныхПараметров(result, "ИдИС,ТипИС,ИмяИС,Название", ext_sync_obj["Type"]+" "+get_prop(ext_sync_obj,"Title",ext_sync_obj["ClientId"]));
-		Исключение
-			ИнфОбОшибке = ИнформацияОбОшибке();
-			ОшибкаСтруктура = NewExtExceptionСтруктура(ИнфОбОшибке);
-			_data = ext_sync_obj;
-			_data.Вставить("Title", ОшибкаСтруктура.detail);
-			_data.Вставить("StatusId", "Ошибка");
-			_data.Вставить("StatusMsg", ОшибкаСтруктура.message);
-			_data.Вставить("Data", 
-			Новый Структура("error", ОшибкаСтруктура));
-			objects.Добавить(_data);
-			Возврат;
-		КонецПопытки;
-		
-		objects.Добавить(
-		Новый Структура("ClientId,Id,Type,ClientType,StatusId,Action,Data",
-		result["ИдИС"],
-		result["ИдИС"],
-		ext_sync_obj.Получить("Type"),
-		ext_sync_obj.Получить("ClientType"),
-		"Получен",
-		1,
-		Новый Структура("ini_name,data_is,subobject,name",
-		ext_sync_obj["Data"]["ini_name"],
-		result,
-		ext_sync_obj["Data"]["subobject"],
-		result.Получить("Название")
-		),
-		)
-		);
-		
+		Если ТипЗнч(result) = Тип("Массив") Тогда
+			Для каждого _result из result Цикл
+				Попытка
+					ПроверитьНаличиеОбязательныхПараметров(_result, "ИдИС,ТипИС,ИмяИС,Название", ext_sync_obj["Type"]+" "+get_prop(ext_sync_obj,"Title",ext_sync_obj["ClientId"]));
+				Исключение
+					ИнфОбОшибке = ИнформацияОбОшибке();
+					ОшибкаСтруктура = NewExtExceptionСтруктура(ИнфОбОшибке);
+					_data = ext_sync_obj;
+					_data.Вставить("Title", ОшибкаСтруктура.detail);
+					_data.Вставить("StatusId", "Ошибка");
+					_data.Вставить("StatusMsg", ОшибкаСтруктура.message);
+					_data.Вставить("Data", 
+					Новый Структура("error", ОшибкаСтруктура));
+					objects.Добавить(_data);
+					Возврат;
+				КонецПопытки;
+				
+				objects.Добавить(
+				Новый Структура("ClientId,Id,Type,ClientType,StatusId,Action,Data",
+				_result["ИдИС"],
+				_result["ИдИС"],
+				ext_sync_obj.Получить("Type"),
+				ext_sync_obj.Получить("ClientType"),
+				"Получен",
+				1,
+				Новый Структура("ini_name,data_is,subobject,name",
+				ext_sync_obj["Data"]["ini_name"],
+				_result,
+				ext_sync_obj["Data"]["subobject"],
+				_result.Получить("Название")
+				),
+				)
+				);	
+			КонецЦикла;	
+		Иначе	
+			Попытка
+				ПроверитьНаличиеОбязательныхПараметров(result, "ИдИС,ТипИС,ИмяИС,Название", ext_sync_obj["Type"]+" "+get_prop(ext_sync_obj,"Title",ext_sync_obj["ClientId"]));
+			Исключение
+				ИнфОбОшибке = ИнформацияОбОшибке();
+				ОшибкаСтруктура = NewExtExceptionСтруктура(ИнфОбОшибке);
+				_data = ext_sync_obj;
+				_data.Вставить("Title", ОшибкаСтруктура.detail);
+				_data.Вставить("StatusId", "Ошибка");
+				_data.Вставить("StatusMsg", ОшибкаСтруктура.message);
+				_data.Вставить("Data", 
+				Новый Структура("error", ОшибкаСтруктура));
+				objects.Добавить(_data);
+				Возврат;
+			КонецПопытки;
+			
+			objects.Добавить(
+			Новый Структура("ClientId,Id,Type,ClientType,StatusId,Action,Data",
+			result["ИдИС"],
+			result["ИдИС"],
+			ext_sync_obj.Получить("Type"),
+			ext_sync_obj.Получить("ClientType"),
+			"Получен",
+			1,
+			Новый Структура("ini_name,data_is,subobject,name",
+			ext_sync_obj["Data"]["ini_name"],
+			result,
+			ext_sync_obj["Data"]["subobject"],
+			result.Получить("Название")
+			),
+			)
+			);
+		КонецЕсли;	
 	ИначеЕсли result.status = "error" Тогда
 		ОшибкаСтруктура= result["data"];
 		мОписаниеОшибки	= Новый Массив();
