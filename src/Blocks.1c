@@ -56,6 +56,8 @@
 #Область include_BlocklySabyBlocks_src_Blocks_SabyExecuteAction
 #КонецОбласти
 
+#Область include_BlocklySabyBlocks_src_Blocks_SabyFind
+#КонецОбласти
 
 #Область include_BlocklySabyBlocks_src_Blocks_C1Execute
 #КонецОбласти

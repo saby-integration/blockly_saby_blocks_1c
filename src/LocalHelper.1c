@@ -347,6 +347,11 @@
 	Возврат Результат;	
 КонецФункции	
 
+Функция local_helper_find_sbis_object(context, type, filter)
+	Результат	=	local_helper_api(context, "API3.FindSbisObject",Новый Структура("Type, Filter", type, filter));
+	Возврат Результат;
+КонецФункции
+
 Функция РазобратьСтрокуУРЛ(СтрокаАдреса, ПротоколПоУмолчанию = "http")
 	Адрес = Новый Структура("scheme, host, port, resource");
 	Индекс = Найти(СтрокаАдреса, "://");
@@ -516,3 +521,73 @@
     КонецЕсли;
 	
 КонецПроцедуры	
+
+//Передача ошибок и статуса выполнения на сервер статистик
+Процедура local_helper_write_stat(context_params = Неопределено, action_name, action_param, КоличествоОбъектов = 0) Экспорт
+	Если context_params = Неопределено Тогда
+		context_params = НастройкиПодключенияПрочитать();
+	КонецЕсли;
+	
+	Попытка
+         ПараметрыМетода = Новый Структура("stat", 
+         Новый Структура("service, module, subsystem, action_name, action_param, connection_id, count",
+            context_params.service,
+            ПолучитьНазваниеПродукта(),
+            context_params.subsystem,
+            action_name,
+            action_param,
+            context_params.ConnectionId,
+            КоличествоОбъектов
+        	)
+        );
+        
+        РезультатПередачи = local_helper_exec_method(
+		context_params,
+		Новый Структура("url, method, params, auto_auth",
+			context_params.api_url+"/integration_config/service/",
+			"API3.WriteStat",
+			ПараметрыМетода,
+			Ложь,
+			)
+		);	
+	Исключение
+		ИнфОбОшибке = ИнформацияОбОшибке();
+	КонецПопытки;
+         
+КонецПроцедуры
+
+Процедура local_helper_write_error(context_params = Неопределено, action_name, action_param, error_name, error_detail, data, code, КоличествоОбъектов = 0) Экспорт
+	Если context_params = Неопределено Тогда
+		context_params = НастройкиПодключенияПрочитать();
+	КонецЕсли;
+	
+	Попытка
+         ПараметрыМетода = Новый Структура("error",
+         Новый Структура("service, module, subsystem, action_name, action_param, error_name, error_detail, data, code, count",
+            context_params.service,
+            ПолучитьНазваниеПродукта(),
+            context_params.subsystem,
+            action_name,
+            action_param,
+            error_name,
+            error_detail,
+            data,
+            code,
+            КоличествоОбъектов
+        	)
+        );
+		РезультатПередачи = local_helper_exec_method(
+		context_params,
+		Новый Структура("url, method, params, auto_auth",
+			context_params.api_url+"/integration_config/service/",
+			"API3.WriteError",
+			ПараметрыМетода,
+			Ложь,
+			)
+		);	
+	Исключение
+		ИнфОбОшибке = ИнформацияОбОшибке();
+	КонецПопытки;
+         
+КонецПроцедуры
+
