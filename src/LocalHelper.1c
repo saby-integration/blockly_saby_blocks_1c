@@ -61,13 +61,17 @@
 			type_request = "post";
 		КонецЕсли;
 		local_helper_add_auth_header(context_params, headers);
-		code_result = local_helper_exec_request(type_request, url, response_type, Новый Структура("params, data, headers", params, data, headers));
+		Параметры_exec_request	= Новый Структура("params, data, headers", params, data, headers);
+		Если context_params.Свойство("proxy") Тогда
+			Параметры_exec_request.Вставить("proxy", context_params.proxy);
+		КонецЕсли;	
+		code_result = local_helper_exec_request(type_request, url, response_type, Параметры_exec_request);
 		Если code_result.code = 401 Тогда
 			Если	kwargs.Свойство("auto_auth")
 				И	kwargs.auto_auth Тогда
 				local_helper_auth_by_login(context_params);
 				local_helper_add_auth_header(context_params, headers);			
-				code_result = local_helper_exec_request(type_request, url, response_type, Новый Структура("params, data, headers", params, data, headers));
+				code_result = local_helper_exec_request(type_request, url, response_type, Параметры_exec_request);
 			КонецЕсли;
 		КонецЕсли;
 		Если code_result.code = 401 Тогда
@@ -487,15 +491,19 @@
 	Возврат Результат;
 КонецФункции
 
-Функция local_helper_read_version_info(api_url, product_name)
+Функция local_helper_read_version_info(api_url, product_name, context_param)
 	link = get_update_url(api_url, product_name);
 	link = link + product_name +".json";
-	response = local_helper_exec_request("get", link, "json");
+	Параметры_exec_request	= Новый Структура;
+	Если context_param.Свойство("proxy") Тогда
+		Параметры_exec_request.Вставить("proxy", context_param.proxy);
+	КонецЕсли;
+	response = local_helper_exec_request("get", link, "json", Параметры_exec_request);
 	Если response.code = 200 Тогда
 		Возврат response.result
 	ИначеЕсли response.code = 302 Тогда
 		Если найти(response.result,"Found. Redirecting to ")> 0 Тогда
-			response = local_helper_exec_request("get", Сред(response.result, 23), "json");
+			response = local_helper_exec_request("get", Сред(response.result, 23), "json", Параметры_exec_request);
 			Если response.code = 200 Тогда
 				Возврат response.result;
 			КонецЕсли;
