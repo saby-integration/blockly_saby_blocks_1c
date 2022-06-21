@@ -151,10 +151,12 @@
 					Возврат;
 				КонецПопытки;
 				
+				ИдИС = ?(result.Найти(_result) = 0, ext_sync_obj["ClientId"],_result["ИдИС"]); 
+				
 				objects.Добавить(
 				Новый Структура("ClientId,Id,Type,ClientType,StatusId,Action,Data",
-				_result["ИдИС"],
-				_result["ИдИС"],
+				ИдИС,
+				ИдИС,
 				ext_sync_obj.Получить("Type"),
 				ext_sync_obj.Получить("ClientType"),
 				"Получен",
