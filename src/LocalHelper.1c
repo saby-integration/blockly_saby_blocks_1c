@@ -60,14 +60,19 @@
 		Если Не kwargs.Свойство("type", type_request) Тогда
 			type_request = "post";
 		КонецЕсли;
+		ПараметрыВыполнения	=	Новый Структура("params, data, headers", params, data, headers);
+		Если context_params.Свойство("Proxy") Тогда
+			ПараметрыВыполнения.Вставить("Proxy", context_params.Proxy);
+		КонецЕсли;         
+		
 		local_helper_add_auth_header(context_params, headers);
-		code_result = local_helper_exec_request(type_request, url, response_type, Новый Структура("params, data, headers", params, data, headers));
+		code_result = local_helper_exec_request(type_request, url, response_type, ПараметрыВыполнения);
 		Если code_result.code = 401 Тогда
 			Если	kwargs.Свойство("auto_auth")
 				И	kwargs.auto_auth Тогда
 				local_helper_auth_by_login(context_params);
 				local_helper_add_auth_header(context_params, headers);			
-				code_result = local_helper_exec_request(type_request, url, response_type, Новый Структура("params, data, headers", params, data, headers));
+				code_result = local_helper_exec_request(type_request, url, response_type, ПараметрыВыполнения);
 			КонецЕсли;
 		КонецЕсли;
 		Если code_result.code = 401 Тогда
@@ -221,7 +226,7 @@
 // response_type: json, text, binary (в ответе будет лежать имя временного файла)
 
 Функция local_helper_exec_request(request_type, Знач request_url, response_type, __kwargs = Неопределено)
-	Перем ИмяФайлаОтвета, proxy, proxy_param, ssl, headers;
+	Перем ИмяФайлаОтвета, Proxy, ProxyParam, ssl, headers;
 	
 	Адрес = РазобратьСтрокуУРЛ(request_url);
 	
@@ -237,9 +242,9 @@
 	Если Адрес.scheme = "https" Тогда
 		ssl = Новый ЗащищенноеСоединениеOpenSSL();
 	КонецЕсли;
-	Если kwargs.Свойство("proxy", proxy_param) Тогда
-		proxy = Новый ИнтернетПрокси;
-		proxy.Установить(proxy_param.protocol, proxy_param.server, Число(proxy_param.port), proxy_param.user, proxy_param.password);
+	Если kwargs.Свойство("Proxy", ProxyParam) Тогда
+		Proxy = Новый ИнтернетПрокси;
+		Proxy.Установить(ProxyParam.Protocol, ProxyParam.Server, Число(ProxyParam.Port), ProxyParam.User, ProxyParam.Password);
 	КонецЕсли;
 	
 	Если Не kwargs.Свойство("headers", headers) Тогда
@@ -247,7 +252,7 @@
 	КонецЕсли;
 	
 	Попытка
-		http_connection = Новый HTTPСоединение(Адрес.host, Адрес.port,,,proxy,,ssl);
+		http_connection = Новый HTTPСоединение(Адрес.host, Адрес.port,,,Proxy,,ssl);
 		http_request	= Новый HTTPЗапрос(Адрес.resource, headers);
 		Если request_type = "post" Тогда
 			http_request.УстановитьТелоИзСтроки(kwargs.data, "UTF-8");
@@ -487,10 +492,11 @@
 	Возврат Результат;
 КонецФункции
 
-Функция local_helper_read_version_info(api_url, product_name)
+Функция local_helper_read_version_info(api_url, product_name, context_param)
 	link = get_update_url(api_url, product_name);
 	link = link + product_name +".json";
-	response = local_helper_exec_request("get", link, "json");
+	
+	response = local_helper_exec_request("get", link, "json", context_param);
 	Если response.code = 200 Тогда
 		Возврат response.result
 	ИначеЕсли response.code = 302 Тогда
