@@ -7,6 +7,12 @@
 	Если easy_send = "TRUE" Тогда
 		action_name = "ПростоОтправить";
 	ИначеЕсли send_type = "MAGIC_BUTTON" Тогда
+		Если doc["Вложение"] = Неопределено или doc["Вложение"].Количество() = 0 Тогда
+			ВызватьИсключение NewExtExceptionСтрока(,"Отсутствуют вложения. "+ doc["Название"], "execute_action");	
+		КонецЕсли;
+		Если doc_performer.Количество() = 0 Тогда
+			ВызватьИсключение NewExtExceptionСтрока(,"Не выбраны сотрудники для подписания или отсутствуют в СБИС. "+ doc["Название"], "execute_action");	
+		КонецЕсли;
 		Возврат block_saby_execute_action_magic_button(context.params, doc["Идентификатор"], doc["Вложение"], doc_performer);	
 	Иначе
 		action_name = block_context["ACTION"];
