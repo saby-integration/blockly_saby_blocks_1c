@@ -72,9 +72,14 @@
 		КонецЕсли;
 		Если code_result.code = 401 Тогда
 			ВызватьИсключение NewExtExceptionСтрока(,"Не верный логин или пароль",,,,"Unauthorized" );
+		ИначеЕсли	(code_result.code = 200 или code_result.code = 500) И code_result.result.Получить("error") <> Неопределено Тогда
+			//ПОЧЕМУ код - 200, при classid = "{00000000-0000-0000-0000-1FA000001002}
+			//https://sbis.ru/help/integration/api/all_methods/auth_one
+			//Требуется подтверждение телефона или подтверждение СМС
+			msg = code_result.result["error"]["message"];
+			ВызватьИсключение NewExtExceptionСтрока(  ,msg, code_result.result );
 		ИначеЕсли	code_result.result.Получить("error") <> Неопределено
-			И	(	code_result.code = 500
-			Или	code_result.code = 501
+			И (code_result.code = 501
 			Или	code_result.code = 404
 			Или	code_result.code = 200) Тогда
 			_details = Неопределено;
