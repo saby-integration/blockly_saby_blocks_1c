@@ -506,24 +506,6 @@
 	Возврат Результат;
 КонецФункции
 
-Функция local_helper_read_version_info(api_url, product_name, context_param)
-	link = get_update_url(api_url, product_name);
-	link = link + product_name +".json";
-	
-	response = local_helper_exec_request("get", link, "json", context_param);
-	Если response.code = 200 Тогда
-		Возврат response.result
-	ИначеЕсли response.code = 302 Тогда
-		Если найти(response.result,"Found. Redirecting to ")> 0 Тогда
-			response = local_helper_exec_request("get", Сред(response.result, 23), "json");
-			Если response.code = 200 Тогда
-				Возврат response.result;
-			КонецЕсли;
-		КонецЕсли;	
-	КонецЕсли;
-	ВызватьИсключение NewExtExceptionСтрока(,"Ошибка запроса", response.code,,response.result);
-КонецФункции
-
 Процедура local_helper_pause(Секунды)
 	Если Секунды<> 0 Тогда
 
