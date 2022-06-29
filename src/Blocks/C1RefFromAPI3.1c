@@ -1,0 +1,14 @@
+Функция block_c1_ref_from_api3_calc_value(block_type, node, path, context, block_context)
+	Если Найти(block_context.API3["ИмяИС"], ".") > 0 Тогда
+		ИмяИС = block_context.API3["ИмяИС"];
+	Иначе	
+		ИмяИС = block_context.API3["ТипИС"] + "." + block_context.API3["ИмяИС"];		
+	КонецЕсли;	
+	Результат = ПолучитьСсылкуПоИдИС(ИмяИС, block_context.API3["ИдИС"]);
+	Если Результат.ПолучитьОбъект() = Неопределено Тогда
+		ИнфОбОшибке	= ИнформацияОбОшибке();
+		ВызватьИсключение(NewExtExceptionСтрока(ИнфОбОшибке, "Объект не найден. " + block_context.ИмяИС + " с идентификатором " + block_context.ИдИС, block_type,, add_block_to_dump(block_context), "ObjectNotFound"));
+	Иначе	
+		Возврат Результат;
+	КонецЕсли;	
+КонецФункции

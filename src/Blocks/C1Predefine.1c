@@ -1,0 +1,4 @@
+Функция block_c1_predefine_calc_value(block_type, node, path, context, block_context)
+	type_list = СтрРазделить(block_context.ИмяИС,".");
+	Возврат ПолучитьСоответсвиеПредопределенных(type_list[0], type_list[1]); //TODO в ини predefine перейти на c1_predefine
+КонецФункции

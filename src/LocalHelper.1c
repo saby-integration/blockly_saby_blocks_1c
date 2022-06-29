@@ -95,6 +95,15 @@
 	Возврат code_result.result;
 КонецФункции
 
+Функция local_helper_get_product_version_status(context_params, product, client_version)
+	Попытка
+		Возврат local_helper_integration_api(context_params, "API3.GetProductVersionStatus", Новый Структура("product, client_version", product, client_version));
+	Исключение
+		ИнфОбОшибке = ИнформацияОбОшибке();
+		ВызватьИсключение(NewExtExceptionСтрока(ИнфОбОшибке));		
+	КонецПопытки;	
+КонецФункции
+
 Функция local_helper_extsyncdoc_write(context_params, connection_uuid, extsyncdoc, objects)
 	Попытка
 		params = Новый Структура("param", Новый Структура("ConnectionId, ExtSyncDoc, ExtSyncObj", connection_uuid, extsyncdoc, objects));
@@ -485,23 +494,6 @@
 		)
 	);
 	Возврат Результат;
-КонецФункции
-
-Функция local_helper_read_version_info(api_url, product_name)
-	link = get_update_url(api_url, product_name);
-	link = link + product_name +".json";
-	response = local_helper_exec_request("get", link, "json");
-	Если response.code = 200 Тогда
-		Возврат response.result
-	ИначеЕсли response.code = 302 Тогда
-		Если найти(response.result,"Found. Redirecting to ")> 0 Тогда
-			response = local_helper_exec_request("get", Сред(response.result, 23), "json");
-			Если response.code = 200 Тогда
-				Возврат response.result;
-			КонецЕсли;
-		КонецЕсли;	
-	КонецЕсли;
-	ВызватьИсключение NewExtExceptionСтрока(,"Ошибка запроса", response.code,,response.result);
 КонецФункции
 
 Процедура local_helper_pause(Секунды)

@@ -35,6 +35,12 @@
 #Область include_BlocklySabyBlocks_src_Blocks_C1Ref
 #КонецОбласти
 
+#Область include_BlocklySabyBlocks_src_Blocks_C1Predefine  
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_C1RefFromAPI3  
+#КонецОбласти
+
 #Область include_BlocklySabyBlocks_src_Blocks_C1MetaRead 
 #КонецОбласти
 
