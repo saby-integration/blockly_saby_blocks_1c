@@ -60,21 +60,31 @@
 		Если Не kwargs.Свойство("type", type_request) Тогда
 			type_request = "post";
 		КонецЕсли;
+		ПараметрыВыполнения	=	Новый Структура("params, data, headers", params, data, headers);
+		Если context_params.Свойство("Proxy") Тогда
+			ПараметрыВыполнения.Вставить("Proxy", context_params.Proxy);
+		КонецЕсли;         
+		
 		local_helper_add_auth_header(context_params, headers);
-		code_result = local_helper_exec_request(type_request, url, response_type, Новый Структура("params, data, headers", params, data, headers));
+		code_result = local_helper_exec_request(type_request, url, response_type, ПараметрыВыполнения);
 		Если code_result.code = 401 Тогда
 			Если	kwargs.Свойство("auto_auth")
 				И	kwargs.auto_auth Тогда
 				local_helper_auth_by_login(context_params);
 				local_helper_add_auth_header(context_params, headers);			
-				code_result = local_helper_exec_request(type_request, url, response_type, Новый Структура("params, data, headers", params, data, headers));
+				code_result = local_helper_exec_request(type_request, url, response_type, ПараметрыВыполнения);
 			КонецЕсли;
 		КонецЕсли;
 		Если code_result.code = 401 Тогда
 			ВызватьИсключение NewExtExceptionСтрока(,"Не верный логин или пароль",,,,"Unauthorized" );
+		ИначеЕсли	(code_result.code = 200 или code_result.code = 500) И code_result.result.Получить("error") <> Неопределено Тогда
+			//ПОЧЕМУ код - 200, при classid = "{00000000-0000-0000-0000-1FA000001002}
+			//https://sbis.ru/help/integration/api/all_methods/auth_one
+			//Требуется подтверждение телефона или подтверждение СМС
+			msg = code_result.result["error"]["message"];
+			ВызватьИсключение NewExtExceptionСтрока(  ,msg, code_result.result );
 		ИначеЕсли	code_result.result.Получить("error") <> Неопределено
-			И	(	code_result.code = 500
-			Или	code_result.code = 501
+			И (code_result.code = 501
 			Или	code_result.code = 404
 			Или	code_result.code = 200) Тогда
 			_details = Неопределено;
@@ -230,7 +240,7 @@
 // response_type: json, text, binary (в ответе будет лежать имя временного файла)
 
 Функция local_helper_exec_request(request_type, Знач request_url, response_type, __kwargs = Неопределено)
-	Перем ИмяФайлаОтвета, proxy, proxy_param, ssl, headers;
+	Перем ИмяФайлаОтвета, Proxy, ProxyParam, ssl, headers;
 	
 	Адрес = РазобратьСтрокуУРЛ(request_url);
 	
@@ -246,9 +256,9 @@
 	Если Адрес.scheme = "https" Тогда
 		ssl = Новый ЗащищенноеСоединениеOpenSSL();
 	КонецЕсли;
-	Если kwargs.Свойство("proxy", proxy_param) Тогда
-		proxy = Новый ИнтернетПрокси;
-		proxy.Установить(proxy_param.protocol, proxy_param.server, Число(proxy_param.port), proxy_param.user, proxy_param.password);
+	Если kwargs.Свойство("Proxy", ProxyParam) Тогда
+		Proxy = Новый ИнтернетПрокси;
+		Proxy.Установить(ProxyParam.Protocol, ProxyParam.Server, Число(ProxyParam.Port), ProxyParam.User, ProxyParam.Password);
 	КонецЕсли;
 	
 	Если Не kwargs.Свойство("headers", headers) Тогда
@@ -256,7 +266,7 @@
 	КонецЕсли;
 	
 	Попытка
-		http_connection = Новый HTTPСоединение(Адрес.host, Адрес.port,,,proxy,,ssl);
+		http_connection = Новый HTTPСоединение(Адрес.host, Адрес.port,,,Proxy,,ssl);
 		http_request	= Новый HTTPЗапрос(Адрес.resource, headers);
 		Если request_type = "post" Тогда
 			http_request.УстановитьТелоИзСтроки(kwargs.data, "UTF-8");
