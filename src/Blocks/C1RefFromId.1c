@@ -1,16 +1,8 @@
 Функция block_c1_ref_from_id_calc_value(block_type, node, path, context, block_context)
 
 	Если block_context.Свойство("ИмяИС") И block_context.Свойство("ИдИС") И
-		ЗначениеЗаполнено(block_context.ИмяИС) И ЗначениеЗаполнено(block_context.ИдИС) Тогда
+		ЗначениеЗаполнено(block_context.ИмяИС) И ЗначениеЗаполнено(block_context.ИдИС) Тогда		
 		
-		Результат = ПолучитьСсылкуПоИдИС(block_context.ИмяИС, block_context.ИдИС);
-		Если Результат.ПолучитьОбъект() = Неопределено Тогда
-			ИнфОбОшибке	= ИнформацияОбОшибке();
-			ВызватьИсключение(NewExtExceptionСтрока(ИнфОбОшибке, "Объект не найден. " + block_context.ИмяИС + " с идентификатором " + block_context.ИдИС, block_type,, add_block_to_dump(block_context), "ObjectNotFound"));
-		Иначе	
-			Возврат Результат;
-		КонецЕсли; 
+		Возврат ПолучитьСсылкуПоИдИС(block_context.ИмяИС, block_context.ИдИС, block_context); 
 	КонецЕсли;
-	
-	Возврат неопределено;
 КонецФункции
