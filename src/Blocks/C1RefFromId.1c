@@ -3,6 +3,6 @@
 	Если block_context.Свойство("ИмяИС") И block_context.Свойство("ИдИС") И
 		ЗначениеЗаполнено(block_context.ИмяИС) И ЗначениеЗаполнено(block_context.ИдИС) Тогда		
 		
-		Возврат ПолучитьСсылкуПоИдИС(block_context.ИмяИС, block_context.ИдИС, block_context); 
+		Возврат ПолучитьСсылкуПоИдИС(block_context.ИмяИС, block_context.ИдИС); 
 	КонецЕсли;
 КонецФункции
