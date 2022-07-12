@@ -65,6 +65,9 @@
 #Область include_BlocklySabyBlocks_src_Blocks_SabyFind
 #КонецОбласти
 
+#Область include_BlocklyExecutor_src_Blocks_LogicNegate
+#КонецОбласти
+
 #Область include_BlocklySabyBlocks_src_Blocks_C1Execute
 #КонецОбласти
 
