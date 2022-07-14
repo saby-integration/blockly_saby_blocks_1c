@@ -1,12 +1,12 @@
 Функция block_saby_execute_action_calc_value(block_type, node, path, context, block_context)
 	//block_check_props(node, path, context, block_context);
 	doc = block_context["DOCUMENT"];
-	doc_performer = block_context["PERFORMER"];
 	easy_send = block_get_mutation(node, "EASY_SEND"); 
 	send_type = block_get_mutation(node, "SEND_TYPE");	
 	Если easy_send = "TRUE" Тогда
 		action_name = "ПростоОтправить";
 	ИначеЕсли send_type = "MAGIC_BUTTON" Тогда
+		doc_performer = block_context["PERFORMER"];
 		Если doc["Вложение"] = Неопределено или doc["Вложение"].Количество() = 0 Тогда
 			ВызватьИсключение NewExtExceptionСтрока(,"Отсутствуют вложения. "+ doc["Название"], "execute_action");	
 		КонецЕсли;
