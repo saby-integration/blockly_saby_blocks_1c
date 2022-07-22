@@ -10,6 +10,9 @@
 	Возврат param;	
 КонецФункции
 
+#Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3Accruals
+#КонецОбласти
+
 #Область include_BlocklySabyBlocks_src_Blocks_Api3Objects_Api3Link
 #КонецОбласти
 
