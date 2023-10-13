@@ -1,0 +1,155 @@
+
+#Область include_BlocklySabyBlocks_base_Blocks_ExtsysRead
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_C1RefToObj
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_C1RefFromId
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_SabyUploadFiles
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_SabyConvertFilesToPdf
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_C1DocReadPrintForms
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_NewObj
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_GetCurrentDatetime
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_ObjPropSet
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_Format 
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_ObjPropGet
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_C1CallSelect 
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_C1Ref
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_C1Predefine  
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_C1RefFromAPI3  
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_C1MetaRead 
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_C1MetaCreate
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_C1MetaUpdate
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_C1RegisterUpdate
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_C1Strip 
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_ReSearch 
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_src_Blocks_ListObjGroup 
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_Uuid4
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_MathRound 
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_SabyEdoStart
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_C1CallFilter
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_C1ClearTable 
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_C1GetUuid
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_SabyExecuteAction
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_SabyFind
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_SabyGet
+#КонецОбласти
+
+#Область include_BlocklyExecutor_base_Blocks_LogicNegate
+#КонецОбласти
+
+#Область include_BlocklyExecutor_base_Blocks_textGetSubstring
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_ObjPropAppend
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_ExtsyncdocWrite
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_TestGetSabyObject
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_FedConvertObjectToXml
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_FedConvertXmlToObject 
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_ExtsyncdocRun
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_ExtsysUpdateStatus
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_SabyExtsyncobjList
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_SabyTaskList
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_AccountingEntriesList
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_SabyReadChanges
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_SabyReadDocument
+#КонецОбласти 
+
+#Область include_BlocklySabyBlocks_base_Blocks_SabyWriteDocument
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_C1AttachAttachment
+#КонецОбласти   
+
+#Область include_BlocklySabyBlocks_base_Blocks_ExtSysReadChanges  
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_ExtSyncDocFillChangedSbisObjects 
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_IndicatorFromAccountingEntrySide
+#КонецОбласти
+
+#Область include_BlocklySabyBlocks_base_Blocks_ExtsysCalcIni
+#КонецОбласти
+
+
