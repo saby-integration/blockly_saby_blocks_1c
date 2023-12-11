@@ -1,0 +1,65 @@
+Функция block_test_read_saby_object_calc_value (block_type, node, path, context, block_context)
+	required_param = Новый Массив;
+	required_param.Добавить("type");
+	required_param.Добавить("value1");
+	block_check_required_param_in_block_context(required_param, block_context);
+	
+	key_number = block_context.Key;
+	block_context.Вставить("keys", Новый Структура("ИдИС", ""));  // todo ошибка на бл, убрать костыли
+	Если key_number = "1" Тогда
+		Для value_number = 1 По 3 Цикл
+			value = get_prop(block_context, "value" + value_number);
+			Если value <> Неопределено Тогда
+				block_context["keys"].Вставить("Ключ1_" + value_number, value);
+			КонецЕсли;
+		КонецЦикла;	
+	ИначеЕсли key_number = "Название" Тогда
+		block_context["keys"].Вставить("Название", get_prop(block_context, "value1"));
+	Иначе
+		block_context["keys"].Вставить("Ключ" + key_number, get_prop(block_context, "value1"));
+	КонецЕсли;
+	
+	// ищем объект по ключам
+	resp = local_helper_find_sbis_object(context.params, block_context.type, block_context.keys);
+    // если не находим ругаемся
+	list_obj = get_prop(resp, "result");
+	// добавляем в обмен
+	Если list_obj = Неопределено ИЛИ list_obj.Количество() = 0 Тогда
+		ВызватьИсключение NewExtExceptionСтрока(,"Тестовый объект не найдет в SABY",,"block_test_read_saby_object",);
+	КонецЕсли;
+	obj = list_obj[0];
+	// запускаем обмен            
+	
+	direction = 2;
+	obj_saby_id = get_prop(obj, "ИдСБИС");
+	
+	extsyncobjects = Новый Массив;
+	extsyncobjects.Добавить(Новый Структура("Action, Title, Type, SbisId", direction, get_prop(obj, "Название"), block_context.type, obj_saby_id));
+	
+	// записываем ссылку
+	connection_uuid = get_prop(context.operation,"connection_uuid","");
+	extsyncdoc_uuid = local_helper_extsyncdoc_write(
+		context.params,
+		connection_uuid,
+		Новый Структура("Direction", direction),
+		extsyncobjects
+	);	
+	context.operation.Вставить("operation_uuid", extsyncdoc_uuid); 
+
+	// получаем наш объект
+	filter = Новый Структура("SyncDocId", extsyncdoc_uuid);
+	sort = Новый Массив();
+	sort.Добавить("Priority");
+	resp = local_helper_extsyncobj_list(context.params, , filter, , );
+	extsyncobject_uuid = resp["result"]["Result"][0]["Uuid"];
+	context.operation.Вставить("extsyncobject_uuid", extsyncobject_uuid); 
+	
+	
+	
+	// вычитываем объекты и подобъекты
+	block_context.Вставить("PrepareResult", block_extsyncdoc_run_extsyncdoc_prepare_saby(context, block_context));
+	extsyncobject = block_extsyncdoc_run_extsyncdoc_execute_is(context, block_context, extsyncobject_uuid);
+	
+	return extsyncobject; 
+	
+КонецФункции
