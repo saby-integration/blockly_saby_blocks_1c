@@ -1,0 +1,47 @@
+Функция block_saby_extsys_update_status2_calc_value(block_type, node, path, context, block_context)
+	СтатусыДокументовОбновитьПоUID(
+		get_prop(block_context, "UID"),
+		get_prop(block_context, "ACTIVE_STAGE"), 
+		get_prop(block_context, "STATE_CODE"),
+		,
+		get_prop(block_context, "ИмяИС"),
+		get_prop(block_context, "ИдИС"), 
+		get_prop(block_context, "SbisID")
+	);
+	Возврат Неопределено;
+КонецФункции
+
+//DEPRECATED
+Функция block_saby_extsys_update_status_calc_value(block_type, node, path, context, block_context)
+	
+	РезультатОбновления = Истина;
+	Если block_context["NAME"] = Неопределено ИЛИ block_context["NAME"]["Data"]["subobject"] <> Неопределено Тогда
+		Возврат Неопределено;
+	КонецЕсли;
+
+	Документ = local_helper_read_document(context.params, Новый Структура("ПервичныйКлюч", block_context["NAME"]["SbisId"]));
+	
+	UID = Документ["Идентификатор"];
+	
+	Попытка
+		Состояние = Справочники.Saby_СостоянияОбъектов.НайтиПоРеквизиту("ИдентификаторСБИС", Число(Документ["Состояние"]["Код"]));
+	Исключение
+		Состояние = Справочники.Saby_СостоянияОбъектов.ПустаяСсылка();
+	КонецПопытки;
+	
+	Попытка
+		АктивныйЭтап = Документ["Этап"][0]["Название"];
+	Исключение
+		АктивныйЭтап = "";
+	КонецПопытки;
+	
+	СтатусыДокументовОбновитьПоUID(
+		UID,
+		АктивныйЭтап,
+		Состояние,
+		,
+		get_prop(block_context["NAME"], "Type"),
+		get_prop(block_context["NAME"], "ClientId"));
+	
+	Возврат Неопределено;
+КонецФункции
