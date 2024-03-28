@@ -1,0 +1,91 @@
+Функция saby_read_changes_get_items(context, block_context)
+	//# Получем идентификато и дату от послденего запроса списка изменений
+	СохранитьСессиюОтладки();
+	ПрочитатьСессиюОтладки();
+	
+	last_event = Неопределено;
+	context.params.Свойство("last_event", last_event);
+	Если last_event = Неопределено Тогда
+		last_event = Новый Структура;
+	КонецЕсли;
+	last_event_id = Неопределено;
+	last_event.Свойство("id", last_event_id);
+	last_document_id = Неопределено;
+	last_event.Свойство("doc_id", last_document_id);
+	
+	last_event_datetime	= Неопределено;
+	last_event.Свойство("date", last_event_datetime);
+	if last_event_datetime = Неопределено and Не ЗначениеЗаполнено(last_event) Тогда
+	    last_event_datetime = local_helper_get_server_datetime(context.params);
+	    context.params.Вставить("last_event", Новый Структура("date", last_event_datetime ));
+	КонецЕсли;
+	
+	//# Формирование фильтра
+	РазмерСтраницы	= 25;
+	Если Не context.params.Свойство("page_size", РазмерСтраницы) Тогда
+		РазмерСтраницы	= 25;
+	КонецЕсли;
+	
+	_filter = Новый Структура(
+	    "Навигация", Новый Структура(
+	        "РазмерСтраницы", Формат(РазмерСтраницы,"ЧГ=0")
+	    )
+	);
+	Если ЗначениеЗаполнено(last_event_datetime) Тогда
+	    _filter.Вставить("ДатаВремяС", last_event_datetime);
+	КонецЕсли;
+	Если ЗначениеЗаполнено(last_event_id) Тогда
+		_filter.Вставить("ИдентификаторСобытия", last_event_id);
+	КонецЕсли;
+	Если ЗначениеЗаполнено(last_document_id) Тогда
+		_filter.Вставить("ИдентификаторДокумента", last_document_id);
+	КонецЕсли;
+	Попытка
+		events = local_helper_read_changes(context.params, _filter);
+	Исключение
+		ИнфОбОшибке = ИнформацияОбОшибке();
+		Если Найти(НРег(ИнфОбОшибке.Описание), "не найдено событие с идентификатором") Тогда
+			_filter.Удалить("ИдентификаторСобытия");
+			Попытка
+				events = local_helper_read_changes(context.params, _filter);
+			Исключение
+				ИнфОбОшибке = ИнформацияОбОшибке();
+				ВызватьИсключение NewExtExceptionСтрока(ИнфОбОшибке,,,,add_block_to_dump(block_context));
+			КонецПопытки;
+		Иначе
+			ВызватьИсключение NewExtExceptionСтрока(ИнфОбОшибке,,,,add_block_to_dump(block_context));
+		КонецЕсли;
+	КонецПопытки;
+	events = events["Документ"];
+	Если events = Неопределено Тогда
+		events = Новый Массив;
+	КонецЕсли;
+
+	//Прогресс
+	СчётчикОбработаныхДокументов = get_prop(block_context, "СчётчикОбработаныхДокументов", 0);
+	СчётчикОбработаныхДокументов = СчётчикОбработаныхДокументов + events.Количество();
+	block_context.Вставить("СчётчикОбработаныхДокументов",  СчётчикОбработаныхДокументов);
+	Если events.Количество() Тогда
+		Если last_event_datetime <> Неопределено Тогда
+			ВремяСтрокой = Прав(last_event_datetime, 8);
+			last_event_datetime = Сред(last_event_datetime, 1, СтрДлина(last_event_datetime) - 8) + СтрЗаменить(ВремяСтрокой, ".", ":");
+		КонецЕсли;
+		ТекстСтатуса = "Количество обработанных статусов: "+Формат(СчётчикОбработаныхДокументов,"ЧГ=0")+", последнее событие: "+last_event_datetime;
+	Иначе
+		ТекстСтатуса = "Получены все статусы.";
+	КонецЕсли;		
+	СообщитьПрогрессОперации(, ТекстСтатуса);
+	
+	return events;
+КонецФункции
+
+Функция saby_read_changes_execute_item(node_loop, path, context, block_context)
+	doc = block_context["items"][block_context["index"]];
+	event = doc["Событие"][0];
+	context.params.Вставить("last_event", Новый Структура(
+	"id, date, doc_id",
+	event["Идентификатор"],  event["ДатаВремя"], doc["Идентификатор"]
+	)
+	);
+	block_execute_all_next(node_loop, path, context, block_context, Истина);
+КонецФункции
