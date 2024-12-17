@@ -1,0 +1,6 @@
+
+#Область include_IntegrationBlockly_base_Blocks_AccountingEntriesListOnClient
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_AccountingEntriesList2OnClient
+#КонецОбласти
