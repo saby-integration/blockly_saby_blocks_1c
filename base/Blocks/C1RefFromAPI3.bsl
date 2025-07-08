@@ -1,0 +1,43 @@
+
+// Функция block_c1_ref_from_api3_calc_value
+//
+// Параметры:
+// block_type - Строка - Название блока
+// node - XML - Текущий обрабатываемый узел XML
+// path - Строка - Абсолютный путь до исполняемого блока
+// context - Соответствие - Контекст исполняемого блока
+// block_context - Соответствие - Контекст текущего выполняемого блока
+//
+// Возвращаемое значение:
+//  Структура - Результат выполения функции
+//
+//DynamicDirective
+Функция block_c1_ref_from_api3_calc_value(block_type, node, path, context, block_context)
+	Если get_prop(block_context.API3,"ИдИС") = Неопределено Тогда
+		Возврат Неопределено;
+	КонецЕсли;
+	Если Найти(block_context.API3["ИмяИС"], ".") > 0 Тогда
+		ИмяИС = block_context.API3["ИмяИС"];
+	Иначе
+		ИмяИС = block_context.API3["ТипИС"] + "." + block_context.API3["ИмяИС"];
+	КонецЕсли;
+	Попытка
+		СсылкаНаобъект = ПолучитьСсылкуПоИдИС(ИмяИС, block_context.API3["ИдИС"]);
+		Возврат СсылкаНаобъект;  
+	Исключение
+		Возврат Неопределено;
+		// BSLLS:CommentedCode-off
+		// BSLLS:SpaceAtStartComment-off
+		//ИдИС = block_context.API3["ИдИС"];
+		//МассивИС = Новый Массив();
+		//МассивИС.Добавить(ИдИС);
+		//remove_mapping = Новый Соответствие;
+		//remove_mapping.Вставить(ИмяИС, МассивИС);
+		//dump = Новый Соответствие;
+		//dump.Вставить("remove_mapping", remove_mapping); 
+		//detail = Строка(ИмяИС) + " - " + Строка(ИдИС);
+		//ВызватьИсключение NewExtExceptionСтрока(,"Объект не найден в ИС", detail,, dump, "NotFound");
+		// BSLLS:SpaceAtStartComment-on
+		// BSLLS:CommentedCode-on
+	КонецПопытки;
+КонецФункции
