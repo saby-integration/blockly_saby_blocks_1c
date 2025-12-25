@@ -1,0 +1,9 @@
+
+#Область include_IntegrationBlockly_base_Blocks_AccountingEntriesList
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_AccountingEntriesList2
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_C1CallSelect2 
+#КонецОбласти
