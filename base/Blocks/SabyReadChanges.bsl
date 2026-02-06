@@ -1,0 +1,182 @@
+
+// Функция saby_read_changes_get_items
+//
+// Параметры:
+// context - Соответствие - Контекст исполняемого блока
+// block_context - Соответствие - Контекст текущего выполняемого блока
+//
+// Возвращаемое значение:
+//  Соответствие - Результат выполения функции
+//
+// Сохраняем идентичность со структурой кода в Питоне
+// BSLLS:CognitiveComplexity-off
+//DynamicDirective
+Функция saby_read_changes_get_items(context, block_context)
+// BSLLS:DeprecatedCurrentDate-off
+	// ТекущаяДатаСеанса нельзя тк метод не поддерживается на клиенте
+	ТекущаяДатаЧислом = (ТекущаяДата() - Дата(1, 1, 1));
+// BSLLS:DeprecatedCurrentDate-on
+
+	//Попробуем вычитать точку с подключения
+	last_event = Неопределено;
+	last_event_id = Неопределено;
+	last_document_id = Неопределено;
+	last_event_datetime	= Неопределено;
+
+	last_event_id = block_obj_get_path_value(context,"operation.data.public_params.last_event.BrokerMarkEdo.edo.id","");
+	last_event_datetime = block_obj_get_path_value(context,"operation.data.public_params.last_event.BrokerMarkEdo.edo.datetime","");
+	last_document_id = block_obj_get_path_value(context, "operation.data.public_params.last_event.BrokerMarkEdo.edo.doc_id", "");
+
+	// Если last_event_id ИЛИ last_event_datetime Тогда
+	// 	last_event = Новый Структура("id,doc_id,date", last_event_id, last_document_id, last_event_datetime );
+	// КонецЕсли;
+
+	//Если точки на подключении нет, то берем из контекста
+	Если last_event_id = Неопределено И last_event_datetime = Неопределено Тогда
+		context.params.Свойство("last_event", last_event);
+
+		//Если точки нигде нет, то создаем пустой объект
+		Если last_event = Неопределено Тогда
+			last_event = Новый Структура;
+		КонецЕсли;
+		
+		last_event.Свойство("id", last_event_id);
+		last_event.Свойство("doc_id", last_document_id);
+		last_event.Свойство("date", last_event_datetime);
+	КонецЕсли;
+
+
+	if last_event_datetime = Неопределено and Не ЗначениеЗаполнено(last_event) Тогда
+	    last_event_datetime = ТранспортИнтеграции.local_helper_get_server_datetime(context.params);
+	    context.params.Вставить("last_event", Новый Структура("date", last_event_datetime ));
+		block_obj_set_path_value(context,"operation.update_public_params.last_event.BrokerMarkEdo.edo.datetime", last_event_datetime);
+	КонецЕсли;
+
+	Если НЕ has_prop(context.params, "ФоновоеЗаданиеНачало") Тогда
+		ВремФоновоеЗаданиеНачало = ДатаСтрокойВЧисло(last_event_datetime);
+		ВремФоновоеЗаданиеНачало = Мин(ВремФоновоеЗаданиеНачало, ТекущаяДатаЧислом);
+		// Дата начала не может быть больше чем текущая датавремя
+		context.params.Вставить("ФоновоеЗаданиеНачало", ВремФоновоеЗаданиеНачало);
+	КонецЕсли;
+	
+	//# Формирование фильтра
+	РазмерСтраницы	= 25;
+	Если Не context.params.Свойство("page_size", РазмерСтраницы) Тогда
+		РазмерСтраницы	= 25;
+	КонецЕсли;
+	
+	_filter = Новый Структура(
+	    "Навигация", Новый Структура(
+	        "РазмерСтраницы", Формат(РазмерСтраницы,"ЧГ=0")
+	    )
+	);
+	Если ЗначениеЗаполнено(last_event_datetime) Тогда
+	    _filter.Вставить("ДатаВремяС", last_event_datetime);
+	КонецЕсли;
+	Если ЗначениеЗаполнено(last_event_id) Тогда
+		_filter.Вставить("ИдентификаторСобытия", last_event_id);
+	КонецЕсли;
+	Если ЗначениеЗаполнено(last_document_id) Тогда
+		_filter.Вставить("ИдентификаторДокумента", last_document_id);
+	КонецЕсли;
+	_filter.Вставить("ДопПоля", "ПервичныйКлюч");
+
+	Попытка
+		events = ТранспортИнтеграции.local_helper_read_changes(context.params, _filter);
+	Исключение
+		ИнфОбОшибке = ИнформацияОбОшибке();
+		Если Найти(НРег(ИнфОбОшибке.Описание), "не найдено событие с идентификатором") Тогда
+			_filter.Удалить("ИдентификаторСобытия");
+			Попытка
+				events = ТранспортИнтеграции.local_helper_read_changes(context.params, _filter);
+			Исключение
+				ИнфОбОшибке = ИнформацияОбОшибке();
+				ВызватьИсключение NewExtExceptionСтрока(ИнфОбОшибке,,,,add_block_to_dump(block_context));
+			КонецПопытки;
+		Иначе
+			ВызватьИсключение NewExtExceptionСтрока(ИнфОбОшибке,,,,add_block_to_dump(block_context));
+		КонецЕсли;
+	КонецПопытки;
+	events = events["Документ"];
+	Если events = Неопределено Тогда
+		events = Новый Массив;
+	КонецЕсли;
+
+	//Прогресс
+	ДопПарамерыПрогресса = Новый Структура; //Градусник для обновления статусов
+	ПроцентПрогресса = 0;
+	
+	СчётчикОбработаныхДокументов = get_prop(block_context, "СчётчикОбработаныхДокументов", 0);
+	СчётчикОбработаныхДокументов = СчётчикОбработаныхДокументов + events.Количество();
+	block_context.Вставить("СчётчикОбработаныхДокументов",  СчётчикОбработаныхДокументов);
+	Если events.Количество() Тогда
+		Если last_event_datetime <> Неопределено Тогда
+			ВремяСтрокой = Прав(last_event_datetime, 8);
+			last_event_datetime = Сред(last_event_datetime, 1, СтрДлина(last_event_datetime) - 8) + СтрЗаменить(ВремяСтрокой, ".", ":");
+		КонецЕсли;
+		ТекстСтатуса = "Количество обработанных статусов: "+Формат(СчётчикОбработаныхДокументов,"ЧГ=0")+", последнее событие: "+last_event_datetime;
+		
+		// Прогрессбар расчитываем так: 0% - ФоновоеЗаданиеНачало, самое первое значение last_event_datetime
+		// Текущее положение - ДатаВремя события
+		// 100% - текущая датавремя.
+		// ДатаНачалаЧислом считаем - 0, все остальные значения уменьшаем на его величину
+		МассивСобытий = get_prop(events[events.Количество() - 1], "Событие", Новый Массив);
+		ДатаСобытияЧислом = 0;
+		ДатаНачалаЧислом	= get_prop(context.params, "ФоновоеЗаданиеНачало", 0);
+		ДатаОкончанияЧислом = ТекущаяДатаЧислом - ДатаНачалаЧислом;
+		ДатаОкончанияЧислом = ?(ДатаОкончанияЧислом <= 0, 1, ДатаОкончанияЧислом);
+		Если МассивСобытий.Количество() > 0 Тогда
+			ДанныеСобытия	= МассивСобытий[МассивСобытий.Количество() - 1];
+			ДатаВремяСобытия	= get_prop(ДанныеСобытия, "ДатаВремя", "");
+			ДатаСобытияЧислом = ДатаСтрокойВЧисло(ДатаВремяСобытия);
+		КонецЕсли;
+		ДатаСобытияЧислом = ДатаСобытияЧислом - ДатаНачалаЧислом;
+		ДатаНачалаЧислом = 0;
+		ПроцентПрогресса = Окр(ДатаСобытияЧислом / ДатаОкончанияЧислом * 100, 0);
+	Иначе
+		ТекстСтатуса = "Получены все статусы.";
+		ПроцентПрогресса = 100;
+		// Очистим параметры от ненужной более переменной
+		context.params.Удалить("ФоновоеЗаданиеНачало");
+	КонецЕсли;
+	ДопПарамерыПрогресса.Вставить("Прогресс", ПроцентПрогресса); 
+	СообщитьПрогрессОперации(, ТекстСтатуса, ДопПарамерыПрогресса);
+	
+	Возврат events;
+КонецФункции
+// BSLLS:CognitiveComplexity-on
+
+// Функция saby_read_changes_execute_item
+//
+// Параметры:
+// node_loop - XML - Текущий обрабатываемый узел XML
+// path - Строка - Абсолютный путь до исполняемого блока
+// context - Соответствие - Контекст исполняемого блока
+// block_context - Соответствие - Контекст текущего выполняемого блока
+//
+// Возвращаемое значение:
+//  Неопределено - Результат выполения функции
+//
+// BSLLS:DuplicateStringLiteral-off
+//DynamicDirective
+Функция saby_read_changes_execute_item(node_loop, path, context, block_context)
+	doc = block_context["items"][block_context["index"]];
+	event = doc["Событие"][0];
+	//context.params.Вставить("last_event", Новый Структура(
+	//	"id, date, doc_id",
+	//	event["Идентификатор"],  event["ДатаВремя"], doc["Идентификатор"]));
+
+	block_obj_set_path_value(context,"operation.data.public_params.last_event.BrokerMarkEdo.edo.id", event["Идентификатор"]);	
+	block_obj_set_path_value(context,"operation.update_public_params.last_event.BrokerMarkEdo.edo.id", event["Идентификатор"]);	
+
+	block_obj_set_path_value(context,"operation.data.public_params.last_event.BrokerMarkEdo.edo.datetime", event["ДатаВремя"]);	
+	block_obj_set_path_value(context,"operation.update_public_params.last_event.BrokerMarkEdo.edo.datetime", event["ДатаВремя"]);	
+
+	block_obj_set_path_value(context, "operation.data.public_params.last_event.BrokerMarkEdo.edo.doc_id", doc["Идентификатор"]);	
+	block_obj_set_path_value(context, "operation.update_public_params.last_event.BrokerMarkEdo.edo.doc_id", doc["Идентификатор"]);	
+
+	block_execute_all_next(node_loop, path, context, block_context, Истина);
+	Возврат Неопределено;
+КонецФункции
+
+// BSLLS:DuplicateStringLiteral-on

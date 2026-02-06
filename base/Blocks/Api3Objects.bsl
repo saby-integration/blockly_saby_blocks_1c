@@ -1,0 +1,575 @@
+
+// Функция ЗаполнитьЗначенияApi3Objects
+//
+// Параметры:
+// ТипСБИС - Строка - ТипСБИС
+// ИмяСБИС - Строка - ИмяСБИС
+// block_context - Соответствие - Контекст текущего выполняемого блока
+// РеквизитыТребующиеКонвертации - Структура - содержит реквизиты, требующие конвертации (ссылки на объекты 1С, даты)
+//
+// Возвращаемое значение:
+//  Соответствие - Результат выполения функции
+//
+//DynamicDirective
+Функция ЗаполнитьЗначенияApi3Objects(ТипСБИС, ИмяСБИС, block_context, РеквизитыТребующиеКонвертации = Неопределено)
+	param = Новый Соответствие;
+	// Отдельно переложим данные для конструктора INIT_VALUE в данные объекта
+	l_init_value = get_prop(block_context, "INIT_VALUE", Неопределено);
+	Если ЗначениеЗаполнено(l_init_value)
+			И (ТипЗнч(l_init_value) = Тип("Соответствие") ИЛИ ТипЗнч(l_init_value) = Тип("Структура")) Тогда
+		copy_block_context(param, l_init_value);
+	КонецЕсли;
+	Если ЗначениеЗаполнено(ТипСБИС) Тогда
+		param.Вставить("ТипСБИС", ТипСБИС);
+	КонецЕсли;
+	Если ЗначениеЗаполнено(ИмяСБИС) Тогда
+		param.Вставить("ИмяСБИС", ИмяСБИС);
+	КонецЕсли;
+	copy_block_context(param, block_context);
+	param.Удалить("INIT_VALUE");
+	СконвертироватьРеквизиты(param, РеквизитыТребующиеКонвертации);
+	Возврат param;	
+КонецФункции
+
+Процедура СконвертироватьРеквизиты(param, РеквизитыТребующиеКонвертации)
+	Если РеквизитыТребующиеКонвертации <> Неопределено Тогда
+		Для Каждого ВидРеквизита Из РеквизитыТребующиеКонвертации Цикл
+			Если ВидРеквизита.Ключ = "Ссылки" Тогда
+				СконвертироватьСсылки(param, ВидРеквизита.Значение);
+			ИначеЕсли ВидРеквизита.Ключ = "Даты" Тогда
+				СконвертироватьДаты(param, ВидРеквизита.Значение);
+			Иначе
+				Продолжить;
+			КонецЕсли;
+		КонецЦикла;
+	КонецЕсли;	
+КонецПроцедуры
+
+Процедура СконвертироватьСсылки(param, РеквизитыСсылки)
+	Для Каждого Рек Из РеквизитыСсылки Цикл
+		Попытка 
+			param[Рек.ИмяПоля].Метаданные().ПолноеИмя(); //Проверяем на наличие объекта метаданных
+		Исключение 
+			Продолжить;
+		КонецПопытки;
+		Если Не ЗначениеЗаполнено(param[Рек.ИмяПоля]) Тогда
+			param.Удалить(Рек.ИмяПоля);
+			Продолжить;
+		КонецЕсли;
+		Если ТипЗнч(param[Рек.ИмяПоля]) <> Тип("Структура") И ТипЗнч(param[Рек.ИмяПоля]) <> Тип("Соответствие") Тогда
+			param.Вставить(Рек.ИмяПоля, Api3Object(param[Рек.ИмяПоля], Рек.ИмяСБИС));
+		КонецЕсли;
+	КонецЦикла;	
+КонецПроцедуры
+
+Процедура СконвертироватьДаты(param, РеквизитыДаты)
+	Для Каждого Рек Из РеквизитыДаты Цикл
+		Если ТипЗнч(param[Рек.ИмяПоля]) = Тип("Дата") Тогда
+			param.Вставить(Рек.ИмяПоля, Формат(param[Рек.ИмяПоля], Рек.Формат));
+		КонецЕсли;
+	КонецЦикла;	
+КонецПроцедуры
+
+Функция ОписаниеПоляСсылки(ИмяПоля, ИмяСБИС = Неопределено)
+	СБИСИмя = ?(ИмяСБИС = Неопределено, ИмяПоля, ИмяСБИС);
+	Возврат Новый Структура("ИмяПоля, ИмяСБИС", ИмяПоля, СБИСИмя);	
+КонецФункции
+
+Функция ОписаниеПоляДаты(ИмяПоля, Формат = "ДФ=dd.MM.yyyy")
+	Возврат Новый Структура("ИмяПоля, Формат", ИмяПоля, Формат);
+КонецФункции
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3Accruals
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3AccrualsTable
+#КонецОбласти
+                                                      
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3Incentive
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3IncentiveRecipient
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3BusinessTripList
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3BTCorrection
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3Downtime
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3DowntimeTable
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3AdditionalAssignment
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3AcceptanceAct
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3Link
+#КонецОбласти
+                                  
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3hiring
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3changePosition
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3dismissal
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3leave
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3LeaveTable
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3leavetypeadditional
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3person
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3PersonLocalization
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3PersonEducation
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3employee
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3org
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3department
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3departmentAdmin
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3position
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3planworkshedule
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3leavetype
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3kinship
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3truancy
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3documenttype
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3businesstrip
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3BusinessTripDestination
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3BusinessTripParticipant
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3timesheets
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3timesheetcorrection
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3sicknessreason
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3familymember
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3timeoff
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3timeofftype
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3vacationschedule
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3indexation
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3childcareleave
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3reason
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3sickleave
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3changetermsemploym
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3employmenttype
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3paymentcharacter
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3leave_type
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3Predefined
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3Overtime
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3OvertimeDay
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3OvertimeTable
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3TimesheetsTag
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3Leaveschedule
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3ChangeLeaveschedule
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3ChangeLeavescheduleTable
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3LeavescheduleTable
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3ContactType
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3CadresOther
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3AccrualType
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3Staffingtable
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3TerrConditions
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3Accountingreference
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3Counterparty
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3Selling
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3Sales
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3Contract
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3ImplementationAdjustment
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3WritingOffAct
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3ReceiptAdjustment
+#КонецОбласти  
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3Receipts
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3Stock
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3TypeOfIncome
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3ExpenseItem
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3ReleaseAct
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3IncomingPayment
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3OutgoingPayment
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_ApiCashInOrder
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_ApiCashIssueNote
+#КонецОбласти
+                                
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3AdvanceReport
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3Depreciation
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3CombinationCancel
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3Country
+#КонецОбласти 
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3Warehouse
+#КонецОбласти                     
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3Nomenclature
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3NomenclatureType
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3LeaveLeftovers
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3ReturnToSupplier
+#КонецОбласти  
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3Invoice
+#КонецОбласти      
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3Offset
+#КонецОбласти  
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3VatinvoiceOutgoing
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3InternalTransfer
+#КонецОбласти    
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3Interestonloansrecieved
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3MilitaryRank
+#КонецОбласти 
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3TaxStatus
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3EligibilityCategory
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3StockCategory
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3MilitaryAttitude
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3AccountingAttitude
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3Gender
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3VatinvoiceIncoming
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3Purchaseorder
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3Bank
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3Currency
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3ExtraPayForMergingPositions
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3PropertyType
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3CombinationType
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3AccountingPeriodType
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3LoanAgreementIssued
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3LoanAgreementObtaining
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3EducationDocumentType
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3EducationType
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3Property
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3PersonalAccount
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3SalaryConfiguration
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3OurCurrentAccount
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3ManuallyEnteredTransaction
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3BasisFixedTermContract
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3SpecialWorkingConditions
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3PropertyMoving
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3IndicatorAccounting
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3CustomDocument
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3PropertyReceipt
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3RevocationReason
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3PropertySales
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3CurrentAccount
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3TaxSystem
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3PropertyWriteOff
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3MethodsFillingSchedule
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3BasicPay
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3AccountingSettings
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3AcquiringAgreement
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3AcquiringDocument
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3AdvancePaymentProcedure
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3Allowance
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3AllowanceType
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3ApportionRecord
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3CashRegister
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3ChildTaxDeduction
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3CivilContract
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3ContactPersonCounterParty
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3CostAccountingMethod
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3CounterPartyType
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3CustomerOrder
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3CustomerOrderTable
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3IndividualCounterParty
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3InsurancePremiumRatesType
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3InventoryAct
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3InventoryManagementType
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3InvoiceAdvancePaymentProcedure
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3PayRollProgram
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3PropertyIssueReason
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3PropertyReceiptFixedAssets
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3PurchaseOrderTable
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3SalaryDeductions
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3SalaryPayment
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3SalaryPaymentPayments
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3SalaryPaymentMethod
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3SalesTablDoc
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3ReceiptTable
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3ReturnFromBuyer
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3LaborFunction
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3VatRate
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3Candidate
+#КонецОбласти
+
+#Область include_IntegrationBlockly_base_Blocks_Api3Objects_Api3MaternityLeaveReturn
+#КонецОбласти
